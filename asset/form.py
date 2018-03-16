@@ -29,7 +29,10 @@ class AssetForm(forms.ModelForm):
 
         }
         help_texts = {
-            'network_ip': '必填项目',
+            'network_ip': '* 必填项目,唯一值',
+            'manager': '* 必填项目',
+            "ctime":'* 必填项目',
+            "utime":'* 必填项目'
         }
         error_messages = {
             'model':{

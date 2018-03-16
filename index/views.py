@@ -32,7 +32,8 @@ def login_view(request):
     if request.method == "POST":
         u = request.POST.get("username")
         p = request.POST.get("password")
-        user = authenticate(username=u, password=p)
+        user = authenticate(request,username=u, password=p)
+        print(123)
         if user is not None:
             if user.is_active:
                 login(request, user)

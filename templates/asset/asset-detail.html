@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block  title %}资产详情{% endblock %}
 {% block header-css %}
-    {% load bootstrap3 %}
+
+{% load bootstrap3 %}
 {% endblock %}
 
 
@@ -114,8 +115,6 @@
                                         </tr>
 
 
-
-
                                         <tr>
                                             <td width="20%">CPU:</td>
                                             <td><b>{{ assets.cpu }}</b></td>
@@ -195,7 +194,7 @@
                         closeOnConfirm: false
                     }, function () {
                         $.ajax({
-                            url: "/asset/asset-del.html",
+                            url: "/asset/asset-all-del.html",
                             type: 'POST',
                             data: {'nid': {{  nid }}},
                             success: function (data) {
@@ -215,24 +214,6 @@
                     });
                 });
 
-
-                $('.asset_hardware_update').click(function () {
-
-                    alert('关闭alert, 等待完成, 自动刷新页面');
-                    $.ajax({
-                        url: "/asset/asset-hardware-update.html",
-                        type: 'POST',
-                        data: {'nid': {{  nid }}},
-                        success: function (data) {
-                            var obj = JSON.parse(data);
-                            if (obj.status) {
-                                location.reload()
-                            } else {
-                                $('#error2').text(obj.error);
-                            }
-                        }
-                    })
-                });
 
             });
 

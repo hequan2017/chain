@@ -15,6 +15,9 @@ import json
 
 
 class AssetListAll(LoginRequiredMixin,ListView):
+    '''
+    列表
+    '''
     template_name = 'asset/asset.html'
     paginate_by = settings.DISPLAY_PER_PAGE
     model = asset
@@ -31,39 +34,10 @@ class AssetListAll(LoginRequiredMixin,ListView):
         return super(AssetListAll, self).get_context_data(**kwargs)
 
 
-
-
-    # def post(self, request):
-    #     query = request.POST.get("name")
-    #
-    #     user = User.objects.get(username=request.user)
-    #     if user.is_superuser == 1:
-    #         ret = asset.objects.filter(Q(network_ip=query) | Q(manage_ip=query) | Q(hostname=query) | Q(
-    #             inner_ip=query) | Q(model=query) | Q(
-    #             eth0=query) | Q(eth1=query) | Q(eth2=query) | Q(eth3=query) |
-    #                                    Q(system=query) | Q(system_user__username=query) | Q(
-    #             data_center__data_center_list=query) | Q(
-    #             cabinet=query) |
-    #                                    Q(position=query) | Q(sn=query)
-    #                                    | Q(uplink_port=query) | Q(product_line__name=query)
-    #                                    )
-    #     else:
-    #         product1 = Group.objects.get(user=user)
-    #
-    #         ret = asset.objects.filter(Q(product_line__name=product1) &  Q(network_ip=query) | Q(manage_ip=query) | Q(hostname=query) | Q( inner_ip=query) | Q(model=query) | Q(eth0=query) | Q(eth1=query) | Q(eth2=query) | Q(eth3=query) |
-    #                                    Q(system=query) | Q(system_user__username=query)
-    #                                    | Q(data_center__data_center_list=query) | Q(cabinet=query) | Q(position=query) | Q(sn=query)| Q(uplink_port=query))
-    #
-    #     return render(request, 'asset/asset.html',
-    #                   {"Webssh": getattr(settings, 'Webssh_ip'),
-    #                    "Webssh_port": getattr(settings, 'Webssh_port'),
-    #                    "asset_active": "active",
-    #                    "asset_list_active": "active", "asset_list": ret})
-
-
-
-
 class AssetAdd(LoginRequiredMixin,CreateView):
+    """
+    增加
+    """
     model = asset
     form_class = AssetForm
     template_name = 'asset/asset-add-update.html'
@@ -82,6 +56,9 @@ class AssetAdd(LoginRequiredMixin,CreateView):
 
 
 class AssetUpdate(LoginRequiredMixin,UpdateView):
+    '''
+    更新
+    '''
     model = asset
     form_class = AssetForm
     template_name = 'asset/asset-add-update.html'
@@ -104,6 +81,9 @@ class AssetUpdate(LoginRequiredMixin,UpdateView):
 
 
 class AssetDetail(LoginRequiredMixin,DetailView):
+    '''
+    详细
+    '''
     model = asset
     template_name = 'asset/asset-detail.html'
 
@@ -122,37 +102,20 @@ class AssetDetail(LoginRequiredMixin,DetailView):
 
 
 
-class AssetDel(LoginRequiredMixin,View):
-    model = asset
-
-
-    def post(self, request):
-        ret = {'status': True, 'error': None, }
-        try:
-            id = request.POST.get('nid', None)
-            asset.objects.get(id=id).delete()
-        except Exception as e:
-            ret = {
-                "static": False,
-                "error": '删除请求错误,没有权限{}'.format(e)
-            }
-        finally:
-            return HttpResponse(json.dumps(ret))
-
-
-
 
 class AssetAllDel(LoginRequiredMixin,View):
+    """
+    删除
+    """
     model = asset
-
-
     def post(self, request):
         ret = {'status': True, 'error': None, }
         try:
-            ids = request.POST.getlist('id', None)
+
+            ids = request.POST.getlist('id', None)  or request.POST.get('nid', None)
+            print(ids)
             idstring = ','.join(ids)
             asset.objects.extra(where=['id IN (' + idstring + ')']).delete()
-
         except Exception as e:
             ret['status'] = False
             ret['error'] = '删除请求错误,没有权限{}'.format(e)

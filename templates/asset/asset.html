@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load pagination_tags %}
 {% block header-css %}
 {% endblock %}
 
@@ -8,12 +7,12 @@
 
 
 {% block page-content %}
-<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
             <h2>资产信息</h2>
             <ol class="breadcrumb">
                 <li>
-                    <a  href="{% url "index" %}">主页</a>
+                    <a href="{% url "index" %}">主页</a>
                 </li>
                 <li>
                     <a>资产管理</a>
@@ -27,7 +26,7 @@
 
         </div>
     </div>
-<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox float-e-margins">
@@ -58,10 +57,10 @@
 
                             <form id="cha" class="form-horizontal" action="{% url 'asset:asset_list' %}" method="post">
                                 {% csrf_token %}
-{#                                <div class="col-md-2"><input type="text" class="form-control" name="name" required>#}
-{#                                </div>#}
-{##}
-{#                                <button class="btn btn-primary" type="submit">查询</button>#}
+                                {#                                <div class="col-md-2"><input type="text" class="form-control" name="name" required>#}
+                                {#                                </div>#}
+                                {##}
+                                {#                                <button class="btn btn-primary" type="submit">查询</button>#}
 
 
                                 <a href="{% url    'asset:asset_add' %}" class="btn btn-primary  ">
@@ -103,23 +102,18 @@
                                             <td class="center">{{ row.manage_ip }}</td>
                                             <td class="center">{{ row.platform }}</td>
                                             <td class="center">{{ row.system }}</td>
-                                             <td class="center">{{ row.manager }}</td>
+                                            <td class="center">{{ row.manager }}</td>
                                             <td class="center">{{ row.is_active }}</td>
 
 
-
                                             <td><a class="btn btn-primary  btn-xs "
-                                                   href="{%   url  "asset:asset_update"  pk=row.id %}">编辑</a>
+                                                   href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  asset_del_1" data-toggle="modal"
                                                    data-target="#myModal1">删除
                                                 </a>
 
 
-
-
                                             </td>
-
-
 
 
                                         </tr>
@@ -131,42 +125,57 @@
 
                                 </table>
 
-<div>
-  <center>
-    <ul class="pagination">
-           <li> <a href="{% url "asset:asset_list"  %}?page=1">首页 </a> </li>
-           {% if  page_obj.has_previous %}
-                    <li> <a href="{% url "asset:asset_list"  %}?page={{  page_obj.previous_page_number }}&{{ search_data }}"> 上一页 </a> </li>
-            {% else %}
-                    <li class="disabled"> <a> 上一页 </a> </li>
-           {% endif %}
+                                <div>
+                                    <center>
+                                        <ul class="pagination">
+                                            <li><a href="{% url "asset:asset_list" %}?page=1">首页 </a></li>
+                                            {% if  page_obj.has_previous %}
+                                                <li>
+                                                    <a href="{% url "asset:asset_list" %}?page={{ page_obj.previous_page_number }}&{{ search_data }}">
+                                                        上一页 </a></li>
+                                            {% else %}
+                                                <li class="disabled"><a> 上一页 </a></li>
+                                            {% endif %}
 
-           {% for p in paginator.page_range %}
-               {% if search_data  %}  <!-- 判断是否是搜索分页-->
-                       {% if p == page_obj.number %}
-                            <li class="active"><a href="{% url "asset:asset_list"  %}?page={{ p }}&{{ search_data }}"> {{ p }} </a> </li>
-                        {% else %}
-                            <li ><a href="{% url "asset:asset_list"  %}?page={{ p }}&{{ search_data }}"> {{ p }} </a> </li>
-                        {% endif %}
-                   {% else %}
-                        {% if p == page_obj.number %}
-                            <li class="active"><a href="{% url "asset:asset_list"  %}?page={{ p }}"> {{ p }} </a> </li>
-                        {% else %}
-                            <li ><a href="{% url "asset:asset_list"  %}?page={{ p }}"> {{ p }} </a> </li>
-                        {% endif %}
-               {% endif %}
-           {% endfor %}
+                                            {% for p in paginator.page_range %}
+                                                {% if search_data %}  <!-- 判断是否是搜索分页-->
+                                                    {% if p == page_obj.number %}
+                                                        <li class="active"><a
+                                                                href="{% url "asset:asset_list" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li>
+                                                            <a href="{% url "asset:asset_list" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if p == page_obj.number %}
+                                                        <li class="active"><a
+                                                                href="{% url "asset:asset_list" %}?page={{ p }}"> {{ p }} </a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li>
+                                                            <a href="{% url "asset:asset_list" %}?page={{ p }}"> {{ p }} </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
 
 
-           {% if  page_obj.has_next %}
-                    <li> <a href="{% url "asset:asset_list"  %}?page={{  page_obj.next_page_number }}&{{ search_data }}"> 下一页 </a> </li>
-           {% endif %}
-           <li> <a href="{% url "asset:asset_list"  %}?page={{ page_obj.paginator.num_pages }}">尾页 </a> </li>
-           <li> <span style="color: #0a0a0a">总: &nbsp;{{ page_obj.paginator.num_pages }} 页 </span> </li>
+                                            {% if  page_obj.has_next %}
+                                                <li>
+                                                    <a href="{% url "asset:asset_list" %}?page={{ page_obj.next_page_number }}&{{ search_data }}">
+                                                        下一页 </a></li>
+                                            {% endif %}
+                                            <li>
+                                                <a href="{% url "asset:asset_list" %}?page={{ page_obj.paginator.num_pages }}">尾页 </a>
+                                            </li>
+                                            <li><span style="color: #0a0a0a">总: &nbsp;{{ page_obj.paginator.num_pages }} 页 </span>
+                                            </li>
 
-    </ul>
-  </center>
-</div> <!--页码 -->
+                                        </ul>
+                                    </center>
+                                </div> <!--页码 -->
 
 
                             </form>
@@ -184,18 +193,15 @@
 
 
 
-{% block footer-js %}
+    {% block footer-js %}
 
 
 
-<script>
-     $(function () {
+        <script>
+            $(function () {
 
-       $(document).on('click','.asset_del_1',function () {
-
-
+                $(document).on('click', '.asset_del_1', function () {
                     var id = $(this).parent().parent().attr('id');
-
                     swal({
                         title: "你确定删除",
                         text: "你将无法恢复",
@@ -205,9 +211,8 @@
                         confirmButtonText: "确定",
                         closeOnConfirm: false
                     }, function () {
-
                         $.ajax({
-                            url: "/asset/asset-del.html",
+                            url: "/asset/asset-all-del.html",
                             type: 'POST',
                             data: {'nid': id},
                             success: function (data) {
@@ -227,9 +232,7 @@
 
                 });
 
-  $(document).on('click','.asset_all_del',function () {
-
-
+                $(document).on('click', '.asset_all_del', function () {
 
                     swal({
 
@@ -264,8 +267,6 @@
 
 
             });
-
-
 
 
         </script>

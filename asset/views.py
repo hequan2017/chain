@@ -29,9 +29,15 @@ class AssetListAll(LoginRequiredMixin,ListView):
             "asset_active": "active",
             "asset_list_active": "active",
         }
-
         kwargs.update(context)
         return super(AssetListAll, self).get_context_data(**kwargs)
+
+    def post(self, request):
+        query = request.POST.get("name")
+        ret = asset.objects.filter(Q(network_ip=query)| Q(hostname=query)  | Q(inner_ip=query)  | Q(manager=query))
+        return render(request, 'asset/asset.html',{"asset_active": "active", "asset_list_active": "active", "asset_list": ret})
+
+
 
 
 class AssetAdd(LoginRequiredMixin,CreateView):

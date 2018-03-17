@@ -12,26 +12,26 @@ class asset(models.Model):
         ('何全','何全'),
         ('其他','其他'),
     )
-    platform = models.CharField(max_length=128, choices=PLATFORM_CHOICES,verbose_name='平台',)
-    Instance_id = models.CharField(max_length=64, verbose_name='实例ID', null=True, blank=True)
-    region = models.CharField(max_length=256, verbose_name="地区", null=True, blank=True)
-    manager = models.CharField(max_length=128, choices=MANAGER_CHOICES, verbose_name='负责人', )
 
-    network_ip = models.GenericIPAddressField(verbose_name='外网IP', unique=True)
+    hostname = models.CharField(max_length=64, verbose_name='主机名',unique=True)
+    network_ip = models.GenericIPAddressField(verbose_name='外网IP', null=True,blank=True)
     inner_ip = models.GenericIPAddressField(verbose_name='内网IP', null=True, blank=True)
-
     is_active = models.BooleanField(default=True, verbose_name=('是否运行'))
-    hostname = models.CharField(max_length=64, verbose_name='主机名', null=True,blank=True)
-
 
 
     system = models.CharField(max_length=128,verbose_name='系统版本',null=True,blank=True)
-
-
     cpu = models.CharField(max_length=64,verbose_name='CPU',null=True,blank=True)
     memory = models.CharField(max_length=64, verbose_name='内存', null=True,blank=True)
     disk = models.CharField(max_length=256,verbose_name="硬盘",null=True,blank=True)
     bandwidth = models.IntegerField(verbose_name='带宽', null=True,blank=True,default="1")
+
+
+
+    platform = models.CharField(max_length=128, choices=PLATFORM_CHOICES, verbose_name='平台', )
+    Instance_id = models.CharField(max_length=64, verbose_name='实例ID', null=True, blank=True)
+    region = models.CharField(max_length=256, verbose_name="地区", null=True, blank=True)
+    manager = models.CharField(max_length=128, choices=MANAGER_CHOICES, verbose_name='负责人')
+
 
     ctime = models.DateTimeField(verbose_name='购买时间')
     utime = models.DateTimeField(verbose_name='到期时间')
@@ -50,7 +50,7 @@ class asset(models.Model):
 
 
     def __str__(self):
-        return self.network_ip
+        return self.hostname
 
 
 

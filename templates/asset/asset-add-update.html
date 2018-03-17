@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block  title %}资产{% endblock %}
 {% block header-css %}
-{% load	bootstrap3 %}
+{% load  	bootstrap3 %}
 {% endblock %}
 
 
@@ -32,7 +32,7 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h3>资产</h3>
+                   <h5>资产</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -65,18 +65,12 @@
                             <div class="col-sm-10 col-sm-offset-0">
                                 <h3>基本</h3>
                                 {% bootstrap_field form.hostname layout="horizontal" %}
-                                {% bootstrap_field form.inner_ip layout="horizontal" %}
                                 {% bootstrap_field form.network_ip layout="horizontal" %}
-
-
+                                {% bootstrap_field form.inner_ip layout="horizontal" %}
                                 {% bootstrap_field form.cpu layout="horizontal" %}
                                 {% bootstrap_field form.memory layout="horizontal" %}
                                 {% bootstrap_field form.disk  layout="horizontal" %}
-
                                 {% bootstrap_field form.bandwidth layout="horizontal" %}
-
-
-
                             </div>
                         </div>
                         <div class="hr-line-dashed"></div>
@@ -85,9 +79,10 @@
                             <div class="col-sm-10 col-sm-offset-0">
                                 <h3>位置</h3>
                                  {% bootstrap_field form.platform layout="horizontal" %}
+                                {% bootstrap_field   form.manager  layout="horizontal" %}
                                   {% bootstrap_field form.region layout="horizontal" %}
                                 {% bootstrap_field form.Instance_id  layout="horizontal" %}
-                                {% bootstrap_field   form.manager  layout="horizontal" %}
+
 
 
                             </div>
@@ -98,7 +93,7 @@
                                 <h3>其他</h3>
                                 {% bootstrap_field  form.ctime layout="horizontal" %}
                                 {% bootstrap_field  form.utime layout="horizontal" %}
-                                {% bootstrap_field   form.ps  layout="horizontal" %}
+                                {% bootstrap_field  form.ps  layout="horizontal" %}
 
 
 

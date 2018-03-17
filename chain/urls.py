@@ -19,7 +19,7 @@ from django.conf.urls import include
 from index.views import index,login_view,logout,password_update
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin.site.urls,name='admin'),
     path('', index),
     path('index.html', index,name="index"),
     path('login.html',login_view),

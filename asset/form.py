@@ -26,13 +26,17 @@ class AssetForm(forms.ModelForm):
             'platform': forms.Select(
                 attrs={'class': 'select2',
                        'data-placeholder': ('----请选择平台----')}),
+            'manager': forms.Select(
+                attrs={'class': 'select2',
+                       'data-placeholder': ('----请选择负责人----')}),
 
         }
         help_texts = {
-            'network_ip': '* 必填项目,唯一值',
-            'manager': '* 必填项目',
-            "ctime":'* 必填项目',
-            "utime":'* 必填项目'
+            'hostname': '*  必填项目,名字唯一',
+            'platform': '*  必填项目',
+            'manager': '*  必填项目',
+            "ctime":'*  必填项目',
+            "utime":'*  必填项目'
         }
         error_messages = {
             'model':{

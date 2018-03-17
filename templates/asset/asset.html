@@ -57,17 +57,17 @@
 
                             <form id="cha" class="form-horizontal" action="{% url 'asset:asset_list' %}" method="post">
                                 {% csrf_token %}
-                                {#                                <div class="col-md-2"><input type="text" class="form-control" name="name" required>#}
-                                {#                                </div>#}
-                                {##}
-                                {#                                <button class="btn btn-primary" type="submit">查询</button>#}
+                                <div class="col-md-2"><input type="text" class="form-control" name="name"
+                                                             placeholder="主机名、IP、负责人" required></div>
+
+                                <button class="btn btn-sm btn-primary" type="submit">查询</button>
 
 
-                                <a href="{% url    'asset:asset_add' %}" class="btn btn-primary  ">
+                                <a href="{% url    'asset:asset_add' %}" class="btn btn-sm btn-primary ">
                                     添加</a>
 
 
-                                <a class="btn btn-danger  asset_all_del"
+                                <a class="btn btn-sm btn-danger  asset_all_del"
                                 >批量删除
                                 </a>
                             </form>

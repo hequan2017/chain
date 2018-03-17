@@ -27,7 +27,7 @@
 
             </li>
             <li class="{{ asset_active }}">
-                <a href="#"><i class="fa fa-drivers-license"></i> <span class="nav-label">资产管理</span>
+                <a href="#"><i class="fa fa-inbox"></i> <span class="nav-label">资产管理</span>
                     <span class="fa arrow"> </span></a>
                 <ul class="nav nav-second-level">
                     <li class="{{ asset_list_active }}"><a href="{% url    'asset:asset_list' %}">资产信息</a></li>
@@ -35,7 +35,14 @@
                 </ul>
             </li>
 
+            <li>
+                <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">后台</span>
+                    <span class="fa arrow"> </span></a>
+                <ul class="nav nav-second-level">
+                    <li><a href="/admin">admin</a></li>
 
+                </ul>
+            </li>
 
         </ul>
 

@@ -65,7 +65,8 @@
 
                                 <a href="{% url    'asset:asset_add' %}" class="btn btn-sm btn-primary ">
                                     添加</a>
-
+                                <a   href="{% url    'asset:asset_export' %}"  class="btn btn-sm btn-primary "   id="export"  >
+                                    导出全部</a>
 
                                 <a class="btn btn-sm btn-danger  asset_all_del"
                                 >批量删除
@@ -80,7 +81,7 @@
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
                                         <th>主机名</th>
                                         <th>外网IP</th>
-                                        <th>管理IP</th>
+                                        <th>内网IP</th>
                                         <th>平台</th>
                                         <th>系统版本</th>
                                         <th>负责人</th>
@@ -99,7 +100,7 @@
                                                     href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.hostname }}</a>
                                             </td>
                                             <td class="center">{{ row.network_ip }}</td>
-                                            <td class="center">{{ row.manage_ip }}</td>
+                                            <td class="center">{{ row.inner_ip }}</td>
                                             <td class="center">{{ row.platform }}</td>
                                             <td class="center">{{ row.system }}</td>
                                             <td class="center">{{ row.manager }}</td>
@@ -198,7 +199,36 @@
 
 
         <script>
+
+
+
+
+
             $(function () {
+
+
+
+
+
+
+
+
+                      $(document).ready(function(){
+
+                 $("#export").click(function(){
+                        $.ajax({
+                            url: "/asset/asset-export.html",
+                            type: 'POST',
+                            data: $('#del_form_asset_all').serialize(),
+                            success: function (data) {
+{#                            window.location= "/asset/asset-export.html"#}
+                            }
+                        });
+   });
+   });
+
+
+
 
                 $(document).on('click', '.asset_del_1', function () {
                     var id = $(this).parent().parent().attr('id');

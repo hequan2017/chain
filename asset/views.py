@@ -10,9 +10,7 @@ from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
 import json
-
-
-
+from djqscsv import render_to_csv_response
 
 class AssetListAll(LoginRequiredMixin,ListView):
     '''
@@ -129,3 +127,12 @@ class AssetAllDel(LoginRequiredMixin,View):
             return HttpResponse(json.dumps(ret))
 
 
+
+class AssetExport(View):
+    """
+    导出
+    """
+    def get(self, *args, **kwargs):
+        filename = '资产信息'
+        qs = asset.objects.all()
+        return render_to_csv_response(qs,filename=filename,)

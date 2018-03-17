@@ -6,7 +6,6 @@ from django.contrib.auth.hashers import  check_password
 from django.contrib.auth.models import User
 
 
-
 @login_required(login_url="/login.html")
 def index(request):
     """
@@ -14,6 +13,7 @@ def index(request):
     :param request:
     :return:
     """
+
     return render(request, 'index/index.html', )
 
 
@@ -33,7 +33,6 @@ def login_view(request):
         u = request.POST.get("username")
         p = request.POST.get("password")
         user = authenticate(request,username=u, password=p)
-        print(123)
         if user is not None:
             if user.is_active:
                 login(request, user)

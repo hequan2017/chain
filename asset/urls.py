@@ -7,6 +7,8 @@ urlpatterns = [
     path('asset-all-del.html',views.AssetAllDel.as_view(),name='asset_all_del'),
     path('asset-detail-<int:pk>.html',views.AssetDetail.as_view(),name='asset_detail'),
     path('asset-update-<int:pk>.html', views.AssetUpdate.as_view(), name='asset_update'),
+
+    path('asset-export.html',views.AssetExport.as_view(),name='asset_export'),
 ]
 
 app_name="asset"

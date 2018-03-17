@@ -117,7 +117,6 @@ class AssetAllDel(LoginRequiredMixin,View):
         try:
 
             ids = request.POST.getlist('id', None)  or request.POST.get('nid', None)
-            print(ids)
             idstring = ','.join(ids)
             asset.objects.extra(where=['id IN (' + idstring + ')']).delete()
         except Exception as e:
@@ -132,7 +131,16 @@ class AssetExport(View):
     """
     导出
     """
-    def get(self, *args, **kwargs):
-        filename = '资产信息'
+    def get(self):
         qs = asset.objects.all()
-        return render_to_csv_response(qs,filename=filename,)
+        return render_to_csv_response(qs)
+
+
+    def post(self,request):
+        ids = request.POST.getlist('id', None)
+        idstring = ','.join(ids)
+        qs = asset.objects.extra(where=['id IN (' + idstring + ')']).all()
+        return  render_to_csv_response(qs)
+
+
+

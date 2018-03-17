@@ -21,19 +21,19 @@ http://47.94.252.25:8001
 
 后端：
  * django==2.0.3
- * django-bootstrap3
  * Python3.6.4
 
 
 ###  部署
 
 
-
-
 ```bash
 git clone https://github.com/hequan2017/chain.git
 
+
 cd chain
+
+mv  db.sqlite3  /tmp/
 
 pip3 install -r requirements.txt
 python3  manage.py   makemigrations
@@ -46,18 +46,19 @@ python3 manage.py runserver 0.0.0.0:80
 
 
 ```bash
-如果遇到报错 ImportError: No module named '_sqlite3' ,可以执行下面的操作。
+如果遇到报错 ImportError: No module named '_sqlite3' ,可以执行下面的操作
 
 yum -y install sqlite-devel
 
-安装python3.6.4 或者重新编译
+重新编译python3.6.4 
 ```
 
 
 ###   截图
-![DEMO](static/demo/1.png)
-![DEMO](static/demo/2.png)
-![DEMO](static/demo/3.png)
+![DEMO](static/demo/1.jpg)
+![DEMO](static/demo/2.jpg)
+![DEMO](static/demo/3.jpg)
+
 
 ---
 ### 作者

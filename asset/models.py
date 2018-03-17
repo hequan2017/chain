@@ -12,11 +12,17 @@ class asset(models.Model):
         ('何全','何全'),
         ('其他','其他'),
     )
+    PROJECT_CHOICES=(
+        ('项目1','项目1'),
+        ('项目2', '项目2'),
+        ('项目3', '项目3'),
+        ('其他', '其他')
+    )
 
     hostname = models.CharField(max_length=64, verbose_name='主机名',unique=True)
     network_ip = models.GenericIPAddressField(verbose_name='外网IP', null=True,blank=True)
     inner_ip = models.GenericIPAddressField(verbose_name='内网IP', null=True, blank=True)
-    is_active = models.BooleanField(default=True, verbose_name=('是否运行'))
+    is_active = models.BooleanField(default=True, verbose_name=('激活'))
 
 
     system = models.CharField(max_length=128,verbose_name='系统版本',null=True,blank=True)
@@ -31,6 +37,7 @@ class asset(models.Model):
     Instance_id = models.CharField(max_length=64, verbose_name='实例ID', null=True, blank=True)
     region = models.CharField(max_length=256, verbose_name="地区", null=True, blank=True)
     manager = models.CharField(max_length=128, choices=MANAGER_CHOICES, verbose_name='负责人')
+    project = models.CharField(max_length=128, choices=PROJECT_CHOICES, verbose_name='项目')
 
 
     ctime = models.DateTimeField(verbose_name='购买时间')

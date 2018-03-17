@@ -36,7 +36,8 @@ class AssetForm(forms.ModelForm):
             'platform': '*  必填项目',
             'manager': '*  必填项目',
             "ctime":'*  必填项目',
-            "utime":'*  必填项目'
+            "utime":'*  必填项目',
+            'project':'*  必填项目'
         }
         error_messages = {
             'model':{

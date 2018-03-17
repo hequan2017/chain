@@ -54,7 +54,6 @@
 
                         <div class="table-responsive">
 
-
                             <form id="cha" class="form-horizontal" action="{% url 'asset:asset_list' %}" method="post">
                                 {% csrf_token %}
                                 <div class="col-md-2"><input type="text" class="form-control" name="name"
@@ -65,16 +64,17 @@
 
                                 <a href="{% url    'asset:asset_add' %}" class="btn btn-sm btn-primary ">
                                     添加</a>
-                                <a   href="{% url    'asset:asset_export' %}"  class="btn btn-sm btn-primary "   id="export"  >
-                                    导出全部</a>
+
 
                                 <a class="btn btn-sm btn-danger  asset_all_del"
                                 >批量删除
                                 </a>
                             </form>
+                            <form id="del_form_asset_all" class="form-horizontal  "
+                                  action="{% url 'asset:asset_export' %}" method="post">
+                                {% csrf_token %}
 
 
-                            <form id="del_form_asset_all" class="form-horizontal  ">
                                 <table class="table table-striped table-bordered table-hover dataTables-example">
                                     <thead>
                                     <tr>
@@ -86,7 +86,6 @@
                                         <th>系统版本</th>
                                         <th>负责人</th>
                                         <th>是否运行</th>
-
                                         <th>动作{{ error_performance }}</th>
                                     </tr>
                                     </thead>
@@ -105,29 +104,22 @@
                                             <td class="center">{{ row.system }}</td>
                                             <td class="center">{{ row.manager }}</td>
                                             <td class="center">{{ row.is_active }}</td>
-
-
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  asset_del_1" data-toggle="modal"
-                                                   data-target="#myModal1">删除
-                                                </a>
-
-
+                                                   data-target="#myModal1">删除</a>
                                             </td>
-
-
                                         </tr>
-
-
                                     {% endfor %}
-
                                     </tbody>
 
                                 </table>
-
+                                <button class="btn btn-sm btn-primary" type="submit">导出</button>
+                                <a href="{% url    'asset:asset_export' %}" class="btn btn-sm btn-primary ">导出全部</a>
                                 <div>
+
                                     <center>
+
                                         <ul class="pagination">
                                             <li><a href="{% url "asset:asset_list" %}?page=1">首页 </a></li>
                                             {% if  page_obj.has_previous %}
@@ -201,33 +193,18 @@
         <script>
 
 
-
-
-
             $(function () {
 
+                $(document).on('click', '#export1', function () {
+                    $.ajax({
+                        url: "/asset/asset-export1.html",
+                        type: 'POST',
+                        data: $('#del_form_asset_all').serialize(),
+                        success: function (data) {
 
-
-
-
-
-
-
-                      $(document).ready(function(){
-
-                 $("#export").click(function(){
-                        $.ajax({
-                            url: "/asset/asset-export.html",
-                            type: 'POST',
-                            data: $('#del_form_asset_all').serialize(),
-                            success: function (data) {
-{#                            window.location= "/asset/asset-export.html"#}
-                            }
-                        });
-   });
-   });
-
-
+                        }
+                    });
+                });
 
 
                 $(document).on('click', '.asset_del_1', function () {

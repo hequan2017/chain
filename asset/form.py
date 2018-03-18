@@ -2,7 +2,8 @@ from    django import forms
 from .models import asset
 
 
-
+class FileForm(forms.Form):
+    file = forms.FileField(label="导入资产")
 
 
 class AssetForm(forms.ModelForm):

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load  bootstrap3 %}
 {% block  title %} Chain | 首页{% endblock %}
 
 
@@ -9,7 +10,17 @@
 
 
 {% block page-content %}
-
+    <form	method="post"  action="{% url 'index' %}"	class="form"  enctype="multipart/form-data">
+		{%	csrf_token	%}
+		<div	class="container">
+		{%	bootstrap_form	form	%}
+		{%	buttons	%}
+						<button	type="submit"	class="btn	btn-primary">
+						{%	bootstrap_icon	"star"	%}	Submit
+						</button>
+		{%	endbuttons	%}
+		</div>
+</form>
 
 {% endblock %}
 

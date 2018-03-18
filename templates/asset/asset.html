@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{%	load	bootstrap3	%}
 {% block header-css %}
 {% endblock %}
 
@@ -115,7 +116,7 @@
 
                                 </table>
                                 <button class="btn btn-sm btn-primary" type="submit">导出</button>
-                                <a href="{% url    'asset:asset_export' %}" class="btn btn-sm btn-primary ">导出全部</a>
+                                <a href="{% url    'asset:asset_export' %}"   class="btn btn-sm btn-primary ">导出全部</a>
                                 <div>
 
                                     <center>
@@ -183,6 +184,8 @@
             </div>
         </div>
     </div>
+
+
 
 
 

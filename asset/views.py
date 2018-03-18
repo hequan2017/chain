@@ -2,15 +2,20 @@ from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from asset.models import asset
+from asset.models import asset as Asset
 from .form import AssetForm
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
-from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DeleteView, DetailView,FormView
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
 import json
-from djqscsv import render_to_csv_response
+import codecs
+import csv
+
+
+
 
 class AssetListAll(LoginRequiredMixin,ListView):
     '''
@@ -126,21 +131,64 @@ class AssetAllDel(LoginRequiredMixin,View):
             return HttpResponse(json.dumps(ret))
 
 
-
 class AssetExport(View):
+    model = asset
     """
     导出
     """
-    def get(self):
-        qs = asset.objects.all()
-        return render_to_csv_response(qs)
+    def get(self,request):
+
+        fields = [
+            field for field in Asset._meta.fields
+            if field.name not in [
+                'date_created'
+            ]
+        ]
+        filename = 'assets-all.csv'
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        response.write(codecs.BOM_UTF8)
+        assets = Asset.objects.all()
+        writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
+
+        header = [field.verbose_name for field in fields]
+        writer.writerow(header)
+
+        for asset in assets:
+            data = [getattr(asset, field.name) for field in fields]
+            writer.writerow(data)
+
+        return response
 
 
     def post(self,request):
         ids = request.POST.getlist('id', None)
         idstring = ','.join(ids)
-        qs = asset.objects.extra(where=['id IN (' + idstring + ')']).all()
-        return  render_to_csv_response(qs)
+        fields = [
+            field for field in Asset._meta.fields
+            if field.name not in [
+                'date_created'
+            ]
+        ]
+        filename = 'assets.csv'
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        response.write(codecs.BOM_UTF8)
+        assets = Asset.objects.extra(where=['id IN (' + idstring + ')']).all()
+        writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
+
+        header = [field.verbose_name for field in fields]
+        writer.writerow(header)
+
+        for asset in assets:
+            data = [getattr(asset, field.name) for field in fields]
+            writer.writerow(data)
+        return response
+
+
+
+
+
 
 
 

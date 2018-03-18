@@ -1,9 +1,17 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth.models import User
+
+from  asset.form import FileForm
+from django.views.generic import FormView
+from asset.models import asset
+from asset.models import asset as Asset
+import codecs,chardet
+import csv
+from io import StringIO
 
 
 @login_required(login_url="/login.html")
@@ -13,8 +21,96 @@ def index(request):
     :param request:
     :return:
     """
+    form = FileForm()
+    if request.method =="POST":
+        form = FileForm(request.POST,request.FILES)
+        if form.is_valid():
+            f = form.cleaned_data['file']
+            det_result = chardet.detect(f.read())
+            f.seek(0)  # reset file seek index
 
-    return render(request, 'index/index.html', )
+            file_data = f.read().decode(det_result['encoding']).strip(codecs.BOM_UTF8.decode())
+            csv_file = StringIO(file_data)
+            reader = csv.reader(csv_file)
+            csv_data = [row for row in reader]
+
+            fields = [
+                field for field in Asset._meta.fields
+                if field.name not in [
+                    'date_created'
+                ]
+            ]
+            header_ = csv_data[0]
+            mapping_reverse = {field.verbose_name: field.name for field in fields}
+            attr = [mapping_reverse.get(n, None) for n in header_]
+
+            import time,datetime
+
+            for row in csv_data[1:]:
+                if set(row) == {''}:
+                    continue
+                asset_dict = dict(zip(attr, row))
+                asset_dict_id = dict(zip(attr, row))
+                ids = asset_dict['id']
+                id_ = asset_dict.pop('id', 0)
+
+
+                for k, v in asset_dict_id.items():
+                    if k == 'is_active':
+                        v = True if v in ['TRUE', 1, 'true'] else False
+                    elif k in ['bandwidth', 'memory', 'disk', 'cpu']:
+                        try:
+                            v = int(v)
+                        except ValueError:
+                            v = 0
+                    elif  k  in   ['ctime','utime']  :
+                        try:
+                            v1 = time.strptime(v, '%Y/%m/%d %H:%I')
+                            v =  time.strftime("%Y-%m-%d %H:%M",v1)
+                        except  Exception as e :
+                            print(e)
+                    else:
+                        continue
+                    asset_dict_id[k] =v
+
+                for k, v in asset_dict.items():
+                    if k == 'is_active':
+                        v = True if v in ['TRUE', 1, 'true'] else False
+                    elif k in ['bandwidth', 'memory', 'disk','cpu']:
+                        try:
+                            v = int(v)
+                        except ValueError:
+                            v = 0
+                    elif  k  in   ['ctime','utime']  :
+                        try:
+                            v1 = time.strptime(v, '%Y/%m/%d %H:%I')
+                            v =  time.strftime("%Y-%m-%d %H:%M",v1)
+                        except  Exception as e :
+                            print(e)
+                    else:
+                        continue
+                    asset_dict[k] = v
+
+                asset1 =  Asset.objects.filter(id=ids)   ##判断ID 是否存在
+
+
+                if not asset1:
+                    try:
+                        if len(asset.objects.filter(hostname=asset_dict.get('hostname'))):
+                            raise Exception(('already exists'))
+                        Asset.objects.create(**asset_dict_id)
+                    except Exception as e:
+                        print(e)
+                else:
+                    for k, v in asset_dict.items():
+                        if v:
+                            setattr(asset, k, v)
+                    try:
+                        asset.objects.filter(id=ids).update(**asset_dict)
+                    except Exception as e:
+                        print(e)
+
+    return render(request, 'index/index.html', {'form':form})
 
 
 def login_view(request):

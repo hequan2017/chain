@@ -4,15 +4,7 @@ from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth.models import User
-
-from  asset.form import FileForm
-from django.views.generic import FormView
-from asset.models import asset
-from asset.models import asset as Asset
-import codecs,chardet
-import csv
-from io import StringIO
-
+from .models import login_log
 
 @login_required(login_url="/login.html")
 def index(request):
@@ -44,8 +36,8 @@ def login_view(request):
             if user.is_active:
                 login(request, user)
                 request.session['is_login'] = True
-                # login_ip = request.META['REMOTE_ADDR']
-                # login_log.objects.create(user=request.user, ip=login_ip)
+                login_ip = request.META['REMOTE_ADDR']
+                login_log.objects.create(user=request.user, ip=login_ip)
                 return redirect('/index.html')
             else:
                 return render(request, 'index/login.html', {'error_msg': error_msg1, })
@@ -95,3 +87,15 @@ def password_update(request):
     else:
         form = UserPasswordForm()
     return render(request, 'index/password.html',{'form': form, })
+
+
+@login_required(login_url="/login.html")
+def LoginHistorys(request):
+    """
+    登录历史
+    :param request:
+    :return:
+    """
+    obj = login_log.objects.order_by('-ctime')
+    return render(request, 'index/login-history.html',
+                  {'login': obj,"index_active": "active", "index_login_active": "active", })

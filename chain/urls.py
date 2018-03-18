@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
-from index.views import index,login_view,logout,password_update
+from index.views import index,login_view,logout,password_update,LoginHistorys
 
 urlpatterns = [
     path('admin/', admin.site.urls,name='admin'),
@@ -25,7 +25,7 @@ urlpatterns = [
     path('login.html',login_view),
     path('logout.html',logout),
     path('password_update.html',password_update,name="password_update"),
-
+    path('index/login-history.html',LoginHistorys,name="login-history"),
     path('asset/', include('asset.urls', namespace="asset", ), ),
 
 ]

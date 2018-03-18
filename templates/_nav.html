@@ -36,9 +36,13 @@
                 </ul>
             </li>
 
-            <li>
+            <li  class="{{ index_active }}">
                 <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">后台</span>
                     <span class="fa arrow"> </span></a>
+                 <ul class="nav nav-second-level">
+                    <li class="{{ index_login_active }}"><a href="{% url  'login-history' %}"  >登录历史</a></li>
+
+                </ul>
                 <ul class="nav nav-second-level">
                     <li><a href="/admin"  target="_blank">admin</a></li>
 

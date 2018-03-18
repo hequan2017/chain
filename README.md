@@ -34,18 +34,21 @@ http://47.94.252.25:8001
 ```bash
 git clone https://github.com/hequan2017/chain.git
 
+cd chain/
+pip3 install -r   requirements/requirements.txt
 
-cd chain
+
+cd chain/apps/
 
 mv  db.sqlite3  /tmp/
-
-pip3 install -r requirements.txt
 python3  manage.py   makemigrations
 python3  manage.py   migrate
+
 
 python3 manage.py createsuperuser
 
 python3 manage.py runserver 0.0.0.0:80
+
 ```
 
 

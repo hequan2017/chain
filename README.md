@@ -62,9 +62,9 @@ yum -y install sqlite-devel
 
 
 ###   截图
-![DEMO](static/demo/1.jpg)
-![DEMO](static/demo/2.jpg)
-![DEMO](static/demo/3.jpg)
+![DEMO](apps/static/demo/1.jpg)
+![DEMO](apps/static/demo/2.jpg)
+![DEMO](apps/static/demo/3.jpg)
 
 
 ---

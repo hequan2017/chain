@@ -1,8 +1,6 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from asset.models import asset
-from asset.models import asset as Asset
 from .form import AssetForm
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
@@ -12,7 +10,6 @@ from django.conf import settings
 from django.db.models import Q
 from  asset.form import FileForm
 from asset.models import asset
-from asset.models import asset as Asset
 import codecs,chardet
 import csv,time
 from io import StringIO
@@ -207,7 +204,7 @@ def  AssetImport(request):
             csv_data = [row for row in reader]
 
             fields = [
-                field for field in Asset._meta.fields
+                field for field in asset._meta.fields
                 if field.name not in [
                     'date_created'
                 ]
@@ -264,14 +261,14 @@ def  AssetImport(request):
                         continue
                     asset_dict[k] = v
 
-                asset1 =  Asset.objects.filter(id=ids)   ##判断ID 是否存在
+                asset1 =  asset.objects.filter(id=ids)   ##判断ID 是否存在
 
 
                 if not asset1:
                     try:
                         if len(asset.objects.filter(hostname=asset_dict.get('hostname'))):
                             raise Exception(('already exists'))
-                        Asset.objects.create(**asset_dict_id)
+                        asset.objects.create(**asset_dict_id)
                         created.append(asset_dict['hostname'])
                         assets.append(asset)
                     except Exception as e:

@@ -10,11 +10,13 @@ from django.views.generic import TemplateView, ListView, View, CreateView, Updat
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
+from  asset.form import FileForm
+from asset.models import asset
+from asset.models import asset as Asset
+import codecs,chardet
+import csv,time
+from io import StringIO
 import json
-import codecs
-import csv
-
-
 
 
 class AssetListAll(LoginRequiredMixin,ListView):
@@ -132,9 +134,10 @@ class AssetAllDel(LoginRequiredMixin,View):
 
 
 class AssetExport(View):
-    model = asset
     """
-    导出
+    资产导出
+    :param request:
+    :return:
     """
     def get(self,request):
 
@@ -153,13 +156,10 @@ class AssetExport(View):
 
         header = [field.verbose_name for field in fields]
         writer.writerow(header)
-
         for asset in assets:
             data = [getattr(asset, field.name) for field in fields]
             writer.writerow(data)
-
         return response
-
 
     def post(self,request):
         ids = request.POST.getlist('id', None)
@@ -186,6 +186,126 @@ class AssetExport(View):
         return response
 
 
+def  AssetImport(request):
+    """
+    资产导入
+    :param request:
+    :return:
+    """
+    form = FileForm()
+
+    if request.method =="POST":
+        form = FileForm(request.POST,request.FILES)
+        if form.is_valid():
+            f = form.cleaned_data['file']
+            det_result = chardet.detect(f.read())
+            f.seek(0)  # reset file seek index
+
+            file_data = f.read().decode(det_result['encoding']).strip(codecs.BOM_UTF8.decode())
+            csv_file = StringIO(file_data)
+            reader = csv.reader(csv_file)
+            csv_data = [row for row in reader]
+
+            fields = [
+                field for field in Asset._meta.fields
+                if field.name not in [
+                    'date_created'
+                ]
+            ]
+            header_ = csv_data[0]
+            mapping_reverse = {field.verbose_name: field.name for field in fields}
+            attr = [mapping_reverse.get(n, None) for n in header_]
+
+            created, updated, failed = [], [], []
+            assets = []
+
+            for row in csv_data[1:]:
+                if set(row) == {''}:
+                    continue
+                asset_dict = dict(zip(attr, row))
+                asset_dict_id = dict(zip(attr, row))
+                ids = asset_dict['id']
+                id_ = asset_dict.pop('id', 0)
+
+
+                for k, v in asset_dict_id.items():
+                    if k == 'is_active':
+                        v = True if v in ['TRUE', 1, 'true'] else False
+                    elif k in ['bandwidth', 'memory', 'disk', 'cpu']:
+                        try:
+                            v = int(v)
+                        except ValueError:
+                            v = 0
+                    elif  k  in   ['ctime','utime']  :
+                        try:
+                            v1 = time.strptime(v, '%Y/%m/%d %H:%I')
+                            v =  time.strftime("%Y-%m-%d %H:%M",v1)
+                        except  Exception as e :
+                            print(e)
+                    else:
+                        continue
+                    asset_dict_id[k] =v
+
+                for k, v in asset_dict.items():
+                    if k == 'is_active':
+                        v = True if v in ['TRUE', 1, 'true'] else False
+                    elif k in ['bandwidth', 'memory', 'disk','cpu']:
+                        try:
+                            v = int(v)
+                        except ValueError:
+                            v = 0
+                    elif  k  in   ['ctime','utime']  :
+                        try:
+                            v1 = time.strptime(v, '%Y/%m/%d %H:%I')
+                            v =  time.strftime("%Y-%m-%d %H:%M",v1)
+                        except  Exception as e :
+                            print(e)
+                    else:
+                        continue
+                    asset_dict[k] = v
+
+                asset1 =  Asset.objects.filter(id=ids)   ##判断ID 是否存在
+
+
+                if not asset1:
+                    try:
+                        if len(asset.objects.filter(hostname=asset_dict.get('hostname'))):
+                            raise Exception(('already exists'))
+                        Asset.objects.create(**asset_dict_id)
+                        created.append(asset_dict['hostname'])
+                        assets.append(asset)
+                    except Exception as e:
+                        failed.append('%s: %s' % (asset_dict['hostname'], str(e)))
+
+                else:
+                    for k, v in asset_dict.items():
+                        if v:
+                            setattr(asset, k, v)
+                    try:
+                        asset.objects.filter(id=ids).update(**asset_dict)
+                        updated.append(asset_dict['hostname'])
+                    except Exception as e:
+                        failed.append('%s: %s' % (asset_dict['hostname'], str(e)))
+
+            data = {
+                'created': created,
+                'created_info': 'Created {}'.format(len(created)),
+                'updated': updated,
+                'updated_info': 'Updated {}'.format(len(updated)),
+                'failed': failed,
+                'failed_info': 'Failed {}'.format(len(failed)),
+                'valid': True,
+                'msg': 'Created: {}. Updated: {}, Error: {}'.format(
+                    len(created), len(updated), len(failed))
+            }
+
+
+            return render(request, 'asset/asset-import.html', {'form': form, "asset_active": "active",
+                                                               "asset_import_active": "active",
+                                                               "msg": data })
+
+    return render(request, 'asset/asset-import.html', {'form':form,  "asset_active": "active",
+            "asset_import_active": "active", })
 
 
 

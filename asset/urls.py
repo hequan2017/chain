@@ -9,6 +9,7 @@ urlpatterns = [
     path('asset-update-<int:pk>.html', views.AssetUpdate.as_view(), name='asset_update'),
 
     path('asset-export.html',views.AssetExport.as_view(),name='asset_export'),
+    path('asset-import.html',views.AssetImport,name='asset_import'),
 ]
 
 app_name="asset"

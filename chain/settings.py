@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'bootstrap3',
     'asset',
     'index',
-    'pure_pagination',
 ]
 
 MIDDLEWARE = [
@@ -145,8 +144,3 @@ STATICFILES_DIRS = (
 TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
 DISPLAY_PER_PAGE =  25
 
-PAGINATION_SETTINGS = {
-    'PAGE_RANGE_DISPLAYED': 20,
-    'MARGIN_PAGES_DISPLAYED': 2,
-    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
-}

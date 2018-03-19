@@ -9,12 +9,15 @@ from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
 from  asset.form   import  FileForm
-from  asset.models import  asset
+from  asset.models import  asset  ,platform,region
 from  asset.models import  asset  as Asset
 import codecs,chardet
 import csv,time
 from io import StringIO
 import json
+from django.core import serializers
+
+
 
 
 
@@ -30,7 +33,14 @@ class AssetListAll(LoginRequiredMixin,ListView):
     ordering = ('id',)
 
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         search_data = self.request.GET.copy()
+        try:
+            search_data.pop("page")
+        except BaseException as  e:
+            pass
+
+        context.update(search_data.dict())
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
@@ -324,6 +334,17 @@ def  AssetImport(request):
 
 
 
+def AssetGetdata(request):
+    """
+    获取 地区与区域 的对应关系
+    :param request:
+    :return:
+    """
+    name = request.GET.get('name',None)
+    platforms = platform.objects.get(name=name)
+    regions = platforms.region_set.all()
+    data = serializers.serialize('json', regions)
+    return HttpResponse(data, content_type='application/json')
 
 
 

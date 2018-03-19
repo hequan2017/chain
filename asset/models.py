@@ -7,6 +7,13 @@ class asset(models.Model):
         ('AWS', 'AWS'),
         ('其他', '其他'),
     )
+    REGION_CHOICES = (
+        ('华北2', '华北2'),
+        ('香港', '香港'),
+        ('东京', '东京'),
+        ('其他', '其他'),
+    )
+
     MANAGER_CHOICES=(
         ('何全','何全'),
         ('其他','其他'),
@@ -21,7 +28,6 @@ class asset(models.Model):
     hostname = models.CharField(max_length=64, verbose_name='主机名',unique=True)
     network_ip = models.GenericIPAddressField(verbose_name='外网IP', null=True,blank=True)
     inner_ip = models.GenericIPAddressField(verbose_name='内网IP', null=True, blank=True)
-    is_active = models.BooleanField(default=True, verbose_name=('激活'))
 
 
     system = models.CharField(max_length=128,verbose_name='系统版本',null=True,blank=True)
@@ -32,19 +38,18 @@ class asset(models.Model):
 
 
 
-    platform = models.CharField(max_length=128, choices=PLATFORM_CHOICES, verbose_name='平台', )
-    Instance_id = models.CharField(max_length=64, verbose_name='实例ID', null=True, blank=True)
-    region = models.CharField(max_length=256, verbose_name="地区", null=True, blank=True)
+    platform = models.CharField(max_length=128, choices=PLATFORM_CHOICES, verbose_name='平台')
+    region = models.CharField(max_length=256,choices=REGION_CHOICES,verbose_name="区域",)
     manager = models.CharField(max_length=128, choices=MANAGER_CHOICES, verbose_name='负责人')
     project = models.CharField(max_length=128, choices=PROJECT_CHOICES, verbose_name='项目')
 
 
+
+    Instance_id = models.CharField(max_length=64, verbose_name='实例ID', null=True, blank=True)
     ctime = models.DateTimeField(verbose_name='购买时间')
     utime = models.DateTimeField(verbose_name='到期时间')
-
-
     ps = models.CharField(max_length=1024,verbose_name="备注",null=True,blank=True)
-
+    is_active = models.BooleanField(default=True, verbose_name=('激活'))
 
     class  Meta:
         db_table ="asset"
@@ -59,3 +64,29 @@ class asset(models.Model):
         return self.hostname
 
 
+#平台
+class platform(models.Model):
+    name = models.CharField(max_length=30)
+
+
+    class  Meta:
+        db_table ="platform"
+        verbose_name="云平台管理"
+        verbose_name_plural = '云平台管理'
+
+    def __str__(self):
+        return self.name
+
+#区域
+class region(models.Model):
+    name = models.CharField(max_length=40)
+    platforms = models.ForeignKey(platform,on_delete=models.CASCADE)
+
+    class  Meta:
+        db_table ="region"
+        verbose_name="云区域管理"
+        verbose_name_plural = '云区域管理'
+
+
+    def __str__(self):
+        return self.name

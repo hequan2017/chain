@@ -30,6 +30,12 @@ class AssetForm(forms.ModelForm):
             'manager': forms.Select(
                 attrs={'class': 'select2',
                        'data-placeholder': ('----请选择负责人----')}),
+            'region': forms.Select(
+                attrs={'class': 'select2',
+                       'data-placeholder': ('----请选择区域----')}),
+            'project': forms.Select(
+                attrs={'class': 'select2',
+                       'data-placeholder': ('----请选择项目----')}),
 
         }
         help_texts = {

@@ -1,6 +1,34 @@
 {% extends "base.html" %}
-{%	load	bootstrap3	%}
+{% load	bootstrap3 %}
+{% load static %}
 {% block header-css %}
+    <link href="{% static 'css/plugins/ztree/awesomeStyle/awesome.css' %}" rel="stylesheet">
+    <style type="text/css">
+        div#rMenu {
+            position: absolute;
+            visibility: hidden;
+            text-align: left;
+            top: 100%;
+            left: 0;
+            z-index: 1000;
+            float: left;
+            padding: 5px 0;
+            margin: 2px 0 0;
+            list-style: none;
+            background-clip: padding-box;
+        }
+
+        div#rMenu li {
+            margin: 1px 0;
+            cursor: pointer;
+        {#list-style: none outside none;#}
+        }
+
+        .dropdown a:hover {
+            background-color: #f1f1f1
+        }
+    </style>
+
 {% endblock %}
 
 {% block  title %}资产信息{% endblock %}
@@ -23,14 +51,34 @@
                 </li>
             </ol>
         </div>
-        <div class="col-lg-2">
+        <div class="col-lg-2"  id="split-left">
 
         </div>
     </div>
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-2" id="split-left">
                 <div class="ibox float-e-margins">
+                    <div class="ibox-content mailbox-content" style="padding-top: 0">
+                        <div class="file-manager ">
+
+                            <div class="clearfix">
+                                <div data-options="iconCls:'icon-save'" title="ztree事件">
+                                    <ul id="ztree4" class="ztree"></ul>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-10"   id="split-right" >
+
+                <div class="ibox float-e-margins">
+
                     <div class="ibox-title">
                         <h5>资产信息</h5>
                         <div class="ibox-tools">
@@ -57,7 +105,8 @@
 
                             <form id="cha" class="form-horizontal" action="{% url 'asset:asset_list' %}" method="GET">
                                 {% csrf_token %}
-                                <div class="col-md-2"><input type="text" class="form-control" name="name" placeholder="主机名、IP、负责人" required></div>
+                                <div class="col-md-2"><input type="text" class="form-control" name="name"
+                                                             placeholder="主机名、IP、负责人" required></div>
 
                                 <button class="btn btn-sm btn-primary" type="submit">查询</button>
 
@@ -100,14 +149,14 @@
                                             </td>
                                             <td class="center">{{ row.network_ip }}</td>
                                             <td class="center">{{ row.inner_ip }}</td>
-                                            <td class="center">{{ row.platform }}</td>
+                                            <td class="center">{{ row.platfrom.name }}</td>
                                             <td class="center">{{ row.system }}</td>
                                             <td class="center">{{ row.manager }}</td>
                                             <td class="center">{{ row.is_active }}</td>
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  asset_del"
-                                                  >删除</a>
+                                                >删除</a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -115,7 +164,7 @@
 
                                 </table>
                                 <button class="btn btn-sm btn-primary" type="submit">导出</button>
-                                <a href="{% url    'asset:asset_export' %}"   class="btn btn-sm btn-primary ">导出全部</a>
+                                <a href="{% url    'asset:asset_export' %}" class="btn btn-sm btn-primary ">导出全部</a>
                                 <div>
 
                                     <center>
@@ -131,7 +180,7 @@
                                             {% endif %}
 
                                             {% for p in paginator.page_range %}
-                                                {% if  search_data  %}  <!-- 判断是否是搜索分页-->
+                                                {% if  search_data %}  <!-- 判断是否是搜索分页-->
                                                     {% if p == page_obj.number %}
                                                         <li class="active"><a
                                                                 href="{% url "asset:asset_list" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
@@ -171,7 +220,6 @@
                                 </div> <!--页码 -->
 
 
-
                             </form>
 
 
@@ -193,36 +241,106 @@
 
 
 
+        <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
+        <script src="{% static 'js/jquery.form.min.js' %}"></script>
+
+        <!-- 使用标准json数据构造ztree -->
+
+        <script type="text/javascript">
+
+
+            $(function () {
+                var setting = {
+                    view: {
+                        showLine: true,
+                        selectedMulti: false,
+                        dblClickExpand: false
+                    },
+
+                    data: {
+                        simpleData: {
+                            enable: true,
+                            idKey: "id",
+                            pIdKey: "pId",
+                            rootPId: 0
+                        }
+                    },
+
+                    callback: {
+                        beforeClick: getCurrentNode,
+                        {# onClick : zTreeOnClick#}
+                    }
+                };
+
+                $.ajax({
+                    url: '{% url  'asset:asset_ztree' %}',
+                    type: 'get',
+                    data: '',
+                    dataType: 'json',
+                    success: function (data) {
+                        zTreeObj = $.fn.zTree.init($("#ztree4"), setting, data);
+                        zTreeObj.expandAll(true);
+                    }
+                });
+            });
+
+            function getCurrentNode(treeId, treeNode) {
+                curNode = treeNode;
+                zTreeOnClick(curNode);
+            }
+
+            function zTreeOnClick(treeNode) {
+{#                alert(treeNode.id)#}
+                if ((treeNode.id = 11)){
+                    location.reload();
+                }
+                else {
+                  $.ajax({
+                            url: "{% url  'asset:asset_list' %}",
+                            type: 'GET',
+                            data: {'name': "何全"},
+                            success: function (data) {
+
+                            }
+                        });
+}
+            }
+
+
+        </script>
+
+
+
         <script>
 
 
-           $(document).ready(function () {
-            $('.dataTables-asset').DataTable({
+            $(document).ready(function () {
+                $('.dataTables-asset').DataTable({
 
-            "oLanguage": {
-                "sLengthMenu": "每页显示 _MENU_ 条记录",
-                "sZeroRecords": "对不起，查询不到任何相关数据",
-                "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_条记录",
-                "sInfoEmtpy": "找不到相关数据",
-                "sInfoFiltered": " 数据表中共为 _MAX_ 条记录",
-                "sProcessing": "正在加载中...",
-                "sSearch": "搜索",
-                "oPaginate": {
-                    "sFirst": "第一页",
-                    "sPrevious": " 上一页 ",
-                    "sNext": " 下一页 ",
-                    "sLast": " 最后一页 "
-                }
-            },
-            "order": [[1, 'desc']],
-            destroy:true,
+                    "oLanguage": {
+                        "sLengthMenu": "每页显示 _MENU_ 条记录",
+                        "sZeroRecords": "对不起，查询不到任何相关数据",
+                        "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_条记录",
+                        "sInfoEmtpy": "找不到相关数据",
+                        "sInfoFiltered": " 数据表中共为 _MAX_ 条记录",
+                        "sProcessing": "正在加载中...",
+                        "sSearch": "搜索",
+                        "oPaginate": {
+                            "sFirst": "第一页",
+                            "sPrevious": " 上一页 ",
+                            "sNext": " 下一页 ",
+                            "sLast": " 最后一页 "
+                        }
+                    },
+                    "order": [[1, 'desc']],
+                    destroy: true,
 
 
-            bPaginate: false,
-            dom: '<"html5buttons"B>lTfgitp,'
+                    bPaginate: false,
+                    dom: '<"html5buttons"B>lTfgitp,'
 
-        });
-              });
+                });
+            });
 
             $(function () {
 

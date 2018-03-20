@@ -72,8 +72,6 @@ class AssetAdd(LoginRequiredMixin,CreateView):
     template_name = 'asset/asset-add-update.html'
     success_url = reverse_lazy('asset:asset_list')
 
-    def form_valid(self, form):
-        return super(AssetAdd, self).form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = {
@@ -93,8 +91,15 @@ class AssetUpdate(LoginRequiredMixin,UpdateView):
     template_name = 'asset/asset-add-update.html'
     success_url = reverse_lazy('asset:asset_list')
 
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        print(self.get_object())
+        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        a = super(AssetUpdate, self).get_context_data(**kwargs)
+        print(a)
+
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
@@ -340,11 +345,26 @@ def AssetGetdata(request):
     :param request:
     :return:
     """
-    name = request.GET.get('name',None)
-    platforms = platform.objects.get(name=name)
+    id = request.GET.get('name',None)
+    platforms = platform.objects.get(id=id)
     regions = platforms.region_set.all()
     data = serializers.serialize('json', regions)
     return HttpResponse(data, content_type='application/json')
 
+def AssetZtree(request):
+    """
+    获取 地区与区域 的对应关系
+    :param request:
+    :return:
+    """
+    data = [
+        { "id":"11", "pId":"0", "name":"菜单1"},
+        { "id":"111", "pId":"11", "name":"菜单11",  "page":"xx.action"},
+        { "id":"112", "pId":"11", "name":"菜单12","page":"xx.action"},
+        { "id":"113", "pId":"11", "name":"菜单13", "page":"xx.action"},
+        { "id":"114", "pId":"11", "name":"菜单14","page":"xx.action"},
+
+]
+    return HttpResponse(json.dumps(data), content_type='application/json')
 
 

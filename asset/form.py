@@ -1,5 +1,5 @@
 from    django import forms
-from .models import asset
+from .models import asset,platform,region
 
 
 class FileForm(forms.Form):
@@ -7,6 +7,10 @@ class FileForm(forms.Form):
 
 
 class AssetForm(forms.ModelForm):
+    role_choices = (('1',n) for i, n in  asset.REGION_CHOICES  if  i  !=  asset.PLATFORM_1  )
+
+    region = forms.ChoiceField(choices=role_choices,)
+
     class Meta:
         model = asset
         fields = '__all__'

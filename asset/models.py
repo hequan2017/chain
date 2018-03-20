@@ -2,16 +2,21 @@ from django.db import models
 
 
 class asset(models.Model):
+    PLATFORM_1 = "阿里云"
+    PLATFORM_2 = "AWS"
+
+
     PLATFORM_CHOICES = (
-        ('阿里云', '阿里云'),
-        ('AWS', 'AWS'),
-        ('其他', '其他'),
+        (PLATFORM_1, '阿里云'),
+        (PLATFORM_2, 'AWS'),
     )
+
+
     REGION_CHOICES = (
-        ('华北2', '华北2'),
-        ('香港', '香港'),
-        ('东京', '东京'),
-        ('其他', '其他'),
+        (PLATFORM_1, '华北2'),
+        (PLATFORM_1, '香港'),
+        (PLATFORM_2, '东京'),
+        (PLATFORM_2, '其他'),
     )
 
     MANAGER_CHOICES=(
@@ -38,8 +43,8 @@ class asset(models.Model):
 
 
 
-    platform = models.CharField(max_length=128, choices=PLATFORM_CHOICES, verbose_name='平台')
-    region = models.CharField(max_length=256,choices=REGION_CHOICES,verbose_name="区域",)
+    platform = models.ForeignKey(max_length=128, to="platform",on_delete=models.SET_NULL,null=True, verbose_name='平台')
+    region = models.ForeignKey(max_length=256,to="region",on_delete=models.SET_NULL,null=True,verbose_name="区域",)
     manager = models.CharField(max_length=128, choices=MANAGER_CHOICES, verbose_name='负责人')
     project = models.CharField(max_length=128, choices=PROJECT_CHOICES, verbose_name='项目')
 
@@ -80,7 +85,7 @@ class platform(models.Model):
 #区域
 class region(models.Model):
     name = models.CharField(max_length=40)
-    platforms = models.ForeignKey(platform,on_delete=models.CASCADE)
+    platforms = models.ForeignKey(platform,on_delete=models.SET_NULL,null=True,)
 
     class  Meta:
         db_table ="region"

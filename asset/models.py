@@ -13,10 +13,10 @@ class asset(models.Model):
 
 
     REGION_CHOICES = (
-        (PLATFORM_1, '华北2'),
-        (PLATFORM_1, '香港'),
-        (PLATFORM_2, '东京'),
-        (PLATFORM_2, '其他'),
+        ('1', '华北2'),
+        ('2', '香港'),
+        ('3', '东京'),
+        ('4', '美国'),
     )
 
     MANAGER_CHOICES=(
@@ -42,9 +42,12 @@ class asset(models.Model):
     bandwidth = models.IntegerField(verbose_name='带宽', null=True,blank=True,default="1")
 
 
-
     platform = models.ForeignKey(max_length=128, to="platform",on_delete=models.SET_NULL,null=True, verbose_name='平台')
     region = models.ForeignKey(max_length=256,to="region",on_delete=models.SET_NULL,null=True,verbose_name="区域",)
+
+    # platform = models.CharField(max_length=128, choices=PLATFORM_CHOICES, verbose_name='平台')
+    # region = models.CharField(max_length=128, choices=REGION_CHOICES, verbose_name='区域')
+
     manager = models.CharField(max_length=128, choices=MANAGER_CHOICES, verbose_name='负责人')
     project = models.CharField(max_length=128, choices=PROJECT_CHOICES, verbose_name='项目')
 

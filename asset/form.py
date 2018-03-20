@@ -1,5 +1,5 @@
 from    django import forms
-from .models import asset,platform,region
+from .models import asset,platform
 
 
 class FileForm(forms.Form):
@@ -7,20 +7,21 @@ class FileForm(forms.Form):
 
 
 class AssetForm(forms.ModelForm):
-    role_choices = (('1',n) for i, n in  asset.REGION_CHOICES  if  i  !=  asset.PLATFORM_1  )
 
-    region = forms.ChoiceField(choices=role_choices,)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 
     class Meta:
         model = asset
         fields = '__all__'
 
-        labels={
-            "network_ip":"外网IP",
+        labels = {
+            "network_ip": "外网IP",
         }
         widgets = {
             'ctime': forms.DateInput(
-                attrs={'type': 'date',}
+                attrs={'type': 'date', }
             ),
             'utime': forms.DateInput(
                 attrs={'type': 'date', }
@@ -46,14 +47,16 @@ class AssetForm(forms.ModelForm):
             'hostname': '*  必填项目,名字唯一',
             'platform': '*  必填项目',
             'manager': '*  必填项目',
-            "ctime":'*  必填项目',
-            "utime":'*  必填项目',
-            'project':'*  必填项目'
+            "ctime": '*  必填项目',
+            "utime": '*  必填项目',
+            'project': '*  必填项目'
         }
         error_messages = {
-            'model':{
+            'model': {
                 'max_length': ('太短了'),
             }
         }
+
+
 
 

@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from .form import AssetForm
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
-from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DeleteView, DetailView,FormView
+from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
@@ -16,7 +16,6 @@ import csv,time
 from io import StringIO
 import json
 from django.core import serializers
-
 
 
 
@@ -73,6 +72,7 @@ class AssetAdd(LoginRequiredMixin,CreateView):
     success_url = reverse_lazy('asset:asset_list')
 
 
+
     def get_context_data(self, **kwargs):
         context = {
             "asset_active": "active",
@@ -80,6 +80,9 @@ class AssetAdd(LoginRequiredMixin,CreateView):
         }
         kwargs.update(context)
         return super(AssetAdd, self).get_context_data(**kwargs)
+
+
+
 
 
 class AssetUpdate(LoginRequiredMixin,UpdateView):
@@ -91,25 +94,28 @@ class AssetUpdate(LoginRequiredMixin,UpdateView):
     template_name = 'asset/asset-add-update.html'
     success_url = reverse_lazy('asset:asset_list')
 
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        print(self.get_object())
-        return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        a = super(AssetUpdate, self).get_context_data(**kwargs)
-        print(a)
-
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
         }
+        if '__next__' in self.request.POST:
+            context['i__next__'] = self.request.POST['__next__']
+        else:
+            context['i__next__'] = self.request.META['HTTP_REFERER']
         kwargs.update(context)
         return super(AssetUpdate, self).get_context_data(**kwargs)
 
     def form_invalid(self, form):
         print(form.errors)
         return super(AssetUpdate, self).form_invalid(form)
+
+    def get_success_url(self):
+        self.url = self.request.POST['__next__']
+        return self.url
+
+
 
 
 
@@ -337,6 +343,7 @@ def  AssetImport(request):
     return render(request, 'asset/asset-import.html', {'form':form,  "asset_active": "active",
             "asset_import_active": "active", })
 
+from  .models import asset
 
 
 def AssetGetdata(request):
@@ -349,7 +356,12 @@ def AssetGetdata(request):
     platforms = platform.objects.get(id=id)
     regions = platforms.region_set.all()
     data = serializers.serialize('json', regions)
+
+
     return HttpResponse(data, content_type='application/json')
+
+
+
 
 def AssetZtree(request):
     """

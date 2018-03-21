@@ -57,7 +57,7 @@
     </div>
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
-            <div class="col-lg-2" id="split-left">
+            <div class="col-lg-1" id="split-left">
                 <div class="ibox float-e-margins">
                     <div class="ibox-content mailbox-content" style="padding-top: 0">
                         <div class="file-manager ">
@@ -75,7 +75,7 @@
             </div>
 
 
-            <div class="col-lg-10"   id="split-right" >
+            <div class="col-lg-11"   id="split-right" >
 
                 <div class="ibox float-e-margins">
 
@@ -268,7 +268,7 @@
 
                     callback: {
                         beforeClick: getCurrentNode,
-                        {# onClick : zTreeOnClick#}
+{#                         onClick : zTreeOnClick#}
                     }
                 };
 
@@ -290,20 +290,13 @@
             }
 
             function zTreeOnClick(treeNode) {
-{#                alert(treeNode.id)#}
-                if ((treeNode.id = 11)){
-                    location.reload();
-                }
-                else {
-                  $.ajax({
-                            url: "{% url  'asset:asset_list' %}",
-                            type: 'GET',
-                            data: {'name': "何全"},
-                            success: function (data) {
 
+                            if(treeNode.id==1111 ){
+                                window.location.href='/asset/asset.html'
                             }
-                        });
-}
+                            else {
+                            window.location.href='/asset/asset.html?name='+treeNode.name
+                }
             }
 
 

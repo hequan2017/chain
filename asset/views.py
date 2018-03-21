@@ -53,7 +53,7 @@ class AssetListAll(LoginRequiredMixin,ListView):
         self.queryset = super().get_queryset()
         if  self.request.GET.get('name'):
             query = self.request.GET.get('name',None)
-            queryset = self.queryset.filter(Q(network_ip=query)| Q(hostname=query)  | Q(inner_ip=query)  | Q(manager=query)).order_by('id')
+            queryset = self.queryset.filter(Q(network_ip=query)| Q(hostname=query)  | Q(inner_ip=query)  | Q(manager=query) | Q(platform__name=query)).order_by('-id')
         else:
             queryset = super().get_queryset()
         return queryset
@@ -369,14 +369,10 @@ def AssetZtree(request):
     :param request:
     :return:
     """
-    data = [
-        { "id":"11", "pId":"0", "name":"菜单1"},
-        { "id":"111", "pId":"11", "name":"菜单11",  "page":"xx.action"},
-        { "id":"112", "pId":"11", "name":"菜单12","page":"xx.action"},
-        { "id":"113", "pId":"11", "name":"菜单13", "page":"xx.action"},
-        { "id":"114", "pId":"11", "name":"菜单14","page":"xx.action"},
-
-]
+    manager = platform.objects.values().distinct()
+    data = [ { "id":"1111", "pId":"0", "name":"平台"},]
+    for i   in  manager:
+        data.append( { "id":'{}'.format(i['id']),"pId":"1111", "name":i['name'],  "page":"xx.action"},)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

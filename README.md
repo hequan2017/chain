@@ -4,6 +4,9 @@
 
 非常适合django刚入门的人拿来参考！
 
+大家可以看一下，欢迎提出修改意见。然后大家以此为基础，各自开发自己的板块，最后合成一个项目。
+
+
 * 交流群号： 620176501    欢迎交流！
 
 ---
@@ -35,19 +38,18 @@ http://47.94.252.25:8001
 git clone https://github.com/hequan2017/chain.git
 
 cd chain/
+
 pip3 install -r   requirements/requirements.txt
 
 
-cd chain/apps/
-
 mv  db.sqlite3  /tmp/
-python3  manage.py   makemigrations
-python3  manage.py   migrate
 
+python3   manage.py   makemigrations
+python3   manage.py   migrate
 
-python3 manage.py createsuperuser
+python3   manage.py    createsuperuser
 
-python3 manage.py runserver 0.0.0.0:80
+python3   manage.py runserver 0.0.0.0:80
 
 ```
 

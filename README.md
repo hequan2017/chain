@@ -4,7 +4,7 @@
 
 非常适合django刚入门的人拿来参考！
 
-大家可以看一下，欢迎提出修改意见。然后大家以此为基础，各自开发自己的板块，最后合成一个项目。
+大家可以看一下，欢迎提出修改意见。  然后大家以此为基础，各自开发自己的板块，最后合成一个项目。
 
 
 * 交流群号： 620176501    欢迎交流！
@@ -24,11 +24,12 @@ http://47.94.252.25:8001
 
 ###  环境
 
-前端：INSPINIA 2.7.1  版本
+前端：
+  * INSPINIA 2.7.1  
 
 后端：
- * django==2.0.3
- * Python3.6.4
+  * django==2.0.3
+  * Python3.6.4
 
 
 ###  部署
@@ -52,7 +53,6 @@ python3   manage.py    createsuperuser
 python3   manage.py runserver 0.0.0.0:80
 
 ```
-
 
 ```bash
 如果遇到报错 ImportError: No module named '_sqlite3' ,可以执行下面的操作

@@ -1,5 +1,5 @@
 from    django import forms
-from .models import asset,platform
+from   .models import asset
 
 
 class FileForm(forms.Form):
@@ -7,9 +7,6 @@ class FileForm(forms.Form):
 
 
 class AssetForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
 
     class Meta:
@@ -50,9 +47,8 @@ class AssetForm(forms.ModelForm):
         help_texts = {
             'hostname': '*  必填项目,名字唯一',
             'platform': '*  必填项目',
+            'region': '*  必填项目',
             'manager': '*  必填项目',
-            "ctime": '*  必填项目',
-            "utime": '*  必填项目',
             'project': '*  必填项目'
         }
         error_messages = {

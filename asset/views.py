@@ -49,7 +49,7 @@ class AssetListAll(LoginRequiredMixin,ListView):
         return super().get_context_data(**kwargs)
 
 
-    def get_queryset(self,*args,**kwargs):
+    def get_queryset(self):
         self.queryset = super().get_queryset()
         if  self.request.GET.get('name'):
             query = self.request.GET.get('name',None)
@@ -79,7 +79,7 @@ class AssetAdd(LoginRequiredMixin,CreateView):
             "asset_list_active": "active",
         }
         kwargs.update(context)
-        return super(AssetAdd, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 
@@ -106,6 +106,8 @@ class AssetUpdate(LoginRequiredMixin,UpdateView):
             context['i__next__'] = self.request.META['HTTP_REFERER']
         kwargs.update(context)
         return super(AssetUpdate, self).get_context_data(**kwargs)
+
+
 
     def form_invalid(self, form):
         print(form.errors)
@@ -138,7 +140,7 @@ class AssetDetail(LoginRequiredMixin,DetailView):
             "nid": pk,
         }
         kwargs.update(context)
-        return super(AssetDetail, self).get_context_data(**kwargs)
+        return super().get_context_data(**kwargs)
 
 
 
@@ -276,7 +278,7 @@ def  AssetImport(request):
                             v =  time.strftime("%Y-%m-%d %H:%M",v1)
                         except  Exception as e :
                             print(e)
-                            v = v
+                            v = Null
                     else:
                         continue
                     asset_dict_id[k] =v
@@ -295,13 +297,12 @@ def  AssetImport(request):
                             v =  time.strftime("%Y-%m-%d %H:%M",v1)
                         except  Exception as e :
                             print(e)
-                            v = v
+                            v = Null
                     else:
                         continue
                     asset_dict[k] = v
 
                 asset1 =  asset.objects.filter(id=ids)   ##判断ID 是否存在
-
 
                 if not asset1:
                     try:
@@ -343,9 +344,9 @@ def  AssetImport(request):
     return render(request, 'asset/asset-import.html', {'form':form,  "asset_active": "active",
             "asset_import_active": "active", })
 
-from  .models import asset
 
 
+@login_required
 def AssetGetdata(request):
     """
     获取 地区与区域 的对应关系
@@ -356,16 +357,13 @@ def AssetGetdata(request):
     platforms = platform.objects.get(id=id)
     regions = platforms.region_set.all()
     data = serializers.serialize('json', regions)
-
-
     return HttpResponse(data, content_type='application/json')
 
 
-
-
+@login_required
 def AssetZtree(request):
     """
-    获取 地区与区域 的对应关系
+    获取 区域 资产数 的相关数据
     :param request:
     :return:
     """

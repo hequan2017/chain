@@ -1,6 +1,8 @@
 from django.db import models
 
 
+
+
 class asset(models.Model):
 
     MANAGER_CHOICES=(
@@ -35,10 +37,19 @@ class asset(models.Model):
 
 
     Instance_id = models.CharField(max_length=64, verbose_name='实例ID', null=True, blank=True)
-    ctime = models.DateTimeField(verbose_name='购买时间')
-    utime = models.DateTimeField(verbose_name='到期时间')
+    ctime = models.DateTimeField(verbose_name='购买时间',null=True, blank=True)
+    utime = models.DateTimeField(verbose_name='到期时间',null=True, blank=True)
     ps = models.CharField(max_length=1024,verbose_name="备注",null=True,blank=True)
     is_active = models.BooleanField(default=True, verbose_name=('激活'))
+
+    user = models.CharField(max_length=64,verbose_name="登录用户名",default='root',null=True,blank=True)
+    password = models.CharField(max_length=256, blank=True, null=True, verbose_name=('密码'))
+    private_key = models.TextField(max_length=4096, blank=True, null=True, verbose_name=('私钥'),)
+
+
+
+
+
 
     class  Meta:
         db_table ="asset"

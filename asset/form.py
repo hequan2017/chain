@@ -27,7 +27,11 @@ class AssetForm(forms.ModelForm):
                 attrs={'type': 'date', }
             ),
             'ps': forms.Textarea(
-                attrs={'cols': 80, 'rows': 3}
+                attrs={'cols': 80, 'rows': 3}),
+            'private_key': forms.Textarea(
+                attrs={'cols': 80, 'rows': 8}
+
+
             ),
             'platform': forms.Select(
                 attrs={'class': 'select2',

@@ -1,4 +1,5 @@
-django==2.0.3
+django
 django-bootstrap3
 chardet
 ansible
+djangorestframework

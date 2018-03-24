@@ -1,15 +1,14 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from .form import AssetForm
+from .form import AssetForm ,FileForm,AssetUserForm
 from django.contrib.auth.mixins import LoginRequiredMixin,PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
 from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DeleteView, DetailView
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
-from  asset.form   import  FileForm
-from  asset.models import  asset  ,platform,region
+from  asset.models import  asset  ,platform,region,asset_user
 from  asset.models import  asset  as Asset
 import codecs,chardet
 import csv,time
@@ -26,7 +25,7 @@ class AssetListAll(LoginRequiredMixin,ListView):
     '''
     template_name = 'asset/asset.html'
     paginate_by = settings.DISPLAY_PER_PAGE
-    model = asset
+    model = asset_user
     context_object_name = "asset_list"
     queryset = asset.objects.all()
     ordering = ('id',)
@@ -374,3 +373,123 @@ def AssetZtree(request):
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
+class AssetUserListAll(LoginRequiredMixin,ListView):
+    '''
+    列表
+    '''
+    template_name = 'asset/asset-user.html'
+    paginate_by = settings.DISPLAY_PER_PAGE
+    model = asset_user
+    context_object_name = "asset_user_list"
+    queryset = asset_user.objects.all()
+    ordering = ('id',)
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_user_list_active": "active",
+
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+
+
+
+class AssetUserAdd(LoginRequiredMixin,CreateView):
+    """
+    增加
+    """
+    model = asset_user
+    form_class =AssetUserForm
+    template_name = 'asset/asset-user-add-update.html'
+    success_url = reverse_lazy('asset:asset_user_list')
+
+
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_user_list_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+
+
+
+class AssetUserUpdate(LoginRequiredMixin,UpdateView):
+    '''
+    更新
+    '''
+    model = asset_user
+    form_class = AssetUserForm
+    template_name = 'asset/asset-user-add-update.html'
+    success_url = reverse_lazy('asset:asset_user_list')
+
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_list_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+
+    def form_invalid(self, form):
+        print(form.errors)
+        return super().form_invalid(form)
+
+
+
+
+
+class AssetUserDetail(LoginRequiredMixin,DetailView):
+    '''
+    详细
+    '''
+    model = asset_user
+    template_name = 'asset/asset-user-detail.html'
+
+    def get_context_data(self, **kwargs):
+        pk = self.kwargs.get(self.pk_url_kwarg, None)
+        detail = asset_user.objects.get(id=pk)
+
+        context = {
+            "asset_active": "active",
+            "asset_list_active": "active",
+            "assets": detail,
+            "nid": pk,
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+
+
+class AssetUserAllDel(LoginRequiredMixin,View):
+    """
+    删除
+    """
+    model = asset_user
+    def post(self, request):
+        ret = {'status': True, 'error': None, }
+        try:
+            if  request.POST.get('nid') :
+                id = request.POST.get('nid', None)
+                asset_user.objects.get(id=id).delete()
+            else:
+                ids = request.POST.getlist('id', None)
+                idstring = ','.join(ids)
+                print(idstring)
+                asset_user.objects.extra(where=['id IN (' + idstring + ')']).delete()
+                print(123)
+        except Exception as e:
+            ret['status'] = False
+            ret['error'] = '删除请求错误,没有权限{}'.format(e)
+        finally:
+            return HttpResponse(json.dumps(ret))

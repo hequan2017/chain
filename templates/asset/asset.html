@@ -2,8 +2,16 @@
 {% load	bootstrap3 %}
 {% load static %}
 {% block header-css %}
+
+<link href="{% static  'css/webssh/xterm.min.css' %}" rel="stylesheet" type="text/css"/>
+<link href="{% static  'css/webssh/fullscreen.min.css' %}"  rel="stylesheet" type="text/css"/>
+
+
+
     <link href="{% static 'css/plugins/ztree/awesomeStyle/awesome.css' %}" rel="stylesheet">
     <style type="text/css">
+
+
         div#rMenu {
             position: absolute;
             visibility: hidden;
@@ -157,6 +165,8 @@
                                                    href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  asset_del"
                                                 >删除</a>
+                                                <a type="button" class="btn btn-primary btn-xs webssh" >终端
+                                                </a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -233,12 +243,13 @@
         </div>
     </div>
 
-
-
-
-
     {% block footer-js %}
 
+
+
+        <script src="{% static 'js/webssh/xterm.min.js' %}"></script>
+        <script src="{% static 'js/webssh/fullscreen.min.js' %}"></script>
+{#        <script src="{% static 'js/webssh/main.js' %}"></script>#}
 
 
         <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
@@ -301,8 +312,6 @@
 
 
         </script>
-
-
 
         <script>
 
@@ -404,6 +413,9 @@
 
 
             });
+
+
+
 
 
         </script>

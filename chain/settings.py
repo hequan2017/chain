@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'bootstrap3',
     'asset',
     'index',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -143,4 +145,19 @@ STATICFILES_DIRS = (
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
 DISPLAY_PER_PAGE = 25
+
+
+#http://www.django-rest-framework.org/api-guide/permissions/#api-reference
+#rest-framework    权限分类，现在是默认所有人都可以访问
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        # 'rest_framework.permissions.AllowAny',
+       'rest_framework.permissions.IsAdminUser',
+    ),
+}
 

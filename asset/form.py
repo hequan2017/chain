@@ -1,5 +1,5 @@
 from    django import forms
-from   .models import asset
+from   .models import asset,asset_user
 
 
 class FileForm(forms.Form):
@@ -17,18 +17,16 @@ class AssetForm(forms.ModelForm):
             "network_ip": "外网IP",
         }
         widgets = {
-            'ctime': forms.DateInput(
+            'buy_time': forms.DateInput(
                 attrs={'type': 'date', }
             ),
-            'utime': forms.DateInput(
+            'expire_time': forms.DateInput(
                 attrs={'type': 'date', }
             ),
             'ps': forms.Textarea(
                 attrs={'cols': 80, 'rows': 3}),
             'private_key': forms.Textarea(
                 attrs={'cols': 80, 'rows': 8}
-
-
             ),
             'platform': forms.Select(
                 attrs={'class': 'select2',
@@ -42,8 +40,11 @@ class AssetForm(forms.ModelForm):
             'project': forms.Select(
                 attrs={'class': 'select2',
                        'data-placeholder': ('----请选择项目----')}),
-
+            'user': forms.Select(
+                attrs={'class': 'select2',
+                       'data-placeholder': ('----请选择登录用户----')}),
         }
+
         help_texts = {
             'hostname': '*  必填项目,名字唯一',
             'platform': '*  必填项目',
@@ -58,5 +59,23 @@ class AssetForm(forms.ModelForm):
         }
 
 
+
+
+
+class AssetUserForm(forms.ModelForm):
+
+
+    class Meta:
+        model = asset_user
+        fields = '__all__'
+
+
+        widgets = {
+
+            'ps': forms.Textarea(
+                attrs={'cols': 80, 'rows': 3}),
+
+
+        }
 
 

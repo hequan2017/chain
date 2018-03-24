@@ -3,8 +3,8 @@
 {% load static %}
 {% block header-css %}
 
-<link href="{% static  'css/webssh/xterm.min.css' %}" rel="stylesheet" type="text/css"/>
-<link href="{% static  'css/webssh/fullscreen.min.css' %}"  rel="stylesheet" type="text/css"/>
+<link href="/static/webssh_static/css/xterm.min.css" rel="stylesheet" type="text/css"/>
+<link href="/static/webssh_static/css/fullscreen.min.css" rel="stylesheet" type="text/css"/>
 
 
 
@@ -245,19 +245,13 @@
 
     {% block footer-js %}
 
+<script src="/static/webssh_static/js/xterm.min.js"></script>
+<script src="/static/webssh_static/js/fullscreen.min.js"></script>
+ <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
+<script src="{% static 'js/jquery.form.min.js' %}"></script>
 
-
-        <script src="{% static 'js/webssh/xterm.min.js' %}"></script>
-        <script src="{% static 'js/webssh/fullscreen.min.js' %}"></script>
-{#        <script src="{% static 'js/webssh/main.js' %}"></script>#}
-
-
-        <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
-        <script src="{% static 'js/jquery.form.min.js' %}"></script>
-
-        <!-- 使用标准json数据构造ztree -->
-
-        <script type="text/javascript">
+<!-- 使用标准json数据构造ztree -->
+<script type="text/javascript">
 
 
             $(function () {
@@ -312,8 +306,7 @@
 
 
         </script>
-
-        <script>
+<script>
 
 
             $(document).ready(function () {
@@ -421,6 +414,117 @@
         </script>
 
 
-    {% endblock %}
+<script  type="text/javascript">
+
+
+jQuery(function ($) {
+    $(document).on('click','.webssh',function (event) {
+
+                    event.preventDefault();
+
+                    var id_a = $(this).parent().parent().attr('id');
+
+                    $.ajax({
+{#                        headers: {"X-CSRFToken": '{{ csrf_token }}'},#}
+{#                        url: "/asset/asset-webssh.html",#}
+{#                        type: 'POST',#}
+{#                        data: {'id': id_a},#}
+{#                        success: function (ret) {#}
+{##}
+{#                            var obj = JSON.parse(ret);#}
+{#                            var ips = obj.ip;#}
+{#                            var ports = obj.port;#}
+{#                            var usernames = obj.username;#}
+{#                            var passwords = obj.password;#}
+{##}
+{#                            $.ajax({#}
+
+                                url: "http://127.0.0.1:8003/",
+                                type: 'POST',
+                                data: {hostname: "47.94.252.25", port: 22, username: "root", password: "123456"},
+                                crossDomain: true,
+                                success: callback
+                            });
+
+                                function current_geometry() {
+                                    cols = parseInt(window.innerWidth / 10);
+                                    rows = parseInt(window.innerHeight / 24);
+                                    return [cols, rows];
+                                  }
+
+
+
+                            function callback(msg) {
+                                console.log(msg);
+                                if (msg.status) {
+                                      swal("错误", "登陆" + "[ " + msg.status + " ]" + "遇到错误", "error");
+                                      return;
+                                }
+
+
+
+
+
+                                var    url = "ws://127.0.0.1:8003/" + 'ws?id=' + msg.id,
+                                    socket = new WebSocket(url),
+                                    terminal = document.getElementById('#terminal'),
+                                    geometry = current_geometry();
+                                    term = new Terminal({cursorBlink: true,  cols: geometry[0], rows: geometry[1]});
+
+                                console.log(url);
+                                term.on('data', function (data) {
+                                    // console.log(data);
+                                    socket.send(data);
+                                });
+
+                                socket.onopen = function (e) {
+                                    $('.container1').hide();
+                                    term.open(terminal, true);
+                                    term.toggleFullscreen(true);
+                                };
+
+                                socket.onmessage = function (msg) {
+                                    console.log(msg);
+                                    term.write(msg.data);
+                                };
+
+                                socket.onerror = function (e) {
+                                    console.log(e);
+                                };
+
+                                socket.onclose = function (e) {
+                                    console.log(e);
+                                    term.destroy();
+                                    $('.container1').show();
+                                    // status.text(e.reason);
+                                };
+                            }
+
+
+                                            $(window).resize(function(){
+                    if (typeof term != "undefined") {
+                       geometry = current_geometry();
+                       term.geometry = geometry;
+                       term.resize(geometry[0], geometry[1]);
+                     }
+                   });
+
+
+
+                });
+
+});
+
+
+</script>
+
+
+
+
+
+
+
+
+{% endblock %}
 
 {% endblock %}

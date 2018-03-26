@@ -134,17 +134,34 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
 
     def set_default_headers(self): ##修改源代码的地方
         self.set_header('Access-Control-Allow-Origin', '*')
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+        self.set_header('Access-Control-Max-Age', 1000)
+        self.set_header('Access-Control-Allow-Headers', '*')
+        self.set_header('Content-type', 'application/json')
+
 
     def check_origin(self, origin): ##修改源代码的地方
         return True
 
 
-    def get_privatekey(self):
+    # def get_privatekey(self):
+    #     try:
+    #         data = self.request.files.get('privatekey')[0]['body']
+    #     except TypeError:
+    #         return
+    #     return data.decode('utf-8')
+
+
+    def get_privatekey(self):       ##修改上传KEY 改为 获取 key 路径
         try:
-            data = self.request.files.get('privatekey')[0]['body']
-        except TypeError:
-            return
-        return data.decode('utf-8')
+            data1 = '{0}'.format(self.get_argument('privatekey'))
+            with open(data1)  as file_object:
+                data = file_object.read()
+            return data
+        except Exception as  e:
+            data = None
+            return  data
+
 
     def get_specific_pkey(self, pkeycls, privatekey, password):
         logging.info('Trying {}'.format(pkeycls.__name__))
@@ -260,6 +277,11 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
 
     def set_default_headers(self):  ##修改源代码的地方
         self.set_header('Access-Control-Allow-Origin', '*')
+        self.set_header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS')
+        self.set_header('Access-Control-Max-Age', 1000)
+        self.set_header('Access-Control-Allow-Headers', '*')
+        self.set_header('Content-type', 'application/json')
+
 
     def check_origin(self, origin): ##修改源代码的地方
         return True

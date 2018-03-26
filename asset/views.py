@@ -385,6 +385,7 @@ class AssetUserListAll(LoginRequiredMixin,ListView):
     ordering = ('id',)
 
     def get_context_data(self, **kwargs):
+
         context = {
             "asset_active": "active",
             "asset_user_list_active": "active",
@@ -422,7 +423,7 @@ class AssetUserAdd(LoginRequiredMixin,CreateView):
 
 class AssetUserUpdate(LoginRequiredMixin,UpdateView):
     '''
-    更新
+    登录用户更新
     '''
     model = asset_user
     form_class = AssetUserForm
@@ -433,7 +434,7 @@ class AssetUserUpdate(LoginRequiredMixin,UpdateView):
     def get_context_data(self, **kwargs):
         context = {
             "asset_active": "active",
-            "asset_list_active": "active",
+            "asset_user_list_active": "active",
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
@@ -444,7 +445,18 @@ class AssetUserUpdate(LoginRequiredMixin,UpdateView):
         print(form.errors)
         return super().form_invalid(form)
 
+    def form_valid(self, form):
+        pk = self.kwargs.get(self.pk_url_kwarg, None)
+        obj = asset_user.objects.get(id=pk)
+        old_password= obj.password
 
+        new_password = form.cleaned_data['password']
+        forms = form.save()
+
+        if  new_password  ==  None :
+            forms.password = old_password
+            forms.save()
+        return super().form_valid(form)
 
 
 
@@ -461,7 +473,7 @@ class AssetUserDetail(LoginRequiredMixin,DetailView):
 
         context = {
             "asset_active": "active",
-            "asset_list_active": "active",
+            "asset_user_list_active": "active",
             "assets": detail,
             "nid": pk,
         }
@@ -485,11 +497,39 @@ class AssetUserAllDel(LoginRequiredMixin,View):
             else:
                 ids = request.POST.getlist('id', None)
                 idstring = ','.join(ids)
-                print(idstring)
                 asset_user.objects.extra(where=['id IN (' + idstring + ')']).delete()
-                print(123)
         except Exception as e:
             ret['status'] = False
             ret['error'] = '删除请求错误,没有权限{}'.format(e)
+        finally:
+            return HttpResponse(json.dumps(ret))
+
+
+
+class AssetWeb(LoginRequiredMixin,View):
+    """
+    终端登录
+    """
+
+    def post(self,request,*args,**kwargs):
+        ret={'status':True,}
+        try:
+            id = request.POST.get('id', None)
+            obj = asset.objects.get(id=id)
+
+            ip = obj.network_ip
+            port = obj.port
+            username = obj.user.username
+            password = obj.user.password
+            try :
+                privatekey = obj.user.private_key.path
+            except Exception as e:
+                privatekey = None
+
+            ret.update({"ip": ip,'port':port,"username": username, 'password': password,"privatekey":privatekey})
+            # login_ip = request.META['REMOTE_ADDR']
+        except Exception as e:
+            ret['status'] = False
+            ret['error'] = '请求错误,{}'.format(e)
         finally:
             return HttpResponse(json.dumps(ret))

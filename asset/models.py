@@ -86,11 +86,21 @@ class region(models.Model):
     def __str__(self):
         return self.name
 
+
+
+
+
+
+
+
+
+
+##登录用户
 class  asset_user(models.Model):
     hostname = models.CharField(max_length=64, verbose_name='名称', unique=True)
     username = models.CharField(max_length=64, verbose_name="用户名", default='root', null=True, blank=True)
     password = models.CharField(max_length=256, blank=True, null=True, verbose_name=('密码'))
-    private_key = models.FileField(upload_to = 'upload/private_key/%Y%m%d{}'.format(random.randint(0,99999)),verbose_name="私钥",null=True,blank=True)
+    private_key = models.FileField(upload_to = 'upload/private_key/%Y%m%d_{}'.format(random.randint(0,99999)),verbose_name="私钥",null=True,blank=True)
 
     ps = models.CharField(max_length=10240, verbose_name="备注", null=True, blank=True)
     ctime = models.DateTimeField(auto_now_add=True, null=True, verbose_name='创建时间', blank=True)

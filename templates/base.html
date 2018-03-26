@@ -41,12 +41,14 @@
 
 {% include  "_js.html" %}
 {% block footer-js %}
+
 {% endblock %}
 
-
-
-
-
+{% block footer-js-ajax %}
+<script type="text/JavaScript">
+ $.ajaxSetup({headers: {"X-CSRFToken": '{{ csrf_token }}'}});
+</script>
+{% endblock %}
 </body>
 
 </html>

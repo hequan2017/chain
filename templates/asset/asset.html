@@ -3,8 +3,8 @@
 {% load static %}
 {% block header-css %}
 
-<link href="/static/webssh_static/css/xterm.min.css" rel="stylesheet" type="text/css"/>
-<link href="/static/webssh_static/css/fullscreen.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/webssh_static/css/xterm.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/static/webssh_static/css/fullscreen.min.css" rel="stylesheet" type="text/css"/>
 
 
 
@@ -59,7 +59,7 @@
                 </li>
             </ol>
         </div>
-        <div class="col-lg-2"  id="split-left">
+        <div class="col-lg-2" id="split-left">
 
         </div>
     </div>
@@ -83,7 +83,7 @@
             </div>
 
 
-            <div class="col-lg-11"   id="split-right" >
+            <div class="col-lg-11" id="split-right">
 
                 <div class="ibox float-e-margins">
 
@@ -151,7 +151,7 @@
                                     {% for   row   in   asset_list %}
 
                                         <tr class="gradeA" id="{{ row.id }}">
-                                            <td><input type="checkbox" value="{{ row.id }}"   name="id"></td>
+                                            <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
                                             <td class="center"><a
                                                     href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.hostname }}</a>
                                             </td>
@@ -165,7 +165,7 @@
                                                    href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  asset_del"
                                                 >删除</a>
-                                                <a type="button" class="btn btn-primary btn-xs webssh" >终端
+                                                <a type="button" class="btn btn-primary btn-xs webssh">终端
                                                 </a>
                                             </td>
                                         </tr>
@@ -245,15 +245,13 @@
 
     {% block footer-js %}
 
-<script src="/static/webssh_static/js/xterm.min.js"></script>
-<script src="/static/webssh_static/js/fullscreen.min.js"></script>
- <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
-<script src="{% static 'js/jquery.form.min.js' %}"></script>
-
-<!-- 使用标准json数据构造ztree -->
-<script type="text/javascript">
+        <script src="{% static 'webssh_static/js/xterm.min.js' %}"></script>
+        <script src="{% static 'webssh_static/js/fullscreen.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
+        <script src="{% static 'js/jquery.form.min.js' %}"></script>
 
 
+        <script type="text/javascript">
             $(function () {
                 var setting = {
                     view: {
@@ -273,7 +271,7 @@
 
                     callback: {
                         beforeClick: getCurrentNode,
-{#                         onClick : zTreeOnClick#}
+                        {#                         onClick : zTreeOnClick#}
                     }
                 };
 
@@ -296,18 +294,13 @@
 
             function zTreeOnClick(treeNode) {
 
-                            if(treeNode.id==1111 ){
-                                window.location.href='/asset/asset.html'
-                            }
-                            else {
-                            window.location.href='/asset/asset.html?name='+treeNode.name
+                if (treeNode.id == 1111) {
+                    window.location.href = '/asset/asset.html'
+                }
+                else {
+                    window.location.href = '/asset/asset.html?name=' + treeNode.name
                 }
             }
-
-
-        </script>
-<script>
-
 
             $(document).ready(function () {
                 $('.dataTables-asset').DataTable({
@@ -336,7 +329,6 @@
 
                 });
             });
-
             $(function () {
 
                 $(document).on('click', '.asset_del', function () {
@@ -351,6 +343,7 @@
                         closeOnConfirm: false
                     }, function () {
                         $.ajax({
+                             headers: {"X-CSRFToken": '{{ csrf_token }}'},
                             url: "/asset/asset-all-del.html",
                             type: 'POST',
                             data: {'nid': id},
@@ -385,6 +378,7 @@
                         closeOnConfirm: false
                     }, function () {
                         $.ajax({
+                             headers: {"X-CSRFToken": '{{ csrf_token }}'},
                             url: "/asset/asset-all-del.html",
                             type: 'POST',
                             data: $('#del_form_asset_all').serialize(),
@@ -406,70 +400,61 @@
 
 
             });
-
-
-
-
-
-        </script>
-
-
-<script  type="text/javascript">
-
-
-jQuery(function ($) {
-    $(document).on('click','.webssh',function (event) {
+            jQuery(function ($) {
+                $(document).on('click', '.webssh', function (event) {
 
                     event.preventDefault();
 
                     var id_a = $(this).parent().parent().attr('id');
 
                     $.ajax({
-{#                        headers: {"X-CSRFToken": '{{ csrf_token }}'},#}
-{#                        url: "/asset/asset-webssh.html",#}
-{#                        type: 'POST',#}
-{#                        data: {'id': id_a},#}
-{#                        success: function (ret) {#}
-{##}
-{#                            var obj = JSON.parse(ret);#}
-{#                            var ips = obj.ip;#}
-{#                            var ports = obj.port;#}
-{#                            var usernames = obj.username;#}
-{#                            var passwords = obj.password;#}
-{##}
-{#                            $.ajax({#}
+                        headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                        url: "/asset/asset-webssh.html",
+                        type: 'POST',
+                        data: {'id': id_a},
+                        success: function (ret) {
 
+                            var obj = JSON.parse(ret);
+                            var ips = obj.ip;
+                            var ports = obj.port;
+                            var usernames = obj.username;
+                            var passwords = obj.password;
+                            var privatekey = obj.privatekey;
+
+                            $.ajax({
                                 url: "http://127.0.0.1:8003/",
                                 type: 'POST',
-                                data: {hostname: "47.94.252.25", port: 22, username: "root", password: "123456"},
+                                data: {
+                                    hostname: ips,
+                                    port: ports,
+                                    username: usernames,
+                                    password: passwords,
+                                    privatekey: privatekey
+                                },
                                 crossDomain: true,
                                 success: callback
                             });
 
-                                function current_geometry() {
-                                    cols = parseInt(window.innerWidth / 10);
-                                    rows = parseInt(window.innerHeight / 24);
-                                    return [cols, rows];
-                                  }
-
+                            function current_geometry() {
+                                cols = parseInt(window.innerWidth / 10);
+                                rows = parseInt(window.innerHeight / 24);
+                                return [cols, rows];
+                            }
 
 
                             function callback(msg) {
                                 console.log(msg);
                                 if (msg.status) {
-                                      swal("错误", "登陆" + "[ " + msg.status + " ]" + "遇到错误", "error");
-                                      return;
+                                    swal("错误", "登陆" + "[ " + msg.status + " ]" + "遇到错误", "error");
+                                    return;
                                 }
 
 
-
-
-
-                                var    url = "ws://127.0.0.1:8003/" + 'ws?id=' + msg.id,
+                                var url = "ws://127.0.0.1:8003/" + 'ws?id=' + msg.id,
                                     socket = new WebSocket(url),
                                     terminal = document.getElementById('#terminal'),
                                     geometry = current_geometry();
-                                    term = new Terminal({cursorBlink: true,  cols: geometry[0], rows: geometry[1]});
+                                term = new Terminal({cursorBlink: true, cols: geometry[0], rows: geometry[1]});
 
                                 console.log(url);
                                 term.on('data', function (data) {
@@ -501,30 +486,22 @@ jQuery(function ($) {
                             }
 
 
-                                            $(window).resize(function(){
-                    if (typeof term != "undefined") {
-                       geometry = current_geometry();
-                       term.geometry = geometry;
-                       term.resize(geometry[0], geometry[1]);
-                     }
-                   });
+                            $(window).resize(function () {
+                                if (typeof term != "undefined") {
+                                    geometry = current_geometry();
+                                    term.geometry = geometry;
+                                    term.resize(geometry[0], geometry[1]);
+                                }
+                            });
 
-
-
+                        }
+                    });
                 });
+            });
+        </script>
+    {% endblock %}
 
-});
-
-
-</script>
-
-
-
-
-
-
-
-
-{% endblock %}
+    {% block footer-js-ajax %}
+    {% endblock %}
 
 {% endblock %}

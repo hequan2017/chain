@@ -161,3 +161,5 @@ REST_FRAMEWORK = {
     ),
 }
 
+web_ssh = "47.94.252.25"
+web_port = 8002

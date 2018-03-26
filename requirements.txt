@@ -3,3 +3,5 @@ django-bootstrap3
 chardet
 ansible
 djangorestframework
+paramiko
+tornado

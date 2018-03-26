@@ -343,7 +343,7 @@
                         closeOnConfirm: false
                     }, function () {
                         $.ajax({
-                             headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                            headers: {"X-CSRFToken": '{{ csrf_token }}'},
                             url: "/asset/asset-all-del.html",
                             type: 'POST',
                             data: {'nid': id},
@@ -415,14 +415,14 @@
                         success: function (ret) {
 
                             var obj = JSON.parse(ret);
-                            var ips = obj.ip;
+                            var ips =  obj.ip;
                             var ports = obj.port;
                             var usernames = obj.username;
                             var passwords = obj.password;
                             var privatekey = obj.privatekey;
 
                             $.ajax({
-                                url: "http://127.0.0.1:8003/",
+                                url: "http://{{ web_ssh }}:{{ web_port }}/",
                                 type: 'POST',
                                 data: {
                                     hostname: ips,
@@ -450,7 +450,7 @@
                                 }
 
 
-                                var url = "ws://127.0.0.1:8003/" + 'ws?id=' + msg.id,
+                                var url = "ws://{{ web_ssh }}:{{ web_port }}/" + 'ws?id=' + msg.id,
                                     socket = new WebSocket(url),
                                     terminal = document.getElementById('#terminal'),
                                     geometry = current_geometry();

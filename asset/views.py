@@ -15,6 +15,7 @@ import csv,time
 from io import StringIO
 import json
 from django.core import serializers
+from  chain import settings
 
 
 
@@ -42,7 +43,9 @@ class AssetListAll(LoginRequiredMixin,ListView):
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
-            "search_data":search_data.urlencode()
+            "search_data":search_data.urlencode(),
+            "web_ssh": getattr(settings, 'web_ssh'),
+            "web_port": getattr(settings, 'web_port'),
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
@@ -526,7 +529,7 @@ class AssetWeb(LoginRequiredMixin,View):
             except Exception as e:
                 privatekey = None
 
-            ret.update({"ip": ip,'port':port,"username": username, 'password': password,"privatekey":privatekey})
+            ret.update({"ips": ip,'port':port,"username": username, 'password': password,"privatekey":privatekey})
             # login_ip = request.META['REMOTE_ADDR']
         except Exception as e:
             ret['status'] = False

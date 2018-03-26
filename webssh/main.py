@@ -15,8 +15,8 @@ from tornado.options import define, options, parse_command_line
 from tornado.util import errno_from_exception
 
 
-define('address', default='127.0.0.1', help='listen address')
-define('port', default=8003, help='listen port', type=int)
+define('address', default='0.0.0.0', help='listen address')
+define('port', default=8002, help='listen port', type=int)
 define('debug', default=False, help='debug mode', type=bool)
 define('policy', default='warning',
        help='missing host key policy, reject|autoadd|warning')
@@ -157,6 +157,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
             data1 = '{0}'.format(self.get_argument('privatekey'))
             with open(data1)  as file_object:
                 data = file_object.read()
+            print(data)
             return data
         except Exception as  e:
             data = None

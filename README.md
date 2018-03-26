@@ -34,13 +34,21 @@ http://47.94.252.25:8001
 
 ###  部署
 
+修改  chain/settings.py
+
+```
+web_ssh = "47.94.252.25"    ##修改为本机外网IP,
+web_port = 8002
+
+```
+
 
 ```bash
 git clone https://github.com/hequan2017/chain.git
 
 cd chain/
 
-pip3 install -r   requirements/requirements.txt
+pip3 install -r   requirements.txt
 
 
 mv  db.sqlite3  /tmp/
@@ -51,6 +59,8 @@ python3   manage.py   migrate
 python3   manage.py    createsuperuser
 
 python3   manage.py runserver 0.0.0.0:80
+
+
 python3   webssh/main.py    ##启动终端登录功能
 
 ```

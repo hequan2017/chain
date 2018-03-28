@@ -27,6 +27,7 @@ urlpatterns = [
     path('password_update.html',password_update,name="password_update"),
     path('index/login-history.html',LoginHistorys,name="login-history"),
     path('asset/', include('asset.urls', namespace="asset", ), ),
+    path('tasks/', include('tasks.urls', namespace="tasks", ), ),
 
 ]
 

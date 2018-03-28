@@ -1,71 +1,37 @@
 {% extends "base.html" %}
-{% load	bootstrap3 %}
+{% load bootstrap3 %}
 {% load static %}
+
+{% block  title %}命令行{% endblock %}
 {% block header-css %}
-
-    <link href="/static/webssh_static/css/xterm.min.css" rel="stylesheet" type="text/css"/>
-    <link href="/static/webssh_static/css/fullscreen.min.css" rel="stylesheet" type="text/css"/>
-
-
-
-    <link href="{% static 'css/plugins/ztree/awesomeStyle/awesome.css' %}" rel="stylesheet">
-    <style type="text/css">
-
-
-        div#rMenu {
-            position: absolute;
-            visibility: hidden;
-            text-align: left;
-            top: 100%;
-            left: 0;
-            z-index: 1000;
-            float: left;
-            padding: 5px 0;
-            margin: 2px 0 0;
-            list-style: none;
-            background-clip: padding-box;
-        }
-
-        div#rMenu li {
-            margin: 1px 0;
-            cursor: pointer;
-        {#list-style: none outside none;#}
-        }
-
-        .dropdown a:hover {
-            background-color: #f1f1f1
-        }
-    </style>
-
+   <link href="{% static 'css/plugins/ztree/awesomeStyle/awesome.css' %}" rel="stylesheet">
 {% endblock %}
 
-{% block  title %}资产信息{% endblock %}
-
-
-
 {% block page-content %}
+
+
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>资产信息</h2>
+            <h2>命令行</h2>
             <ol class="breadcrumb">
                 <li>
-                    <a href="{% url "index" %}">主页</a>
+                    <a href="/index.html">主页</a>
                 </li>
                 <li>
-                    <a>资产管理</a>
+                    <a>任务</a>
                 </li>
                 <li class="active">
-                    <strong>资产信息</strong>
+                    <strong>命令行</strong>
                 </li>
             </ol>
         </div>
-        <div class="col-lg-2" id="split-left">
+        <div class="col-lg-2">
 
         </div>
     </div>
-    <div class="wrapper wrapper-content animated fadeInRight   ">
+    <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
-            <div class="col-lg-1" id="split-left">
+         <div class="col-lg-1" id="split-left">
                 <div class="ibox float-e-margins">
                     <div class="ibox-content mailbox-content" style="padding-top: 0">
                         <div class="file-manager ">
@@ -81,14 +47,10 @@
                     </div>
                 </div>
             </div>
-
-
-            <div class="col-lg-11" id="split-right">
-
+            <div class="col-lg-5">
                 <div class="ibox float-e-margins">
-
                     <div class="ibox-title">
-                        <h5>资产信息</h5>
+                        <h5>命令行</h5>
                         <div class="ibox-tools">
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
@@ -108,42 +70,17 @@
                         </div>
                     </div>
                     <div class="ibox-content">
-
                         <div class="table-responsive">
-
-                            <form id="cha" class="form-horizontal" action="{% url 'asset:asset_list' %}" method="GET">
-                                {% csrf_token %}
-                                <div class="col-md-2"><input type="text" class="form-control" name="name"
-                                                             placeholder="主机名、IP、负责人" required></div>
-
-                                <button class="btn btn-sm btn-primary" type="submit">查询</button>
-
-
-                                <a href="{% url    'asset:asset_add' %}" class="btn btn-sm btn-primary ">
-                                    添加</a>
-
-
-                                <a class="btn btn-sm btn-danger  asset_all_del"
-                                >批量删除
-                                </a>
-                            </form>
-                            <form id="del_form_asset_all" class="form-horizontal  "
-                                  action="{% url 'asset:asset_export' %}" method="post">
-                                {% csrf_token %}
-
-
-                                <table class="table table-striped table-bordered table-hover dataTables-asset">
+                            <form class="form-horizontal  cmd_from">
+                     <table class="table table-striped table-bordered table-hover dataTables-example">
                                     <thead>
                                     <tr>
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
                                         <th>主机名</th>
                                         <th>外网IP</th>
-                                        <th>内网IP</th>
-                                        <th>平台</th>
-                                        <th>系统版本</th>
-                                        <th>负责人</th>
-                                        <th>项目</th>
-                                        <th>动作{{ error_performance }}</th>
+                                        <th>用户</th>
+                                        <th>产品线</th>
+
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -156,102 +93,164 @@
                                                     href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.hostname }}</a>
                                             </td>
                                             <td class="center">{{ row.network_ip }}</td>
-                                            <td class="center">{{ row.inner_ip }}</td>
-                                            <td class="center">{{ row.platform.name }}</td>
-                                            <td class="center">{{ row.system }}</td>
-                                            <td class="center">{{ row.manager }}</td>
-                                            <td class="center">{{ row.project }}</td>
-                                            <td><a class="btn btn-primary  btn-xs "
-                                                   href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
-                                                <a class="btn btn-danger  btn-xs  asset_del"
-                                                >删除</a>
-                                                <a type="button" class="btn btn-primary btn-xs webssh">终端
-                                                </a>
-                                            </td>
+                                            <td class="center">{{ row.user }}</td>
+                                            <td class="center">{{ row.project }} </td>
                                         </tr>
                                     {% endfor %}
+
                                     </tbody>
 
                                 </table>
-                                <button class="btn btn-sm btn-primary" type="submit">导出</button>
-                                <a href="{% url    'asset:asset_export' %}" class="btn btn-sm btn-primary ">导出全部</a>
-                                <div>
 
-                                    <center>
-
-                                        <ul class="pagination">
-                                            <li><a href="{% url "asset:asset_list" %}?page=1">首页 </a></li>
-                                            {% if  page_obj.has_previous %}
-                                                <li>
-                                                    <a href="{% url "asset:asset_list" %}?page={{ page_obj.previous_page_number }}&{{ search_data }}">
-                                                        上一页 </a></li>
-                                            {% else %}
-                                                <li class="disabled"><a> 上一页 </a></li>
-                                            {% endif %}
-
-                                            {% for p in paginator.page_range %}
-                                                {% if  search_data %}  <!-- 判断是否是搜索分页-->
-                                                    {% if p == page_obj.number %}
-                                                        <li class="active"><a
-                                                                href="{% url "asset:asset_list" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% else %}
-                                                        <li>
-                                                            <a href="{% url "asset:asset_list" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% else %}
-                                                    {% if p == page_obj.number %}
-                                                        <li class="active"><a
-                                                                href="{% url "asset:asset_list" %}?page={{ p }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% else %}
-                                                        <li>
-                                                            <a href="{% url "asset:asset_list" %}?page={{ p }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% endif %}
-                                            {% endfor %}
+                                <div class="ibox-content">
+                                <div class="form-group">
 
 
-                                            {% if  page_obj.has_next %}
-                                                <li>
-                                                    <a href="{% url "asset:asset_list" %}?page={{ page_obj.next_page_number }}&{{ search_data }}">
-                                                        下一页 </a></li>
-                                            {% endif %}
-                                            <li>
-                                                <a href="{% url "asset:asset_list" %}?page={{ page_obj.paginator.num_pages }}">尾页 </a>
-                                            </li>
-                                            <li><span style="color: #0a0a0a">总: &nbsp;{{ page_obj.paginator.num_pages }} 页 </span>
-                                            </li>
+                                        <div>
 
-                                        </ul>
-                                    </center>
-                                </div> <!--页码 -->
+                                            <select name="module" class="form-control" title="" required=""
+                                            id="id_cmd" style="width: 125px;float: left;">
+                                                {% for i in cmd_list %}
+                                                <option value="{{ i }}">{{ i }}</option>
+                                                {% endfor %}
 
 
-                            </form>
+                                            </select>
+
+                                            <p></p>
+                                            <input type="button" class="btn btn-primary  " value="增加" id="addTable"
+                                                   onclick="add_tr(this)"/>
+                                            <input type="button" class="btn btn-danger  " value="删除" id="deleteTable"
+                                                   onclick="del_tr(this)"/>
+                                            <input class="form-control"    placeholder="命令"   name="args" title="" style="width:500px;">
 
 
+                                        </div>
+
+
+                                    </div>
+
+                                <div class="form-group">
+                                        <div class="col-sm-6 col-sm-offset-2">
+
+                                            <a id="cmd" class="btn btn-primary" type="submit">提交</a>
+                                            <button class="btn btn-white" type="button" onclick='clearBody()'>取消
+                                            </button>
+                                        </div>
+                                    </div>
+
+
+
+                            </div>
+
+                                </form>
                         </div>
 
+
+
                     </div>
+                </div>
+            </div>
 
 
+
+            <div class="col-sm-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>输出结果
+                        </h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-links">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">配置选项 1</a>
+                                </li>
+                                <li><a href="#">配置选项 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content  pres">
+
+                        <pre> <span id="err"></span></pre>
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+
+
     {% block footer-js %}
-
-        <script src="{% static 'webssh_static/js/xterm.min.js' %}"></script>
-        <script src="{% static 'webssh_static/js/fullscreen.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
-        <script src="{% static 'js/jquery.form.min.js' %}"></script>
+      <script type="text/JavaScript">
+    $.ajaxSetup({headers: {"X-CSRFToken": '{{ csrf_token }}'}});
+</script>
 
 
-        <script type="text/javascript">
+
+        <script>
+
+
+            $(function () {
+
+  $(document).on('click','#cmd',function () {
+
+
+
+
+                    $.ajax({
+                        url: "{% url 'tasks:perform' %}",
+                        type: 'POST',
+                        data: $('.cmd_from').serialize(),
+                        success: function (data) {
+                            var obj = JSON.parse(data);
+                            cons = "";
+                            if (obj.data) {
+                                $.each(obj, function (data, values) {
+                                    $.each(values, function (index, value) {
+                                        cons += "<pre>" + "主机:" + value.hostname + "\n" + "结果: \n " + value.data + "</pre>"
+
+                                    });
+                                    $(".pres").html(cons); //把内容入到这个div中即完成
+                                });
+                            } else {
+                                $('#err').text(obj.error);
+                            }
+
+                        }
+
+                    })
+                });
+
+
+            });
+
+            function clearBody() {
+                location.reload()
+            }
+
+
+            function add_tr(obj) {
+                var tr = $(obj).parent();
+                tr.after(tr.clone());
+            }
+
+            function del_tr(obj) {
+                $(obj).parent().remove();
+            }
+
+        </script>
+
+                <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
+     <script type="text/javascript">
             $(function () {
                 var setting = {
                     view: {
@@ -295,10 +294,12 @@
             function zTreeOnClick(treeNode) {
 
                 if (treeNode.id == 1111) {
-                    window.location.href = '/asset/asset.html'
+                    window.location.href = '{% url  "tasks:cmd"  %}'
                 }
                 else {
-                    window.location.href = '/asset/asset.html?name=' + treeNode.name
+
+                    window.location.href = '/tasks/cmd.html?name=' + treeNode.name
+
                 }
             }
 
@@ -499,9 +500,7 @@
                 });
             });
         </script>
-    {% endblock %}
 
-    {% block footer-js-ajax %}
     {% endblock %}
 
 {% endblock %}

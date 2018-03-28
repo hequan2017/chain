@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'index',
     'rest_framework',
     'rest_framework.authtoken',
+    'tasks',
 ]
 
 MIDDLEWARE = [
@@ -161,5 +162,5 @@ REST_FRAMEWORK = {
     ),
 }
 
-web_ssh = "47.94.252.25"
+web_ssh = "127.0.0.1"
 web_port = 8002

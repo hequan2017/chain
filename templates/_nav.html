@@ -36,7 +36,15 @@
 
                 </ul>
             </li>
+            <li class="{{ tasks_active }}">
+                <a href="#"><i class="fa fa-inbox"></i> <span class="nav-label">执行任务</span>
+                    <span class="fa arrow"> </span></a>
+                <ul class="nav nav-second-level">
+                    <li class="{{ tasks_cmd_active }}"><a href="{% url    'tasks:cmd' %}">cmd</a></li>
 
+
+                </ul>
+            </li>
             <li  class="{{ index_active }}">
                 <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">后台</span>
                     <span class="fa arrow"> </span></a>

@@ -16,7 +16,7 @@ from io import StringIO
 import json
 from django.core import serializers
 from  chain import settings
-
+from os import system
 
 
 
@@ -26,7 +26,7 @@ class AssetListAll(LoginRequiredMixin,ListView):
     '''
     template_name = 'asset/asset.html'
     paginate_by = settings.DISPLAY_PER_PAGE
-    model = asset_user
+    model = asset
     context_object_name = "asset_list"
     queryset = asset.objects.all()
     ordering = ('id',)
@@ -55,7 +55,7 @@ class AssetListAll(LoginRequiredMixin,ListView):
         self.queryset = super().get_queryset()
         if  self.request.GET.get('name'):
             query = self.request.GET.get('name',None)
-            queryset = self.queryset.filter(Q(network_ip=query)| Q(hostname=query)  | Q(inner_ip=query)  | Q(manager=query) | Q(platform__name=query)).order_by('-id')
+            queryset = self.queryset.filter(Q(network_ip=query)| Q(hostname=query)  | Q(inner_ip=query)| Q(project=query)  | Q(manager=query) | Q(platform__name=query)).order_by('-id')
         else:
             queryset = super().get_queryset()
         return queryset
@@ -365,14 +365,15 @@ def AssetGetdata(request):
 @login_required
 def AssetZtree(request):
     """
-    获取 区域 资产数 的相关数据
+    获取 区域 资产树 的相关数据
     :param request:
     :return:
     """
-    manager = platform.objects.values().distinct()
-    data = [ { "id":"1111", "pId":"0", "name":"平台"},]
-    for i   in  manager:
-        data.append( { "id":'{}'.format(i['id']),"pId":"1111", "name":i['name'],  "page":"xx.action"},)
+
+    manager = asset.objects.values("project").distinct()
+    data = [ { "id":"1111", "pId":"0", "name":"项目"},]
+    for  i  in  manager:
+        data.append( { "id":i['project'],"pId":"1111", "name":i['project'],  "page":"xx.action"},)
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
@@ -418,8 +419,15 @@ class AssetUserAdd(LoginRequiredMixin,CreateView):
             "asset_user_list_active": "active",
         }
         kwargs.update(context)
+
         return super().get_context_data(**kwargs)
 
+    def form_valid(self, form):
+        forms = form.save()
+        name = form.cleaned_data['hostname']
+        obj = asset_user.objects.get(hostname=name).private_key.name
+        system("chmod  600  {0}".format(obj))
+        return super().form_valid(form)
 
 
 
@@ -455,6 +463,9 @@ class AssetUserUpdate(LoginRequiredMixin,UpdateView):
 
         new_password = form.cleaned_data['password']
         forms = form.save()
+        name = form.cleaned_data['hostname']
+        obj = asset_user.objects.get(hostname=name).private_key.name
+        system("chmod  600  {0}".format(obj))
 
         if  new_password  ==  None :
             forms.password = old_password
@@ -529,7 +540,7 @@ class AssetWeb(LoginRequiredMixin,View):
             except Exception as e:
                 privatekey = None
 
-            ret.update({"ips": ip,'port':port,"username": username, 'password': password,"privatekey":privatekey})
+            ret.update({"ip": ip,'port':port,"username": username, 'password': password,"privatekey":privatekey})
             # login_ip = request.META['REMOTE_ADDR']
         except Exception as e:
             ret['status'] = False

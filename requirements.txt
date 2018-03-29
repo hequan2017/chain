@@ -1,7 +1,6 @@
 django
 django-bootstrap3
 chardet
-ansible==2.4.2.0
 djangorestframework
 paramiko
 tornado

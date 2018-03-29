@@ -56,7 +56,14 @@ mv  db.sqlite3  /tmp/
 python3   manage.py   makemigrations
 python3   manage.py   migrate
 
-python3   manage.py    createsuperuser
+创建用户
+python manage.py  shell  << EOF
+from django.contrib.auth.models import User
+user=User.objects.create_superuser('admin','emailname@demon.com','1qaz.2wsx')
+exit()
+EOF
+
+
 
 python3   manage.py runserver 0.0.0.0:80
 

@@ -9,14 +9,17 @@ from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
 from  asset.models import  asset  ,platform,region,asset_user
-from  asset.models import  asset  as Asset
 import codecs,chardet
+from  asset.models import  asset as Asset
 import csv,time
 from io import StringIO
 import json
 from django.core import serializers
 from  chain import settings
 from os import system
+import logging
+logger = logging.getLogger('asset')
+from  djqscsv import render_to_csv_response
 
 
 
@@ -37,7 +40,7 @@ class AssetListAll(LoginRequiredMixin,ListView):
         try:
             search_data.pop("page")
         except BaseException as  e:
-            pass
+            logger.error(e)
 
         context.update(search_data.dict())
         context = {
@@ -176,53 +179,35 @@ class AssetExport(View):
     :return:
     """
 
-
-    def get(self,request,):
-
-        fields = [
-            field for field in Asset._meta.fields
-            if field.name not in [
-                'date_created'
-            ]
-        ]
-        filename = 'assets-all.csv'
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        response.write(codecs.BOM_UTF8)
-        assets = Asset.objects.all()
-        writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
-
-        header = [field.verbose_name for field in fields]
-        writer.writerow(header)
-        for asset_ in assets:
-            data = [getattr(asset_, field.name) for field in fields]
-            writer.writerow(data)
-        return response
+    def get(self,request):
+          qs = asset.objects.all()
+          return render_to_csv_response(qs)
 
     def post(self,request):
-        ids = request.POST.getlist('id', None)
-        idstring = ','.join(ids)
-        fields = [
-            field for field in   Asset._meta.fields
-            if field.name not in [
-                'date_created'
-            ]
-        ]
-        filename = 'assets.csv'
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        response.write(codecs.BOM_UTF8)
-        assets =  Asset.objects.extra(where=['id IN (' + idstring + ')']).all()
-        writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
+         ids = request.POST.getlist('id', None)
+         idstring = ','.join(ids)
+         qs = asset.objects.extra(where=['id IN (' + idstring + ')']).all()
+         return  render_to_csv_response(qs)
 
-        header = [field.verbose_name for field in fields]
-        writer.writerow(header)
 
-        for asset_ in assets:
-            data = [getattr(asset_, field.name) for field in fields]
-            writer.writerow(data)
-        return response
-
+##待解决  导入导出
+        # ids = request.POST.getlist('id', None)
+        # idstring = ','.join(ids)
+        # fields = [
+        #     field for field in   Asset._meta.fields
+        #     if field.name not in [
+        #         'date_created'
+        #     ]
+        # ]
+        # filename = 'assets.csv'
+        # response = HttpResponse(content_type='text/csv')
+        # response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        # response.write(codecs.BOM_UTF8)
+        # assets =  Asset.objects.extra(where=['id IN (' + idstring + ')']).all()
+        # writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
+        #
+        # header = [field.verbose_name for field in fields]
+        # writer.writerow(header)
 
 def  AssetImport(request):
     """
@@ -274,13 +259,13 @@ def  AssetImport(request):
                             v = int(v)
                         except ValueError:
                             v = 0
-                    elif  k  in   ['ctime','utime']  :
+                    elif  k  in   ['platform',]  :
                         try:
                             v1 = time.strptime(v, '%Y/%m/%d %H:%M')
                             v =  time.strftime("%Y-%m-%d %H:%M",v1)
                         except  Exception as e :
-                            print(e)
-                            v = Null
+                            logger.error(e)
+                            v = '1970-01-1 00:00'
                     else:
                         continue
                     asset_dict_id[k] =v
@@ -293,13 +278,13 @@ def  AssetImport(request):
                             v = int(v)
                         except ValueError:
                             v = 0
-                    elif  k  in   ['ctime','utime']  :
-                        try:
-                            v1 = time.strptime(v, '%Y/%m/%d %H:%M')
-                            v =  time.strftime("%Y-%m-%d %H:%M",v1)
-                        except  Exception as e :
-                            print(e)
-                            v = Null
+                    # elif  k  in   ['ctime','utime']  :
+                    #     try:
+                    #         v1 = time.strptime(v, '%Y/%m/%d %H:%M')
+                    #         v =  time.strftime("%Y-%m-%d %H:%M",v1)
+                    #     except  Exception as e :
+                    #         logger.error(e)
+                    #         v = '1970-01-1 00:00'
                     else:
                         continue
                     asset_dict[k] = v

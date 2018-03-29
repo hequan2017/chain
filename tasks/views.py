@@ -21,9 +21,11 @@ from .models import cmd_list
 from os import system
 import threading
 
-from   .ansible_2420.runner import AdHocRunner
-from   .ansible_2420.inventory import BaseInventory
+# from   .ansible_2420.runner import AdHocRunner
+# from   .ansible_2420.inventory import BaseInventory
 
+import logging
+logger = logging.getLogger('tasks')
 
 
 
@@ -68,7 +70,8 @@ class MyThread(threading.Thread):
     def get_result(self):
         try:
             return self.result  # 如果子线程不使用join方法，此处可能会报没有self.result的错误
-        except Exception:
+        except Exception as e:
+            logger.error(e)
             return None
 
 
@@ -89,6 +92,7 @@ def thread_cmd_job(assets,tasks):
     try:
         data = retsult.results_raw['ok'][hostname]
     except Exception as e:
+        logger.error(e)
         data = retsult.results_raw['failed'][hostname]
 
     task = []
@@ -99,9 +103,11 @@ def thread_cmd_job(assets,tasks):
                 task.append(data['task{}'.format(i)]['stderr'])
             task.append(tasks1)
         except Exception as e:
+            logger.error("任务执行失败",e)
             try:
                 task.append(retsult.results_raw['failed'][hostname]['task{}'.format(i)]['stderr'])
             except Exception as e:
+                logger.error('未执行本任务{0}，请检查修改上面任务 \n {1}'.format(e,tasks))
                 task.append('未执行本任务{0}，请检查修改上面任务 \n {1}'.format(e,tasks))
         finally:
             ret = {'hostname': hostname, 'data': '\n'.join(task)}
@@ -149,6 +155,7 @@ class TasksPerform(View):
                             "username": i.user.username,
                             "password": i.user.password,
                             "private_key": i.user.private_key.name,
+                            "vars":{"name": 'hequan'},
                         }],)
 
             t_list = []

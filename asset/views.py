@@ -180,34 +180,62 @@ class AssetExport(View):
     """
 
     def get(self,request):
-          qs = asset.objects.all()
-          return render_to_csv_response(qs)
+          # qs = asset.objects.all()
+          # return render_to_csv_response(qs)
+
+        fields = [
+            field for field in   Asset._meta.fields
+            if field.name not in [
+                'date_created'
+            ]
+        ]
+        filename = 'assets.csv'
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+        response.write(codecs.BOM_UTF8)
+        writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
+
+        header = [field.verbose_name for field in fields]
+        writer.writerow(header)
+
+        assets = Asset.objects.all()
+
+        for asset_ in assets:
+            data = [getattr(asset_, field.name) for field in fields]
+            writer.writerow(data)
+
+        return response
 
     def post(self,request):
          ids = request.POST.getlist('id', None)
          idstring = ','.join(ids)
          qs = asset.objects.extra(where=['id IN (' + idstring + ')']).all()
-         return  render_to_csv_response(qs)
+
+         # return  render_to_csv_response(qs)
+         fields = [
+             field for field in Asset._meta.fields
+             if field.name not in [
+                 'date_created'
+             ]
+         ]
+         filename = 'assets.csv'
+         response = HttpResponse(content_type='text/csv')
+         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+         response.write(codecs.BOM_UTF8)
+
+         writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
+
+         header = [field.verbose_name for field in fields]
+         writer.writerow(header)
+         for asset_ in  qs:
+            data = [getattr(asset_, field.name) for field in fields]
+            writer.writerow(data)
+         return response
+
 
 
 ##待解决  导入导出
-        # ids = request.POST.getlist('id', None)
-        # idstring = ','.join(ids)
-        # fields = [
-        #     field for field in   Asset._meta.fields
-        #     if field.name not in [
-        #         'date_created'
-        #     ]
-        # ]
-        # filename = 'assets.csv'
-        # response = HttpResponse(content_type='text/csv')
-        # response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        # response.write(codecs.BOM_UTF8)
-        # assets =  Asset.objects.extra(where=['id IN (' + idstring + ')']).all()
-        # writer = csv.writer(response, dialect='excel', quoting=csv.QUOTE_MINIMAL)
-        #
-        # header = [field.verbose_name for field in fields]
-        # writer.writerow(header)
+
 
 def  AssetImport(request):
     """
@@ -259,13 +287,13 @@ def  AssetImport(request):
                             v = int(v)
                         except ValueError:
                             v = 0
-                    elif  k  in   ['platform',]  :
-                        try:
-                            v1 = time.strptime(v, '%Y/%m/%d %H:%M')
-                            v =  time.strftime("%Y-%m-%d %H:%M",v1)
-                        except  Exception as e :
-                            logger.error(e)
-                            v = '1970-01-1 00:00'
+                    elif  k  in   ['platform','region','user','buy_time',"expire_time"]  :
+                            # if v == '阿里云':
+                                v=None
+                    elif  k  in   ['ctime','utime'] :
+                        v = "1970-01-01 00:00"
+
+
                     else:
                         continue
                     asset_dict_id[k] =v
@@ -278,13 +306,11 @@ def  AssetImport(request):
                             v = int(v)
                         except ValueError:
                             v = 0
-                    # elif  k  in   ['ctime','utime']  :
-                    #     try:
-                    #         v1 = time.strptime(v, '%Y/%m/%d %H:%M')
-                    #         v =  time.strftime("%Y-%m-%d %H:%M",v1)
-                    #     except  Exception as e :
-                    #         logger.error(e)
-                    #         v = '1970-01-1 00:00'
+                    elif  k  in   ['platform','region','user','buy_time',"expire_time"]  :
+                            # if v == '阿里云':
+                                v=None
+                    elif  k  in   ['ctime','utime']  :
+                            v = "1970-01-01 00:00"
                     else:
                         continue
                     asset_dict[k] = v

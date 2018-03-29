@@ -19,9 +19,11 @@ from django.core import serializers
 from  chain import settings
 from .models import cmd_list
 from os import system
+import threading
+
 from   .ansible_2420.runner import AdHocRunner
 from   .ansible_2420.inventory import BaseInventory
-import threading
+
 
 
 
@@ -77,15 +79,34 @@ def thread_cmd_job(assets,tasks):
     执行命令的线程
     :param assets:  资产帐号密码
     :param tasks:  执行的命令 和 模块
-    :return:  主机名 |  执行结果
+    :return:  执行结果
     """
     inventory = BaseInventory(assets)
     runner = AdHocRunner(inventory)
     retsult = runner.run(tasks, "all")
     hostname = assets[0]['hostname']
-    data = retsult.results_raw['ok'][hostname]
 
-    return  hostname ,data
+    try:
+        data = retsult.results_raw['ok'][hostname]
+    except Exception as e:
+        data = retsult.results_raw['failed'][hostname]
+
+    task = []
+    for i in range(len(tasks)):
+        try:
+            tasks1 = data['task{}'.format(i)]['stdout']
+            if tasks1 == "":
+                task.append(data['task{}'.format(i)]['stderr'])
+            task.append(tasks1)
+        except Exception as e:
+            try:
+                task.append(retsult.results_raw['failed'][hostname]['task{}'.format(i)]['stderr'])
+            except Exception as e:
+                task.append('未执行本任务{0}，请检查修改上面任务 \n {1}'.format(e,tasks))
+        finally:
+            ret = {'hostname': hostname, 'data': '\n'.join(task)}
+
+    return ret
 
 
 
@@ -101,7 +122,16 @@ class TasksPerform(View):
             ids = request.POST.getlist('id')
             args = request.POST.getlist('args', None)
             module = request.POST.getlist('module', None)
-            idstring = ','.join(ids)
+
+            ids1=[]
+            for i in ids:
+                try:
+                   ids_test = asset.objects.get(id=i).user.hostname
+                   ids1.append(i)
+                except Exception  as e:
+                   pass
+
+            idstring = ','.join(ids1)
             obj = asset.objects.extra(where=['id IN (' + idstring + ')'])
 
             tasks = []
@@ -110,10 +140,8 @@ class TasksPerform(View):
 
             ret_data = {'data': []}
 
-            try:
-                assets = []
-
-                for i in obj:
+            assets = []
+            for i in obj:
                     assets.append([{
                             "hostname": i.hostname,
                             "ip": i.network_ip,
@@ -123,26 +151,16 @@ class TasksPerform(View):
                             "private_key": i.user.private_key.name,
                         }],)
 
-                t_list = []
+            t_list = []
 
-                for i in range(obj.count()):
+            for i in range(obj.count()):
                     t =  MyThread(thread_cmd_job, args=(assets[i],tasks,))
                     t_list.append(t)
                     t.start()
 
-
-
-                for j in t_list:
+            for j in t_list:
                     j.join()
-                    hostname,ret = j.get_result()
-                    task = []
-                    for i   in   range(len(tasks)):
-                        task.append(ret['task{}'.format(i)]['stdout'])
+                    ret = j.get_result()
+                    ret_data['data'].append(ret)
 
-                    ret1 = {'hostname': hostname, 'data': '\n'.join(task)}
-                    ret_data['data'].append(ret1)
-            except Exception as e:
-                    ret_data['data'].append( {'hostname': ret,"data": "执行错误,{}".format(e)})
-
-            finally:
-                    return HttpResponse(json.dumps(ret_data))
+            return HttpResponse(json.dumps(ret_data))

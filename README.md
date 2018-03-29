@@ -70,7 +70,11 @@ python3   webssh/main.py    ##启动终端登录功能
 
 yum -y install sqlite-devel
 
-重新编译python3.6.4 
+重新编译python3.6.4
+
+想在windows 环境下运行，请注释 tasks/views.py  以下两行
+from   .ansible_2420.runner import AdHocRunner
+from   .ansible_2420.inventory import BaseInventory
 ```
 
 

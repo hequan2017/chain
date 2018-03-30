@@ -9,7 +9,7 @@ from django.views.generic import TemplateView, ListView, View, CreateView, Updat
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
-from  asset.models import  asset  ,platform,region,asset_user
+from  asset.models import  asset  ,asset_user
 from  asset.models import  asset  as Asset
 import codecs,chardet
 import csv,time

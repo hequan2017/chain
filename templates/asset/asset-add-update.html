@@ -79,7 +79,7 @@
                             <div class="col-sm-10 col-sm-offset-0">
                                 <h3>位置</h3>
                                 {% bootstrap_field form.platform layout="horizontal" %}
-                                {% bootstrap_field form.region layout="horizontal" %}
+                                {% bootstrap_field form.region   layout="horizontal" %}
                                 {% bootstrap_field form.project layout="horizontal" %}
                                 {% bootstrap_field form.manager layout="horizontal" %}
                                 {% bootstrap_field form.user layout="horizontal" %}
@@ -137,18 +137,18 @@
                 });
             });
 
-            $('#id_platform').change(function () {
-                var name = $('#id_platform').val();
-
-                $.getJSON("{% url 'asset:asset_getdata' %}?name=" + name, function (data, textStatus) {
-
-                    var content = '';
-                    $.each(data, function (i, item) {
-                        content += '<option   value=' + item.pk + '>' + item.fields.name + '</option>'
-                    });
-                    $('#id_region').html(content)
-                });
-            });
+{#            $('#id_platform').change(function () {#}
+{#                var name = $('#id_platform').val();#}
+{##}
+{#                $.getJSON("{% url 'asset:asset_getdata' %}?name=" + name, function (data, textStatus) {#}
+{##}
+{#                    var content = '';#}
+{#                    $.each(data, function (i, item) {#}
+{#                        content += '<option   value=' + item.pk + '>' + item.fields.name + '</option>'#}
+{#                    });#}
+{#                    $('#id_region').html(content)#}
+{#                });#}
+{#            });#}
 
 
         </script>

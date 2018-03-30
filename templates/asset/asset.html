@@ -140,7 +140,6 @@
                                         <th>外网IP</th>
                                         <th>内网IP</th>
                                         <th>平台</th>
-                                        <th>系统版本</th>
                                         <th>负责人</th>
                                         <th>项目</th>
                                         <th>动作{{ error_performance }}</th>
@@ -157,8 +156,7 @@
                                             </td>
                                             <td class="center">{{ row.network_ip }}</td>
                                             <td class="center">{{ row.inner_ip }}</td>
-                                            <td class="center">{{ row.platform.name }}</td>
-                                            <td class="center">{{ row.system }}</td>
+                                            <td class="center">{{ row.platform   }} --  {{ row.region  }}</td>
                                             <td class="center">{{ row.manager }}</td>
                                             <td class="center">{{ row.project }}</td>
                                             <td><a class="btn btn-primary  btn-xs "
@@ -454,7 +452,7 @@
                                     socket = new WebSocket(url),
                                     terminal = document.getElementById('#terminal'),
                                     geometry = current_geometry();
-                                term = new Terminal({cursorBlink: true, cols: geometry[0], rows: geometry[1]});
+                                term  =  new Terminal({cursorBlink: true, cols: geometry[0], rows: geometry[1]});
 
                                 console.log(url);
                                 term.on('data', function (data) {

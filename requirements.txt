@@ -5,3 +5,4 @@ djangorestframework
 paramiko
 tornado
 bootstrap-admin
+ansible

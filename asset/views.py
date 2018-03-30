@@ -8,7 +8,7 @@ from django.views.generic import TemplateView, ListView, View, CreateView, Updat
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
-from  asset.models import  asset  ,platform,region,asset_user
+from  asset.models import  asset  ,asset_user
 import codecs,chardet
 from  asset.models import  asset as Asset
 import csv,time
@@ -287,13 +287,8 @@ def  AssetImport(request):
                             v = int(v)
                         except ValueError:
                             v = 0
-                    elif  k  in   ['platform','region','user','buy_time',"expire_time"]  :
-                            # if v == '阿里云':
-                                v=None
-                    elif  k  in   ['ctime','utime'] :
-                        v = "1970-01-01 00:00"
-
-
+                    elif k in ['buy_time', "expire_time", 'ctime', 'utime']:
+                            v = "1970-01-01 00:00"
                     else:
                         continue
                     asset_dict_id[k] =v
@@ -306,11 +301,8 @@ def  AssetImport(request):
                             v = int(v)
                         except ValueError:
                             v = 0
-                    elif  k  in   ['platform','region','user','buy_time',"expire_time"]  :
-                            # if v == '阿里云':
-                                v=None
-                    elif  k  in   ['ctime','utime']  :
-                            v = "1970-01-01 00:00"
+                    elif  k  in   ['buy_time',"expire_time",'ctime','utime']  :
+                        v = "1970-01-01 00:00"
                     else:
                         continue
                     asset_dict[k] = v
@@ -359,18 +351,6 @@ def  AssetImport(request):
 
 
 
-@login_required
-def AssetGetdata(request):
-    """
-    获取 地区与区域 的对应关系
-    :param request:
-    :return:
-    """
-    id = request.GET.get('name',None)
-    platforms = platform.objects.get(id=id)
-    regions = platforms.region_set.all()
-    data = serializers.serialize('json', regions)
-    return HttpResponse(data, content_type='application/json')
 
 
 @login_required

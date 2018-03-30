@@ -116,18 +116,6 @@
                 });
             });
 
-            $('#id_platform').change(function () {
-                var name = $('#id_platform').val();
-
-                $.getJSON("{% url 'asset:asset_getdata' %}?name=" + name, function (data, textStatus) {
-
-                    var content = '';
-                    $.each(data, function (i, item) {
-                        content += '<option   value=' + item.pk + '>' + item.fields.name + '</option>'
-                    });
-                    $('#id_region').html(content)
-                });
-            });
 
 
         </script>

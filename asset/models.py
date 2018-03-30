@@ -4,6 +4,16 @@ import random
 
 
 class asset(models.Model):
+    PLATFORM_CHOICES=(
+        ("阿里云","阿里云"),
+        ("AWS", "AWS"),
+        ("其他", "其他"),
+    )
+    REGION_CHOICES=(
+        ("香港",'香港'),
+        ("东京",'东京'),
+    )
+
 
     MANAGER_CHOICES=(
         ('何全','何全'),
@@ -15,7 +25,7 @@ class asset(models.Model):
         ('项目3', '项目3'),
         ('其他', '其他')
     )
-
+    id = models.AutoField(primary_key=True,verbose_name="id")
     hostname = models.CharField(max_length=64, verbose_name='主机名',unique=True)
     network_ip = models.GenericIPAddressField(verbose_name='外网IP', null=True,blank=True)
     inner_ip = models.GenericIPAddressField(verbose_name='内网IP', null=True, blank=True)
@@ -28,8 +38,8 @@ class asset(models.Model):
     bandwidth = models.IntegerField(verbose_name='带宽', null=True,blank=True,default="1")
 
 
-    platform = models.ForeignKey(max_length=128, to="platform",on_delete=models.SET_NULL,null=True, verbose_name='平台')
-    region = models.ForeignKey(max_length=256,to="region",on_delete=models.SET_NULL,null=True,verbose_name="区域",)
+    platform =  models.CharField(max_length=128, choices=PLATFORM_CHOICES, verbose_name='平台')
+    region =  models.CharField(max_length=128, choices=REGION_CHOICES, verbose_name='区域')
 
     manager = models.CharField(max_length=128, choices=MANAGER_CHOICES, verbose_name='负责人')
     project = models.CharField(max_length=128, choices=PROJECT_CHOICES, verbose_name='项目')
@@ -37,8 +47,10 @@ class asset(models.Model):
     user = models.ForeignKey(verbose_name="登录用户",to='asset_user',on_delete=models.SET_NULL,null=True, blank=True)
 
     Instance_id = models.CharField(max_length=64, verbose_name='实例ID', null=True, blank=True)
+
     buy_time = models.DateTimeField(verbose_name='购买时间',null=True, blank=True)
     expire_time = models.DateTimeField(verbose_name='到期时间',null=True, blank=True)
+
     ps = models.CharField(max_length=1024,verbose_name="备注",null=True,blank=True)
     port = models.IntegerField(verbose_name="登录端口",default='22',null=True, blank=True)
     is_active = models.BooleanField(default=True, verbose_name=('激活'))
@@ -57,35 +69,6 @@ class asset(models.Model):
 
     def __str__(self):
         return self.hostname
-
-
-#平台
-class platform(models.Model):
-    name = models.CharField(max_length=30)
-
-
-    class  Meta:
-        db_table ="platform"
-        verbose_name="云平台管理"
-        verbose_name_plural = '云平台管理'
-
-    def __str__(self):
-        return self.name
-
-#区域
-class region(models.Model):
-    name = models.CharField(max_length=40)
-    platforms = models.ForeignKey(platform,on_delete=models.SET_NULL,null=True,)
-
-    class  Meta:
-        db_table ="region"
-        verbose_name="云区域管理"
-        verbose_name_plural = '云区域管理'
-
-
-    def __str__(self):
-        return self.name
-
 
 
 

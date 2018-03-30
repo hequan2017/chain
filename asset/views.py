@@ -19,7 +19,7 @@ from  chain import settings
 from os import system
 import logging
 logger = logging.getLogger('asset')
-from  djqscsv import render_to_csv_response
+
 
 
 

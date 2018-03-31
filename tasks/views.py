@@ -18,11 +18,10 @@ import json
 from django.core import serializers
 from  chain import settings
 from .models import cmd_list
-from os import system
 import threading
 
-# from   .ansible_2420.runner import AdHocRunner
-# from   .ansible_2420.inventory import BaseInventory
+from   .ansible_2420.runner import AdHocRunner
+from   .ansible_2420.inventory import BaseInventory
 
 import logging
 logger = logging.getLogger('tasks')

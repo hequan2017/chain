@@ -1,0 +1,6 @@
+---
+- hosts: all 
+
+  tasks:
+  - name: "ls /tmp" 
+    shell: 'ls /tmp/'

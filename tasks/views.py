@@ -20,7 +20,7 @@ from  chain import settings
 from .models import cmd_list
 import threading
 
-from   .ansible_2420.runner import AdHocRunner
+from   .ansible_2420.runner import AdHocRunner,PlayBookRunner
 from   .ansible_2420.inventory import BaseInventory
 
 import logging
@@ -57,6 +57,9 @@ class  TasksCmd(ListView):
 
 
 class MyThread(threading.Thread):
+    """
+    多线程执行ansible任务
+    """
 
     def __init__(self,func,args=()):
         super(MyThread,self).__init__()
@@ -87,6 +90,16 @@ def thread_cmd_job(assets,tasks):
     runner = AdHocRunner(inventory)
     retsult = runner.run(tasks, "all")
     hostname = assets[0]['hostname']
+
+    ##测试 yml文件执行
+    try:
+        path = "./data/test.yml"
+        runers = PlayBookRunner(playbook_path=path, inventory=inventory)
+        rets = runers.run()
+        print(rets['results_callback'])
+    except Exception as  e:
+        logger.error(e)
+
 
     try:
         data = retsult.results_raw['ok'][hostname]
@@ -146,6 +159,7 @@ class TasksPerform(View):
             ret_data = {'data': []}
 
             assets = []
+
             for i in obj:
                     assets.append([{
                             "hostname": i.hostname,
@@ -159,6 +173,12 @@ class TasksPerform(View):
 
             t_list = []
 
+
+
+
+
+
+
             for i in range(obj.count()):
                     t =  MyThread(thread_cmd_job, args=(assets[i],tasks,))
                     t_list.append(t)
@@ -170,3 +190,4 @@ class TasksPerform(View):
                     ret_data['data'].append(ret)
 
             return HttpResponse(json.dumps(ret_data))
+

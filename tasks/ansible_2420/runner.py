@@ -75,12 +75,8 @@ def get_default_options():
     )
     return options
 
-
-# Jumpserver not use playbook
+#  执行 yml 文件
 class PlayBookRunner:
-    """
-    用于执行AnsiblePlaybook的接口.简化Playbook对象的使用.
-    """
 
     # Default results callback
     results_callback_class = PlaybookResultCallBack
@@ -88,22 +84,28 @@ class PlayBookRunner:
     variable_manager_class = VariableManager
     options = get_default_options()
 
-    def __init__(self, inventory=None, options=None):
+
+    def __init__(self, playbook_path, inventory=None, options=None):
         """
         :param options: Ansible options like ansible.cfg
         :param inventory: Ansible inventory
+        :param BaseInventory:The BaseInventory parameter hostname must be equal to the hosts in yaml
+        or the BaseInventory parameter groups must equal to the hosts in yaml.
         """
         if options:
             self.options = options
         C.RETRY_FILES_ENABLED = False
         self.inventory = inventory
-        self.loader = self.loader_class()
+        # self.loader = self.loader_class()
+        self.loader = DataLoader()
         self.results_callback = self.results_callback_class()
-        self.playbook_path = options.playbook_path
+        # self.playbook_path = options.playbook_path
+        self.playbook_path = playbook_path
         self.variable_manager = self.variable_manager_class(
             loader=self.loader, inventory=self.inventory
         )
-        self.passwords = options.passwords
+        # self.passwords = options.passwords
+        self.passwords = {"passwords":''}#为了修改paramiko中的bug添加入，无实际意义
         self.__check()
 
     def __check(self):
@@ -129,7 +131,15 @@ class PlayBookRunner:
             executor._tqm._stdout_callback = self.results_callback
         executor.run()
         executor._tqm.cleanup()
-        return self.results_callback.output
+        try:
+            results_callback=self.results_callback.output['plays'][0]['tasks'][1]['hosts']
+            status=self.results_callback.output['stats']
+            results={"results_callback":results_callback,"status":status}
+            return results
+        except Exception as e:
+            raise AnsibleError('The hostname parameter or groups parameter in the BaseInventory \
+                               does not match the hosts parameter in the yaml file.')
+
 
 
 class AdHocRunner:

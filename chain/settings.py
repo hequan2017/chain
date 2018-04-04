@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*',]
 
-
+import sys
 # Application definition
 
 INSTALLED_APPS = [
@@ -163,10 +163,10 @@ REST_FRAMEWORK = {
     ),
 }
 
-web_ssh = "47.94.252.25"
+web_ssh = "47.104.140.38"
 web_port = 8002
 
-import sys
+
 
 LOGGING = {
     'version': 1,

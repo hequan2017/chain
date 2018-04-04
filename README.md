@@ -15,7 +15,7 @@
 
 
 ```bash
-http://47.94.252.25:8001
+http://47.104.140.38:8001
 
 账号 admin
 密码 1qaz.2wsx
@@ -32,12 +32,17 @@ http://47.94.252.25:8001
   * Python3.6.4
 
 
+##docker部署
+
+可以参考  data/dockerfile 文件部署
+先部署python3，再部署chain
+
 ###  部署
 
 修改  chain/settings.py
 
 ```
-web_ssh = "47.94.252.25"    ##修改为本机外网IP,
+web_ssh = "47.104.140.38"    ##修改为本机外网IP,
 web_port = 8002
 
 ```

@@ -1,0 +1,26 @@
+mkdir -p  /data/docker
+
+sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+
+sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+
+sudo yum makecache fast
+sudo yum -y install docker-ce
+
+
+docker version
+systemctl enable docker.service
+systemctl start docker.service
+
+
+
+sudo mkdir -p /etc/docker
+sudo tee /etc/docker/daemon.json <<-'EOF'
+{"graph": "/data/docker"}
+EOF
+sudo systemctl daemon-reload
+
+
+
+
+sudo systemctl restart docker

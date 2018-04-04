@@ -27,7 +27,7 @@ class asset(models.Model):
     )
     id = models.AutoField(primary_key=True,verbose_name="id")
     hostname = models.CharField(max_length=64, verbose_name='主机名',unique=True)
-    network_ip = models.GenericIPAddressField(verbose_name='外网IP', null=True,blank=True)
+    network_ip = models.GenericIPAddressField(verbose_name='外网IP',unique=True, null=True,blank=True)
     inner_ip = models.GenericIPAddressField(verbose_name='内网IP', null=True, blank=True)
 
 

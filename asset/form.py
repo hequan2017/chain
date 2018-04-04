@@ -1,5 +1,5 @@
 from    django import forms
-from   .models import asset,asset_user
+from    asset.models import asset, asset_user
 
 
 class FileForm(forms.Form):
@@ -7,8 +7,6 @@ class FileForm(forms.Form):
 
 
 class AssetForm(forms.ModelForm):
-
-
     class Meta:
         model = asset
         fields = '__all__'
@@ -59,16 +57,14 @@ class AssetForm(forms.ModelForm):
         }
 
 
-
-
-
 class AssetUserForm(forms.ModelForm):
-
-
     class Meta:
         model = asset_user
         fields = '__all__'
 
+        help_texts = {
+            'private_key': '*  如私钥有密码，请先取消掉再上传',
+        }
 
         widgets = {
             'password': forms.PasswordInput(
@@ -76,5 +72,3 @@ class AssetUserForm(forms.ModelForm):
             'ps': forms.Textarea(
                 attrs={'cols': 80, 'rows': 3}),
         }
-
-

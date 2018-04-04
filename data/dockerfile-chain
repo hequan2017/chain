@@ -11,7 +11,8 @@ RUN     yum  install supervisor    net-tools -y
 
 WORKDIR  /opt/
 
-RUN  git clone https://github.com/hequan2017/chain.git
+#RUN  git clone https://github.com/hequan2017/chain.git
+COPY    chain  /opt/chain
 WORKDIR  /opt/chain/
 RUN   python -m pip  install -r   requirements.txt
 

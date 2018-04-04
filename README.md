@@ -32,10 +32,6 @@ http://47.104.140.38:8001
   * Python3.6.4
 
 
-##docker部署
-
-可以参考  data/dockerfile 文件部署
-先部署python3，再部署chain
 
 ###  部署
 
@@ -76,6 +72,26 @@ python3   manage.py runserver 0.0.0.0:80
 python3   webssh/main.py    ##启动终端登录功能
 
 ```
+
+### docker部署
+
+可以参考  data/dockerfile 文件部署
+
+```bash
+/opt
+├── chain
+├── dockerfile-chain
+└── dockerfile-python3
+
+docker bulid  -t python3.6.5  -f dockerfile-python3   .
+docker bulid  -t python3.6.5  -f dockerfile-chain  .
+
+docker  run -itd  --name chain   -p 8001:8001  -p 8002:8002     chain
+
+docker  exec  -it   chain /bin/bash
+```
+
+
 
 ```bash
 如果遇到报错 ImportError: No module named '_sqlite3' ,可以执行下面的操作

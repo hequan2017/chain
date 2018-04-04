@@ -84,7 +84,7 @@ python3   webssh/main.py    ##启动终端登录功能
 └── dockerfile-python3
 
 docker bulid  -t python3.6.5  -f dockerfile-python3   .
-docker bulid  -t python3.6.5  -f dockerfile-chain  .
+docker bulid  -t chain  -f dockerfile-chain  .
 
 docker  run -itd  --name chain   -p 8001:8001  -p 8002:8002     chain
 

@@ -130,13 +130,13 @@
 
                                     </div>
 
-                                <div class="form-group">
-                                        <div class="col-sm-6 col-sm-offset-2">
+                                    <div class="form-group">
 
-                                            <a id="cmd" class="btn btn-primary" type="submit">提交</a>
+
+                                            <a id="cmd" class="btn btn-primary"  type="submit">提交</a>
                                             <button class="btn btn-white" type="button" onclick='clearBody()'>取消
                                             </button>
-                                        </div>
+
                                     </div>
 
 
@@ -190,9 +190,7 @@
 
 
 {% block footer-js %}
-{#<script type="text/JavaScript">#}
-{#    $.ajaxSetup({headers: {"X-CSRFToken": '{{ csrf_token }}'}});#}
-{#</script>#}
+
 
 
 
@@ -200,38 +198,36 @@
 
 
             $(function () {
+                $(document).ready(function () {
+                $('.dataTables-asset').DataTable({
 
-  $(document).on('click','#cmd',function () {
-
-
-
-
-                    $.ajax({
-                        url: "{% url 'tasks:perform' %}",
-                        type: 'POST',
-                        data: $('.cmd_from').serialize(),
-                        success: function (data) {
-                            var obj = JSON.parse(data);
-                            cons = "";
-                            if (obj.data) {
-                                $.each(obj, function (data, values) {
-                                    $.each(values, function (index, value) {
-                                        cons += "<pre>" + "主机:" + value.hostname + "\n" + "结果: \n " + value.data + "</pre>"
-
-                                    });
-                                    $(".pres").html(cons); //把内容入到这个div中即完成
-                                });
-                            } else {
-                                $('#err').text(obj.error);
-                            }
-
+                    "oLanguage": {
+                        "sLengthMenu": "每页显示 _MENU_ 条记录",
+                        "sZeroRecords": "对不起，查询不到任何相关数据",
+                        "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_条记录",
+                        "sInfoEmtpy": "找不到相关数据",
+                        "sInfoFiltered": " 数据表中共为 _MAX_ 条记录",
+                        "sProcessing": "正在加载中...",
+                        "sSearch": "搜索",
+                        "oPaginate": {
+                            "sFirst": "第一页",
+                            "sPrevious": " 上一页 ",
+                            "sNext": " 下一页 ",
+                            "sLast": " 最后一页 "
                         }
+                    },
+                    "order": [[1, 'desc']],
+                    destroy: true,
 
-                    })
+
+                    bPaginate: false,
+                    dom: '<"html5buttons"B>lTfgitp,'
+
                 });
-
+            });
 
             });
+
 
             function clearBody() {
                 location.reload()
@@ -247,10 +243,8 @@
                 $(obj).parent().remove();
             }
 
-        </script>
 
-                <script type="text/javascript" src="{% static 'js/plugins/ztree/jquery.ztree.all.min.js' %}"></script>
-     <script type="text/javascript">
+
             $(function () {
                 var setting = {
                     view: {
@@ -303,202 +297,7 @@
                 }
             }
 
-            $(document).ready(function () {
-                $('.dataTables-asset').DataTable({
 
-                    "oLanguage": {
-                        "sLengthMenu": "每页显示 _MENU_ 条记录",
-                        "sZeroRecords": "对不起，查询不到任何相关数据",
-                        "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_条记录",
-                        "sInfoEmtpy": "找不到相关数据",
-                        "sInfoFiltered": " 数据表中共为 _MAX_ 条记录",
-                        "sProcessing": "正在加载中...",
-                        "sSearch": "搜索",
-                        "oPaginate": {
-                            "sFirst": "第一页",
-                            "sPrevious": " 上一页 ",
-                            "sNext": " 下一页 ",
-                            "sLast": " 最后一页 "
-                        }
-                    },
-                    "order": [[1, 'desc']],
-                    destroy: true,
-
-
-                    bPaginate: false,
-                    dom: '<"html5buttons"B>lTfgitp,'
-
-                });
-            });
-            $(function () {
-
-                $(document).on('click', '.asset_del', function () {
-                    var id = $(this).parent().parent().attr('id');
-                    swal({
-                        title: "你确定删除",
-                        text: "你将无法恢复",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "确定",
-                        closeOnConfirm: false
-                    }, function () {
-                        $.ajax({
-                            headers: {"X-CSRFToken": '{{ csrf_token }}'},
-                            url: "/asset/asset-all-del.html",
-                            type: 'POST',
-                            data: {'nid': id},
-                            success: function (data) {
-                                var obj = JSON.parse(data);
-                                if (obj.status) {
-                                    swal({title: "删除", text: "已成功删除", type: "success"}, function () {
-                                        window.location.reload();
-                                    })
-                                } else {
-                                    swal("错误", "删除" + "[ " + obj.error + " ]" + "遇到错误", "error");
-                                }
-                            }
-                        });
-
-
-                    });
-
-                });
-
-                $(document).on('click', '.asset_all_del', function () {
-
-                    swal({
-
-                        title: "你确定删除",
-                        text: "你将无法恢复",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "确定",
-
-                        closeOnConfirm: false
-                    }, function () {
-                        $.ajax({
-                             headers: {"X-CSRFToken": '{{ csrf_token }}'},
-                            url: "/asset/asset-all-del.html",
-                            type: 'POST',
-                            data: $('#del_form_asset_all').serialize(),
-                            success: function (data) {
-                                var obj = JSON.parse(data);
-                                if (obj.status) {
-                                    swal({title: "删除", text: "已成功删除", type: "success"}, function () {
-                                        window.location.reload();
-                                    })
-                                } else {
-                                    swal("错误", "删除" + "[ " + obj.error + " ]" + "遇到错误", "error");
-                                }
-                            }
-                        });
-
-
-                    });
-                });
-
-
-            });
-            jQuery(function ($) {
-                $(document).on('click', '.webssh', function (event) {
-
-                    event.preventDefault();
-
-                    var id_a = $(this).parent().parent().attr('id');
-
-                    $.ajax({
-                        headers: {"X-CSRFToken": '{{ csrf_token }}'},
-                        url: "/asset/asset-webssh.html",
-                        type: 'POST',
-                        data: {'id': id_a},
-                        success: function (ret) {
-
-                            var obj = JSON.parse(ret);
-                            var ips =  obj.ip;
-                            var ports = obj.port;
-                            var usernames = obj.username;
-                            var passwords = obj.password;
-                            var privatekey = obj.privatekey;
-
-                            $.ajax({
-                                url: "http://{{ web_ssh }}:{{ web_port }}/",
-                                type: 'POST',
-                                data: {
-                                    hostname: ips,
-                                    port: ports,
-                                    username: usernames,
-                                    password: passwords,
-                                    privatekey: privatekey
-                                },
-                                crossDomain: true,
-                                success: callback
-                            });
-
-                            function current_geometry() {
-                                cols = parseInt(window.innerWidth / 10);
-                                rows = parseInt(window.innerHeight / 24);
-                                return [cols, rows];
-                            }
-
-
-                            function callback(msg) {
-                                console.log(msg);
-                                if (msg.status) {
-                                    swal("错误", "登陆" + "[ " + msg.status + " ]" + "遇到错误", "error");
-                                    return;
-                                }
-
-
-                                var url = "ws://{{ web_ssh }}:{{ web_port }}/" + 'ws?id=' + msg.id,
-                                    socket = new WebSocket(url),
-                                    terminal = document.getElementById('#terminal'),
-                                    geometry = current_geometry();
-                                term = new Terminal({cursorBlink: true, cols: geometry[0], rows: geometry[1]});
-
-                                console.log(url);
-                                term.on('data', function (data) {
-                                    // console.log(data);
-                                    socket.send(data);
-                                });
-
-                                socket.onopen = function (e) {
-                                    $('.container1').hide();
-                                    term.open(terminal, true);
-                                    term.toggleFullscreen(true);
-                                };
-
-                                socket.onmessage = function (msg) {
-                                    console.log(msg);
-                                    term.write(msg.data);
-                                };
-
-                                socket.onerror = function (e) {
-                                    console.log(e);
-                                };
-
-                                socket.onclose = function (e) {
-                                    console.log(e);
-                                    term.destroy();
-                                    $('.container1').show();
-                                    // status.text(e.reason);
-                                };
-                            }
-
-
-                            $(window).resize(function () {
-                                if (typeof term != "undefined") {
-                                    geometry = current_geometry();
-                                    term.geometry = geometry;
-                                    term.resize(geometry[0], geometry[1]);
-                                }
-                            });
-
-                        }
-                    });
-                });
-            });
         </script>
 
     {% endblock %}

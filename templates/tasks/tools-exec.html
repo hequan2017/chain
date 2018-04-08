@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load static %}
+
+{% block  title %}执行任务{% endblock %}
+{% block header-css %}
+    <link href="{% static 'css/plugins/ztree/awesomeStyle/awesome.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block page-content %}
+
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>执行任务</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/index.html">主页</a>
+                </li>
+                <li>
+                    <a>执行任务</a>
+                </li>
+                <li class="active">
+                    <strong>执行任务</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-1" id="split-left">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content mailbox-content" style="padding-top: 0">
+                        <div class="file-manager ">
+
+                            <div class="clearfix">
+                                <div data-options="iconCls:'icon-save'" title="ztree事件">
+                                    <ul id="ztree4" class="ztree"></ul>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>主机列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">选项 1</a>
+                                </li>
+                                <li><a href="#">选项 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <form class="form-horizontal  asset_from">
+                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                    <thead>
+                                    <tr>
+                                        <th width="20"><input type="checkbox" id="CheckedAssetAll"></th>
+                                        <th>主机名</th>
+                                        <th>外网IP</th>
+                                        <th>用户</th>
+                                        <th>产品线</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for   row   in   asset_list %}
+
+                                        <tr class="gradeA" id="{{ row.id }}">
+                                            <td><input type="checkbox" value="{{ row.id }}" name="asset_id"></td>
+                                            <td class="center"><a
+                                                    href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.hostname }}</a>
+                                            </td>
+                                            <td class="center">{{ row.network_ip }}</td>
+                                            <td class="center">{{ row.user }}</td>
+                                            <td class="center">{{ row.project }} </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+                                <div class="ibox-content">
+                                    <a id="exec" class="btn btn-primary" type="submit">创建任务</a>
+                                    <button class="btn btn-white" type="button" onclick='clearBody()'>取消
+                                    </button>
+
+
+                                </div>
+
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-6">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>工具列表</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">选项 1</a>
+                                </li>
+                                <li><a href="#">选项 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <form class="form-horizontal  tool_from">
+                                <table class="table table-striped table-bordered table-hover dataTables-example">
+                                    <thead>
+                                    <tr>
+                                        <th width="20"></th>
+
+                                        <th>工具名称</th>
+                                        <th>工具类型</th>
+                                        <th>工具备注</th>
+                                        <th>更新时间</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for   row   in   tools_list %}
+
+                                        <tr class="gradeA" id="{{ row.id }}">
+                                            <td><input type="radio" value="{{ row.id }}" name="tool_id"></td>
+                                            <td class="center"><a
+                                                    href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.name }}</a>
+                                            </td>
+                                            <td class="center">{{ row.tool_run_type }}</td>
+                                            <td class="center">{{ row.comment }}</td>
+                                            <td class="center">{{ row.utime }} </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    {% block footer-js %}
+
+
+        <script>
+
+
+            $(function () {
+                $("#CheckedAssetAll").click(function () {
+                    if ($(this).is(":checked")) {
+                        $("[name=asset_id]:checkbox").prop("checked", true);
+                    } else {
+                        $("[name=asset_id]:checkbox").prop("checked", false);
+                    }
+                });
+
+
+                $(document).ready(function () {
+                    $('.dataTables-asset').DataTable({
+
+                        "oLanguage": {
+                            "sLengthMenu": "每页显示 _MENU_ 条记录",
+                            "sZeroRecords": "对不起，查询不到任何相关数据",
+                            "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_条记录",
+                            "sInfoEmtpy": "找不到相关数据",
+                            "sInfoFiltered": " 数据表中共为 _MAX_ 条记录",
+                            "sProcessing": "正在加载中...",
+                            "sSearch": "搜索",
+                            "oPaginate": {
+                                "sFirst": "第一页",
+                                "sPrevious": " 上一页 ",
+                                "sNext": " 下一页 ",
+                                "sLast": " 最后一页 "
+                            }
+                        },
+                        "order": [[1, 'desc']],
+                        destroy: true,
+
+
+                        bPaginate: false,
+                        dom: '<"html5buttons"B>lTfgitp,'
+
+                    });
+                });
+
+                $(document).on('click', '#exec', function () {
+                    tool_id = document.getElementsByName("tool_id");
+                    tool_id_list = [];
+                    for (k in  tool_id) {
+                        if (tool_id[k].checked)
+                            tool_id_list.push(tool_id[k].value);
+                    }
+
+                    asset_id = document.getElementsByName("asset_id");
+                    asset_id_list = [];
+                    for (k in asset_id) {
+                        if (asset_id[k].checked)
+                            asset_id_list.push(asset_id[k].value);
+                    }
+
+                    swal({
+
+                        title: "你确定提交执行任务,无法取消",
+                        text: "主机ID " + asset_id_list + "\n" + "工具ID " + tool_id_list,
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "确定",
+
+                        closeOnConfirm: false
+                    }, function () {
+
+
+                        $.ajax({
+                            url: '{% url  'tasks:tools_exec' %}',
+                            type: 'POST',
+                            data: {"asset": asset_id_list, "tool": tool_id_list},
+                            success: function (data) {
+                                var obj = JSON.parse(data);
+                                if (obj.status) {
+                                    swal({title: "任务", text: "已成功创建，请稍后查询结果", type: "success"}, function () {
+                                        window.location.reload();
+                                    })
+                                } else {
+                                    swal("错误", "任务" + "[ " + obj.error + " ]" + "遇到错误", "error");
+                                }
+                            }
+                        });
+
+
+                    });
+                });
+
+
+            });
+
+            function clearBody() {
+                location.reload()
+            }
+
+
+        </script>
+
+
+        <script type="text/javascript">
+            $(function () {
+                var setting = {
+                    view: {
+                        showLine: true,
+                        selectedMulti: false,
+                        dblClickExpand: false
+                    },
+
+                    data: {
+                        simpleData: {
+                            enable: true,
+                            idKey: "id",
+                            pIdKey: "pId",
+                            rootPId: 0
+                        }
+                    },
+
+                    callback: {
+                        beforeClick: getCurrentNode,
+                        {#                         onClick : zTreeOnClick#}
+                    }
+                };
+
+                $.ajax({
+                    url: '{% url  'asset:asset_ztree' %}',
+                    type: 'get',
+                    data: '',
+                    dataType: 'json',
+                    success: function (data) {
+                        zTreeObj = $.fn.zTree.init($("#ztree4"), setting, data);
+                        zTreeObj.expandAll(true);
+                    }
+                });
+            });
+
+            function getCurrentNode(treeId, treeNode) {
+                curNode = treeNode;
+                zTreeOnClick(curNode);
+            }
+
+            function zTreeOnClick(treeNode) {
+
+                if (treeNode.id == 1111) {
+                    window.location.href = '{% url  "tasks:tools_exec"  %}'
+                }
+                else {
+
+                    window.location.href = '/tasks/tools-exec.html?name=' + treeNode.name
+
+                }
+            }
+
+
+        </script>
+
+    {% endblock %}
+
+{% endblock %}

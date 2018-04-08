@@ -267,7 +267,7 @@
                             success: function (data) {
                                 var obj = JSON.parse(data);
                                 if (obj.status) {
-                                    swal({title: "任务", text: "已成功创建，请稍后查询结果", type: "success"}, function () {
+                                    swal({title: "任务", text: "已成功创建 id:"+obj.id+'\n'+"状态:"+obj.state+'\n\n'+"请稍后查询结果", type: "success"}, function () {
                                         window.location.reload();
                                     })
                                 } else {

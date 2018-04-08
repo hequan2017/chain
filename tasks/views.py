@@ -14,7 +14,7 @@ from .models import cmd_list
 import threading, logging
 from  tasks.form import ToolsForm
 logger = logging.getLogger('tasks')
-
+import os
 
 
 
@@ -246,6 +246,7 @@ class ToolsAllDel(LoginRequiredMixin, View):
         finally:
             return HttpResponse(json.dumps(ret))
 
+from .tasks import ansbile_tools
 
 class ToolsExec(LoginRequiredMixin, ListView):
     """
@@ -283,10 +284,41 @@ class ToolsExec(LoginRequiredMixin, ListView):
             asset_id = request.POST.getlist('asset[]', None)
             tool_id = request.POST.getlist('tool[]', None)
             asset_id_tring = ','.join(asset_id)
-            tool_id_tring = ','.join(tool_id)
-            asset_obj = asset.objects.extra(where=['id IN (' + asset_id_tring + ')'])
-            tool_obj = tools_script.objects.extra(where=['id IN (' + tool_id_tring + ')'])
 
+
+            print(int(tool_id[0]))
+            id= int(tool_id[0])
+            print(type(id))
+            asset_obj = asset.objects.extra(where=['id IN (' + asset_id_tring + ')'])
+            tool_obj = tools_script.objects.filter(id=id).first()
+
+            assets = []
+
+
+            for i in asset_obj:
+                assets.append([{
+                    "hostname": i.hostname,
+                    "ip": i.network_ip,
+                    "port": i.port,
+                    "username": i.user.username,
+                    "password": i.user.password,
+                    "private_key": i.user.private_key.name,
+                    # "vars": {'name':123}, 变量
+                }], )
+
+            if tool_obj.tool_run_type == 'shell':
+                with  open('test.sh', 'w+') as f:
+                        f.write(tool_obj.tool_script)
+                        shell = '{}.sh'.format(tool_obj.id)
+                os.system("sed  's/\r//'  test.sh >  {}".format(shell))
+                print(assets,shell)
+                for  i in assets:
+                    rets = ansbile_tools.delay(i,shell)
+                    print(rets)
+
+                #
+                # ret['state']=rets.state
+                # ret['id']=rets.task_id
 
         except Exception as e:
             ret['status'] = False

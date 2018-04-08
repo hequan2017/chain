@@ -91,6 +91,7 @@ python3   manage.py runserver 0.0.0.0:80
 
 python3    webssh/main.py    ##启动终端登录功能
 
+python3   manage.py   celery worker  -c  4        --loglevel=info
 ```
 
 ### docker部署

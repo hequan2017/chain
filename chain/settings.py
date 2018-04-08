@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import djcelery
-djcelery.setup_loader()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -45,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'tasks',
+    'djcelery',
 ]
 
 MIDDLEWARE = [
@@ -201,3 +201,18 @@ LOGGING = {
         },
     },
 }
+
+djcelery.setup_loader()
+BROKER_URL = 'redis://127.0.0.1:6379/0'  #消息存储数据存储在仓库0
+
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend' # 指定 Backend
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+CELERY_TIMEZONE = 'Asia/Shanghai'
+
+#CELERY_ALWAYS_EAGER = True   # 如果开启，Celery便以eager模式运行, 则task便不需要加delay运行
+
+CELERY_IMPORTS = ('tasks.tasks',)
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'  #这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中

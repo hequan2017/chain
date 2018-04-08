@@ -190,7 +190,58 @@
 
 
 {% block footer-js %}
+ <script>
 
+
+$(function () {
+
+            $(document).on('click','#cmd',function () {
+
+
+
+
+                    $.ajax({
+                        url: "{% url 'tasks:perform' %}",
+                        type: 'POST',
+                        data: $('.cmd_from').serialize(),
+                        success: function (data) {
+                            var obj = JSON.parse(data);
+                            cons = "";
+                            if (obj.data) {
+                                $.each(obj, function (data, values) {
+                                    $.each(values, function (index, value) {
+                                        cons += "<pre>" + "主机:" + value.hostname + "\n" + "结果: \n " + value.data + "</pre>"
+
+                                    });
+                                    $(".pres").html(cons); //把内容入到这个div中即完成
+                                });
+                            } else {
+                                $('#err').text(obj.error);
+                            }
+
+                        }
+
+                    })
+                });
+
+
+            });
+
+            function clearBody() {
+                location.reload()
+            }
+
+
+            function add_tr(obj) {
+                var tr = $(obj).parent();
+                tr.after(tr.clone());
+            }
+
+            function del_tr(obj) {
+                $(obj).parent().remove();
+            }
+
+ </script>
 
 
 
@@ -227,21 +278,6 @@
             });
 
             });
-
-
-            function clearBody() {
-                location.reload()
-            }
-
-
-            function add_tr(obj) {
-                var tr = $(obj).parent();
-                tr.after(tr.clone());
-            }
-
-            function del_tr(obj) {
-                $(obj).parent().remove();
-            }
 
 
 

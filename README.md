@@ -28,9 +28,9 @@ http://47.104.140.38:8001
   *  data      测试数据/Dockerfile目录
   *  index     首页及用户处理
   *  tasks     任务
-  *  static    静态任务
+  *  static    css | js
   *  templates 静态模板
-  *  webssh    终端登录    利用的  https://github.com/huashengdun/webssh   此项目
+  *  webssh    终端登录     参考的  https://github.com/huashengdun/webssh   此项目
 
 ###  环境
 
@@ -40,7 +40,7 @@ http://47.104.140.38:8001
 
 后端：
   * django==2.0.4
-  * Python3.6.5   可参考 data/python3-install
+  * Python3.6.5
 
 数据库：
   * 目前开发阶段 用的 sqlite3,可无缝切换为 mysql
@@ -58,9 +58,10 @@ http://47.104.140.38:8001
 git clone https://github.com/hequan2017/chain.git
 ```
 
+
 修改 chain/settings.py
 ```bash
-web_ssh = "47.104.140.38"    ##修改为本机外网IP,
+web_ssh = "47.104.140.38"    ##修改为本机外网IP
 web_port = 8002
 ```
 
@@ -107,7 +108,7 @@ python3   manage.py   celery worker  -c  4        --loglevel=info
 docker bulid  -t python3.6.5  -f dockerfile-python3   .
 docker bulid  -t chain  -f dockerfile-chain  .
 
-docker  run -itd  --name chain   -p 8001:8001  -p 8002:8002     chain
+docker  run  -itd  --name chain   -p 8001:8001  -p 8002:8002     chain
 
 docker  exec  -it   chain /bin/bash
 ```
@@ -121,12 +122,13 @@ yum -y install sqlite-devel
 
 重新编译python3.6.4
 
-
 想在windows 环境下运行，请注释 tasks/views.py  以下两行
 
 
 from   .ansible_2420.runner import AdHocRunner
 from   .ansible_2420.inventory import BaseInventory
+
+
 ```
 
 

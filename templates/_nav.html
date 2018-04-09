@@ -18,11 +18,11 @@
                     </ul>
                 </div>
                 <div class="logo-element">
-                   Chain
+                    Chain
                 </div>
             </li>
             <li>
-                <a  href="{% url "index" %}"><i class="fa fa-th-list"></i> <span class="nav-label">首页</span>
+                <a href="{% url "index" %}"><i class="fa fa-th-list"></i> <span class="nav-label">首页</span>
                 </a>
 
             </li>
@@ -31,29 +31,29 @@
                     <span class="fa arrow"> </span></a>
                 <ul class="nav nav-second-level">
                     <li class="{{ asset_list_active }}"><a href="{% url    'asset:asset_list' %}">资产信息</a></li>
-                    <li class="{{ asset_user_list_active }}"><a href="{% url    'asset:asset_user_list' %}">登录用户</a></li>
+                    <li class="{{ asset_user_list_active }}"><a href="{% url    'asset:asset_user_list' %}">登录用户</a>
+                    </li>
                     <li class="{{ asset_import_active }}"><a href="{% url    'asset:asset_import' %}">资产导入</a></li>
 
 
                 </ul>
             </li>
             <li class="{{ tasks_active }}">
-                <a href="#"><i class="fa fa-inbox"></i> <span class="nav-label">执行任务</span>
+                <a href="#"><i class="fa  fa-coffee"></i> <span class="nav-label">作业中心</span>
                     <span class="fa arrow"> </span></a>
                 <ul class="nav nav-second-level">
                     <li class="{{ tasks_cmd_active }}"><a href="{% url    'tasks:cmd' %}">命令行</a></li>
-                     <li class="{{ tools_active }}"><a href="{% url    'tasks:tools' %}">工具</a></li>
-                      <li class="{{ tools_exec_active }}"><a href="{% url    'tasks:tools_exec' %}">创建任务</a></li>
-
-
+                    <li class="{{ tools_active }}"><a href="{% url    'tasks:tools' %}">工具</a></li>
+                    <li class="{{ tools_exec_active }}"><a href="{% url    'tasks:tools_exec' %}">创建任务</a></li>
+                    <li class="{{ tools_results_active }}"><a href="{% url    'tasks:tools_results' %}">任务结果</a></li>
                 </ul>
             </li>
-            <li  class="{{ index_active }}">
+            <li class="{{ index_active }}">
                 <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">后台</span>
                     <span class="fa arrow"> </span></a>
-                 <ul class="nav nav-second-level">
-                    <li class="{{ index_login_active }}"><a href="{% url  'login-history' %}"  >登录历史</a></li>
-                    <li><a href="/admin"  target="_blank">管理界面</a></li>
+                <ul class="nav nav-second-level">
+                    <li class="{{ index_login_active }}"><a href="{% url  'login-history' %}">登录历史</a></li>
+                    <li><a href="/admin" target="_blank">管理界面</a></li>
 
                 </ul>
             </li>

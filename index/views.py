@@ -4,6 +4,7 @@ from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
 from django.contrib.auth.hashers import  check_password
 from django.contrib.auth.models import User
+
 from .models import login_log
 
 @login_required(login_url="/login.html")
@@ -97,5 +98,4 @@ def LoginHistorys(request):
     :return:
     """
     obj = login_log.objects.order_by('-ctime')
-    return render(request, 'index/login-history.html',
-                  {'login': obj,"index_active": "active", "index_login_active": "active", })
+    return render(request, 'index/login-history.html',{'login': obj,"index_active": "active", "index_login_active": "active", })

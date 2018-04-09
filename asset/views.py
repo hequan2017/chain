@@ -1,23 +1,20 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
 from .form import AssetForm, FileForm, AssetUserForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.models import User, Group
-from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DetailView
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
 from  asset.models import asset, asset_user
-import codecs, chardet
 from  asset.models import asset as Asset
-import csv, time
 from io import StringIO
-import json
-from django.core import serializers
 from  chain import settings
+
 from os import system
-import logging
+
+import csv, json, logging, codecs, chardet
 
 logger = logging.getLogger('asset')
 
@@ -60,7 +57,9 @@ class AssetListAll(LoginRequiredMixin, ListView):
         self.queryset = super().get_queryset()
         if self.request.GET.get('name'):
             query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter( Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project=query) | Q(manager=query)).order_by('-id')
+            queryset = self.queryset.filter(
+                Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project=query) | Q(
+                    manager=query)).order_by('-id')
         else:
             queryset = super().get_queryset()
         return queryset

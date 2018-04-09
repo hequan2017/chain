@@ -1,7 +1,7 @@
 from celery import Celery, platforms
 
 platforms.C_FORCE_ROOT = True
-
+from  chain import settings
 app = Celery('chain')
 app.config_from_object('django.conf:settings',)
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
@@ -22,25 +22,33 @@ def debug_task(self):
 def  ansbile_tools(assets,tools):
     current_process()._config = {'semprefix': '/mp'}
 
+    ret=[]
 
+    for i  in  assets:
 
-    inventory = BaseInventory(assets)
-    runner = AdHocRunner(inventory)
+        inventory = BaseInventory(i)
+        runner = AdHocRunner(inventory)
+        tasks = [
+                {"action": {"module": "script", "args": "{}".format(tools)}, "name": "script"},
+        ]
+        retsult = runner.run(tasks, "all")
+        hostname = i[0]['hostname']
 
-    tasks = [
-        {"action": {"module": "script", "args": "{}".format(tools)}, "name": "script"},
-    ]
-    retsult = runner.run(tasks, "all")
-    hostname = assets[0]['hostname']
+        try:
+            try:
+                data = retsult.results_raw['ok'][hostname]
+                ret.append(json.dumps(data))
+            except Exception as e:
+                logger.error(e)
+                try:
+                    data = retsult.results_raw['failed'][hostname]
+                    ret.append(json.dumps(data))
+                except Exception as  e:
+                    logger.error(e)
+                    data = retsult.results_raw['unreachable'][hostname]
+                    ret.append(json.dumps(data))
+        except Exception as e:
+            logger.error(e)
 
-    try:
-        data = retsult.results_raw['ok'][hostname]
-    except Exception as e:
-        logger.error(e)
-        data = retsult.results_raw['failed'][hostname]
-
-    print(type(data))
-    import time
-    time.sleep(30)
-    return  json.dumps(data)
+    return   ret
 

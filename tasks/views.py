@@ -1,32 +1,27 @@
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.models import User, Group
 from django.urls import reverse_lazy
-from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DeleteView, DetailView
+from django.views.generic import  ListView, View, CreateView, UpdateView, DetailView
 from django.db.models import Q
-from  asset.models import asset, asset_user
-from  tasks.models import tools_script
-import json
-from  chain import settings
-from .models import cmd_list
-import threading, logging
+from  asset.models import asset
+from  tasks.models import cmd_list,tools_script,tool_results
 from  tasks.form import ToolsForm
-logger = logging.getLogger('tasks')
-import os
-
+from djcelery.models import TaskMeta
+from .tasks import ansbile_tools
+from  chain import settings
 
 
 from .ansible_2420.runner import AdHocRunner, PlayBookRunner
 from .ansible_2420.inventory import BaseInventory
 
+import os,json,threading, logging,random
+logger = logging.getLogger('tasks')
 
 
 
 class TasksCmd(LoginRequiredMixin, ListView):
     """
-    任务cmd执行
+    任务cmd 界面
     """
     template_name = 'tasks/cmd.html'
     model = asset
@@ -58,7 +53,6 @@ class MyThread(threading.Thread):
     """
     多线程执行ansible任务
     """
-
     def __init__(self, func, args=()):
         super(MyThread, self).__init__()
         self.func = func
@@ -97,25 +91,40 @@ def ThreadCmdJob(assets, tasks):
     #     logger.error(e)
 
     try:
+        """执行成功"""
         data = retsult.results_raw['ok'][hostname]
     except Exception as e:
         logger.error(e)
-        data = retsult.results_raw['failed'][hostname]
+        try:
+            """执行失败"""
+            data = retsult.results_raw['failed'][hostname]
+        except Exception as  e:
+            logger.error("连接不上  {0}".format(e))
+            data_fatal_msg = retsult.results_raw['unreachable'][hostname]
+
+
 
     task = []
     for i in range(len(tasks)):
         try:
+            """任务的返回结果  成功信息 """
             tasks_std = data['task{}'.format(i)]['stdout']
-            if tasks_std == "":
-                task.append(data['task{}'.format(i)]['stderr'])
             task.append(tasks_std)
         except Exception as e:
-            logger.error("任务执行失败", e)
+            logger.error("执行失败{0}".format(e))
             try:
+                """失败信息"""
                 task.append(retsult.results_raw['failed'][hostname]['task{}'.format(i)]['stderr'])
             except Exception as e:
-                logger.error('未执行任务{0}，请检查修改上面任务！！！ \n {1}'.format(e, tasks))
-                task.append('未执行任务{0},请检查修改上面任务！！！ \n \n {1}'.format(e, tasks))
+                logger.error("执行失败{0}".format(e))
+                try :
+                    """连接失败"""
+                    task.append("连接失败  {0}".format(data_fatal_msg['task{}'.format(i)]['msg']))
+                except Exception as e:
+                    logger.error('未执行任务{0}，请检查修改上面任务！！！ \n {1}'.format(e,tasks))
+                    task.append('未执行任务{0},请检查修改上面任务！！！ \n \n {1}'.format(e, tasks))
+
+
 
     ret = {'hostname': hostname, 'data': '\n'.join(task)}
     return ret
@@ -123,7 +132,7 @@ def ThreadCmdJob(assets, tasks):
 
 class TasksPerform(LoginRequiredMixin, View):
     """
-    执行cmd  命令
+    执行 cmd  命令
     """
 
     def post(self, request):
@@ -170,6 +179,9 @@ class TasksPerform(LoginRequiredMixin, View):
 
 
 class ToolsList(LoginRequiredMixin, ListView):
+    """
+    工具列表
+    """
     template_name = 'tasks/tools.html'
     model = tools_script
     context_object_name = "tools_list"
@@ -186,7 +198,7 @@ class ToolsList(LoginRequiredMixin, ListView):
 
 class ToolsAdd(LoginRequiredMixin, CreateView):
     """
-     资产增加
+     工具增加
     """
     model = tools_script
     form_class =  ToolsForm
@@ -195,8 +207,8 @@ class ToolsAdd(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = {
-            "asset_active": "active",
-            "asset_list_active": "active",
+            "tasks_active": "active",
+            "tools_active": "active",
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
@@ -204,7 +216,7 @@ class ToolsAdd(LoginRequiredMixin, CreateView):
 
 class ToolsUpdate(LoginRequiredMixin, UpdateView):
     '''
-     资产更新
+     工具更新
     '''
     model = tools_script
     form_class = ToolsForm
@@ -214,8 +226,8 @@ class ToolsUpdate(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = {
-            "asset_active": "active",
-            "asset_list_active": "active",
+            "tasks_active": "active",
+            "tools_active": "active",
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
@@ -226,7 +238,7 @@ class ToolsUpdate(LoginRequiredMixin, UpdateView):
 
 class ToolsAllDel(LoginRequiredMixin, View):
     """
-    资产删除
+    工具删除
     """
     model = tools_script
 
@@ -246,7 +258,7 @@ class ToolsAllDel(LoginRequiredMixin, View):
         finally:
             return HttpResponse(json.dumps(ret))
 
-from .tasks import ansbile_tools
+
 
 class ToolsExec(LoginRequiredMixin, ListView):
     """
@@ -271,7 +283,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
         tools_list = tools_script.objects.all()
         context = {
             "tasks_active": "active",
-            " tools_exec_active": "active",
+            "tools_exec_active": "active",
             "tools_list":tools_list
         }
         kwargs.update(context)
@@ -279,21 +291,27 @@ class ToolsExec(LoginRequiredMixin, ListView):
 
 
     def post(self, request):
+        """
+        执行工具
+        :param request:  asset_id,tool_id
+        :return:
+        """
         ret = {'status': True, 'error': None, }
         try:
             asset_id = request.POST.getlist('asset[]', None)
             tool_id = request.POST.getlist('tool[]', None)
+            if  asset_id == [] or  tool_id == []:
+                ret['status'] = False
+                ret['error'] = '未选择主机 或 未选择工具'
+                return HttpResponse(json.dumps(ret))
+
+
             asset_id_tring = ','.join(asset_id)
 
-
-            print(int(tool_id[0]))
-            id= int(tool_id[0])
-            print(type(id))
             asset_obj = asset.objects.extra(where=['id IN (' + asset_id_tring + ')'])
-            tool_obj = tools_script.objects.filter(id=id).first()
+            tool_obj = tools_script.objects.filter(id=int(tool_id[0])).first()
 
             assets = []
-
 
             for i in asset_obj:
                 assets.append([{
@@ -306,22 +324,78 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     # "vars": {'name':123}, 变量
                 }], )
 
-            if tool_obj.tool_run_type == 'shell':
-                with  open('test.sh', 'w+') as f:
-                        f.write(tool_obj.tool_script)
-                        shell = '{}.sh'.format(tool_obj.id)
-                os.system("sed  's/\r//'  test.sh >  {}".format(shell))
-                print(assets,shell)
-                for  i in assets:
-                    rets = ansbile_tools.delay(i,shell)
-                    print(rets)
 
-                #
-                # ret['state']=rets.state
-                # ret['id']=rets.task_id
+            if tool_obj.tool_run_type == 'shell'  :
+                file = "data/script/{0}.sh".format(random.randint(0,999999))
+                file2 = "data/script/{0}.sh".format(random.randint(1000000,9999999))
+                with  open(file, 'w+') as f:
+                        f.write(tool_obj.tool_script)
+                os.system("sed  's/\r//'  {0} >  {1}".format(file,file2))
+                rets = ansbile_tools.delay(assets,file2)
+
+                task_obj = tool_results.objects.create(task_id=rets.task_id)
+                ret['id']=task_obj.id
 
         except Exception as e:
             ret['status'] = False
             ret['error'] = '创建任务失败{0}'.format(e)
         finally:
             return HttpResponse(json.dumps(ret))
+
+
+
+class ToolsResultsList(LoginRequiredMixin, ListView):
+    """
+    执行工具 返回信息列表
+    """
+
+    ordering = ('-ctime',)
+    template_name = 'tasks/tools-results.html'
+    model = tool_results
+    context_object_name = "tools_results_list"
+    paginate_by = settings.DISPLAY_PER_PAGE
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        search_data = self.request.GET.copy()
+        try:
+            search_data.pop("page")
+        except BaseException as  e:
+            logger.error(e)
+
+        context.update(search_data.dict())
+        context = {
+            "tasks_active": "active",
+            "tools_results_active": "active",
+            "search_data": search_data.urlencode(),
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+
+class ToolsResultsDetail(LoginRequiredMixin, DetailView):
+    '''
+     执行工具 结果详细
+    '''
+
+    model =  tool_results
+    template_name = 'tasks/tools-results-detail.html'
+
+    def get_context_data(self, **kwargs):
+        pk = self.kwargs.get(self.pk_url_kwarg, None)
+        task = tool_results.objects.get(id=pk)
+
+        results = TaskMeta.objects.get(task_id=task.task_id)
+
+        context = {
+            "tasks_active": "active",
+            "tools_results_active": "active",
+            "task": task,
+            "results":results,
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+

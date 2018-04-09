@@ -28,7 +28,6 @@ urlpatterns = [
     path('index/login-history.html',LoginHistorys,name="login-history"),
     path('asset/', include('asset.urls', namespace="asset", ), ),
     path('tasks/', include('tasks.urls', namespace="tasks", ), ),
-
 ]
 
 

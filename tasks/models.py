@@ -9,8 +9,8 @@ cmd_list = ['shell','cron','file','service','user','ping','yum','setup','templat
 class tools_script(models.Model):
     TOOL_RUN_TYPE = (
         ('shell', 'shell'),
-        ('python', 'python'),
-        ( 'yml', 'yml'),
+        # ('python', 'python'),
+        # ( 'yml', 'yml'),
     )
 
     name = models.CharField(max_length=255, verbose_name='工具名称',unique=True)
@@ -28,4 +28,21 @@ class tools_script(models.Model):
     class Meta:
         db_table = "tools_script"
         verbose_name = "工具"
+        verbose_name_plural = verbose_name
+
+
+
+
+class  tool_results(models.Model):
+    task_id =  models.UUIDField(max_length=255, verbose_name='任务ID',unique=True)
+    ctime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+
+
+
+    # def __str__(self):
+    #     return self.ctime
+
+    class Meta:
+        db_table = "tool_results"
+        verbose_name = "任务"
         verbose_name_plural = verbose_name

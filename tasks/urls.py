@@ -13,6 +13,9 @@ urlpatterns = [
     path('tools-update-<int:pk>.html', views.ToolsUpdate.as_view(), name='tools_update'),
     path('tools-exec.html', views.ToolsExec.as_view(), name='tools_exec'),
 
+    path('tools-results.html', views.ToolsResultsList.as_view(), name='tools_results'),
+    path('tools-results-detail-<int:pk>.html', views.ToolsResultsDetail.as_view(), name='tools_results_detail'),
+
 ]
 
 app_name="tasks"

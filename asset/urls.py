@@ -15,6 +15,7 @@ urlpatterns = [
     path('asset-import.html',views.AssetImport,name='asset_import'),
     path('asset-ztree.html', views.AssetZtree, name='asset_ztree'),
 
+
     path('api/asset.html', api.AssetList.as_view(), name='asset_api_list'),
     path('api/asset-detail-<int:pk>.html', api.AssetDetail.as_view(), name='asset_api_detail'),
 

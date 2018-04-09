@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block  title %}资产详情{% endblock %}
+{% block header-css %}
+
+{% load bootstrap3 %}
+{% endblock %}
+
+
+{% block  page-content %}
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>任务结果</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/index.html">主页</a>
+                </li>
+                <li>
+                    <a href="{% url "tasks:tools_results" %}">任务</a>
+                </li>
+                <li class="active">
+                    <strong>任务结果</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="panel-options">
+                        <ul class="nav nav-tabs">
+                            <li class="active">
+                                <a class="text-center"><i class="fa fa-laptop"></i>任务结果</a>
+                            </li>
+
+
+                        </ul>
+                    </div>
+                    <div class="tab-content">
+                        <div class="col-sm-7" style="padding-left: 0">
+                            <div class="ibox float-e-margins">
+                                <div class="ibox-title">
+                                    <span class="label"><b>{{ task.id }}</b></span>
+                                    <div class="ibox-tools">
+                                        <a class="collapse-link">
+                                            <i class="fa fa-chevron-up"></i>
+                                        </a>
+                                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                            <i class="fa fa-wrench"></i>
+                                        </a>
+                                        <ul class="dropdown-menu dropdown-user">
+                                        </ul>
+                                        <a class="close-link">
+                                            <i class="fa fa-times"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="ibox-content">
+
+                                    <table class="table">
+                                        <tbody>
+                                        <tr>
+                                            <td style=" border-top: none !important;" width="20%">id:</td>
+                                            <td style=" border-top: none !important;"><b>{{ task.id }}</b>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="20%">task_id:</td>
+                                            <td><b>{{ task.task_id }}</b>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td width="20%">结果:</td>
+                                            <td><b>{{ results.result }}</b></td>
+                                        </tr>
+
+
+
+
+
+                                        <tr>
+                                            <td width="20%">状态:</td>
+                                            <td><b>{{ results.status }}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="20%">traceback:</td>
+                                            <td><b>{{ results.traceback }}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="20%">data_done:</td>
+                                            <td><b>{{ results.data_done }}</b></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="20%">hidden:</td>
+                                            <td><b>{{ esults.hidden }}</b></td>
+                                        </tr>
+
+                                       <tr>
+                                            <td width="20%">创建时间:</td>
+                                            <td><b>{{ task.ctime }}</b></td>
+                                        </tr>
+
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-5" style="padding-left: 0;padding-right: 0">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <i class="fa fa-info-circle"></i> 快速修改
+                                </div>
+                                <div class="panel-body">
+                                    <table class="table">
+                                        <tbody>
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+{% endblock %}
+
+

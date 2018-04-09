@@ -1,8 +1,6 @@
 from django.db import models
 import random
 
-
-
 class asset(models.Model):
     PLATFORM_CHOICES=(
         ("阿里云","阿里云"),
@@ -69,12 +67,6 @@ class asset(models.Model):
 
     def __str__(self):
         return self.hostname
-
-
-
-
-
-
 
 
 

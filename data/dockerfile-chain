@@ -6,9 +6,18 @@ ARG  ip="127.0.0.1"
 WORKDIR  /tmp
 RUN  wget https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-7.noarch.rpm  && \
      rpm -ivh epel-release-latest-7.noarch.rpm   && \
-     yum  install supervisor  sshpass  net-tools -y
+     yum  install supervisor   redis sshpass  net-tools -y
 
 COPY    chain  /opt/chain
+
+WORKDIR  /usr/local/src
+
+RUN wget http://download.redis.io/releases/redis-stable.tar.gz  && \
+    tar -zxvf redis-stable.tar.gz   -C  /usr/local/   && \
+    cd /usr/local/   && \
+    mv redis-stable redis   && \
+    cd redis   && \
+    make
 
 WORKDIR   /opt/chain/
 
@@ -18,11 +27,12 @@ RUN  python -m pip  install -r   requirements.txt  && \
      python     manage.py   migrate
 
 
+
 COPY  password.sh  /tmp/password.sh
 
 RUN   sed  -i "s/^web_ssh.*$/web_ssh = '${ip}' /g"  /opt/chain/chain/settings.py   && \
       sh /tmp/password.sh  && \
-     mkdir -p /etc/supervisor/
+      mkdir -p /etc/supervisor/
 
 
 COPY  supervisord.conf   /etc/supervisor/supervisord.conf

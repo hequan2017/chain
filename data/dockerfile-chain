@@ -19,12 +19,8 @@ RUN   python -m pip  install -r   requirements.txt
 
 RUN mkdir -p /etc/supervisor/
 
-RUN echo [supervisord]  >  /etc/supervisor/supervisord.conf  && \
-    echo nodaemon=true   >> /etc/supervisor/supervisord.conf  && \
-    echo [program:chain]  >> /etc/supervisor/supervisord.conf  && \
-    echo command=/usr/bin/python    /opt/chain/manage.py   runserver   0.0.0.0:8001  >> /etc/supervisor/supervisord.conf && \
-    echo [program:webssh]               >> /etc/supervisor/supervisord.conf  && \
-    echo command=/usr/bin/python    /opt/chain/webssh/main.py    >> /etc/supervisor/supervisord.conf
+
+COPY  supervisord.conf   /etc/supervisor/supervisord.conf
 
 RUN   sed  -i    's/\#\!\/usr\/bin\/python/\#\!\/usr\/bin\/python2/'   /usr/bin/supervisord
 RUN   sed  -i    's/\#\!\/usr\/bin\/python/\#\!\/usr\/bin\/python2/'   /usr/bin/supervisorctl

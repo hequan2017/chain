@@ -105,6 +105,11 @@ python3   manage.py   celery worker  -c  4        --loglevel=info
 ├── dockerfile-chain
 └── dockerfile-python3
 
+cd /opt
+mv  /opt/chain/dockerfile-python3   .
+mv  /opt/chain/dockerfile-chain   .
+mv  /opt/chain/supervisord.conf  .
+
 docker bulid  -t python3.6.5  -f dockerfile-python3   .
 docker bulid  -t chain  -f dockerfile-chain  .
 

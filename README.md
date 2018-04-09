@@ -71,6 +71,7 @@ web_port = 8002
 ```bash
 cd chain/
 
+yum  install   sshpass   -y
 pip3   install -r   requirements.txt
 
 mv     db.sqlite3  /tmp/

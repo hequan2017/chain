@@ -106,12 +106,14 @@ python3   manage.py   celery worker  -c  4        --loglevel=info
 └── dockerfile-python3
 
 cd /opt
-mv  /opt/chain/dockerfile-python3   .
-mv  /opt/chain/dockerfile-chain   .
-mv  /opt/chain/supervisord.conf  .
+修改外网IP
 
-docker bulid  -t python3.6.5  -f dockerfile-python3   .
-docker bulid  -t chain  -f dockerfile-chain  .
+mv  /opt/chain/data/dockerfile-python3   .
+mv  /opt/chain/data/dockerfile-chain   .
+mv  /opt/chain/data/supervisord.conf  .
+
+docker build  -t python3.6.5  -f dockerfile-python3   .
+docker build  -t chain   -f dockerfile-chain .
 
 docker  run  -itd  --name chain   -p 8001:8001  -p 8002:8002     chain
 

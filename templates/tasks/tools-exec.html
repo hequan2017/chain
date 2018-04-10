@@ -163,7 +163,7 @@
                                         <tr class="gradeA" id="{{ row.id }}">
                                             <td><input type="radio" value="{{ row.id }}" name="tool_id"></td>
                                             <td class="center"><a
-                                                    href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.name }}</a>
+                                                    href="{% url  "tasks:tools_update"   pk=row.id   %}">{{ row.name }}</a>
                                             </td>
                                             <td class="center">{{ row.tool_run_type }}</td>
                                             <td class="center">{{ row.comment }}</td>
@@ -193,17 +193,16 @@
 
         <script>
 
-   $("#CheckedAssetAll").click(function () {
-        if ($(this).is(":checked")) {
-            $("[name=asset_id]:checkbox").prop("checked", true);
-        } else {
-            $("[name=asset_id]:checkbox").prop("checked", false);
-        }
-    });
+            $("#CheckedAssetAll").click(function () {
+                if ($(this).is(":checked")) {
+                    $("[name=asset_id]:checkbox").prop("checked", true);
+                } else {
+                    $("[name=asset_id]:checkbox").prop("checked", false);
+                }
+            });
 
 
             $(function () {
-
 
 
                 $(document).ready(function () {
@@ -237,22 +236,21 @@
                 $(document).on('click', '#exec', function () {
 
 
-                    tool_id = document.getElementsByName("tool_id");
+                    var obj = document.getElementsByName("tool_id");
                     tool_id_list = [];
-                    for (k in  tool_id) {
-                        if (tool_id[k].checked)
-                            tool_id_list.push(tool_id[k].value);
+                    for (var i = 0; i < obj.length; i++) {
+                        if (obj[i].checked) {
+                            tool_id_list.push((obj[i].value));
+                        }
                     }
 
 
-
-                var asset_id = document.getElementsByName('asset_id');
-                            var asset_id_list = new Array();
-                            for(var i = 0; i <  asset_id.length; i++){
-                             if(asset_id[i].checked)
-                            asset_id_list.push( asset_id[i].value);
-                            }
-
+                    var asset_id = document.getElementsByName('asset_id');
+                    var asset_id_list = new Array();
+                    for (var i = 0; i < asset_id.length; i++) {
+                        if (asset_id[i].checked)
+                            asset_id_list.push(asset_id[i].value);
+                    }
 
 
                     swal({
@@ -275,7 +273,11 @@
                             success: function (data) {
                                 var obj = JSON.parse(data);
                                 if (obj.status) {
-                                    swal({title: "任务", text: "已成功创建 id:"+obj.id+'\n\n'+"请稍后查询结果", type: "success"}, function () {
+                                    swal({
+                                        title: "任务",
+                                        text: "已成功创建 id:" + obj.id + '\n\n' + "请稍后查询结果",
+                                        type: "success"
+                                    }, function () {
                                         window.location.reload();
                                     })
                                 } else {
@@ -290,7 +292,6 @@
 
 
             });
-
 
 
             function clearBody() {

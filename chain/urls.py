@@ -18,8 +18,11 @@ from django.urls import path
 from django.conf.urls import include
 from  index.views   import  index,login_view,logout,password_update,LoginHistorys
 
+
 urlpatterns = [
     path('admin/', admin.site.urls,name='admin'),
+    path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('', index),
     path('index.html', index,name="index"),
     path('login.html',login_view),

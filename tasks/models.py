@@ -3,14 +3,14 @@ from django.db import models
 # Create your models here.
 
 
-cmd_list = ['shell','cron','file','service','user','ping','yum','setup','template','synchronize','get_url']
+cmd_list = ['shell','raw','cron','file','service','user','ping','yum','setup','script','synchronize','get_url']
 
 
 class tools_script(models.Model):
     TOOL_RUN_TYPE = (
         ('shell', 'shell'),
-        # ('python', 'python'),
-        # ( 'yml', 'yml'),
+        ('python', 'python'),
+        ( 'yml', 'yml'),
     )
 
     name = models.CharField(max_length=255, verbose_name='工具名称',unique=True)

@@ -124,9 +124,7 @@
                                     添加</a>
 
 
-                                <a class="btn btn-sm btn-danger  asset_all_del"
-                                >批量删除
-                                </a>
+
                             </form>
                             <form id="del_form_asset_all" class="form-horizontal  "
                                   action="{% url 'asset:asset_export' %}" method="post">
@@ -174,6 +172,9 @@
                                 </table>
                                 <button class="btn btn-sm btn-primary" type="submit">导出</button>
                                 <a href="{% url    'asset:asset_export' %}" class="btn btn-sm btn-primary ">导出全部</a>
+                                 <a class="btn btn-sm btn-danger  asset_all_del"
+                                >批量删除
+                                </a>
                                 <div>
 
                                     <center>

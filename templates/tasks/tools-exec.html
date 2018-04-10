@@ -88,7 +88,8 @@
                                     {% for   row   in   asset_list %}
 
                                         <tr class="gradeA" id="{{ row.id }}">
-                                            <td><input type="checkbox" value="{{ row.id }}" name="asset_id"></td>
+                                            <td><input type="checkbox" value="{{ row.id }}" n="{{ row.hostname }}"
+                                                       name="asset_id"></td>
                                             <td class="center"><a
                                                     href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.hostname }}</a>
                                             </td>
@@ -161,9 +162,10 @@
                                     {% for   row   in   tools_list %}
 
                                         <tr class="gradeA" id="{{ row.id }}">
-                                            <td><input type="radio" value="{{ row.id }}" name="tool_id"></td>
+                                            <td><input type="radio" value="{{ row.id }}" n="{{ row.name }}"
+                                                       name="tool_id"></td>
                                             <td class="center"><a
-                                                    href="{% url  "tasks:tools_update"   pk=row.id   %}">{{ row.name }}</a>
+                                                    href="{% url  "tasks:tools_update"   pk=row.id %}">{{ row.name }}</a>
                                             </td>
                                             <td class="center">{{ row.tool_run_type }}</td>
                                             <td class="center">{{ row.comment }}</td>
@@ -238,25 +240,31 @@
 
                     var obj = document.getElementsByName("tool_id");
                     tool_id_list = [];
+                    tool_id_name = [];
                     for (var i = 0; i < obj.length; i++) {
                         if (obj[i].checked) {
+
                             tool_id_list.push((obj[i].value));
+                            tool_id_name.push(obj[i].getAttribute('n'));
                         }
                     }
 
 
                     var asset_id = document.getElementsByName('asset_id');
+                    asset_id_name = [];
                     var asset_id_list = new Array();
                     for (var i = 0; i < asset_id.length; i++) {
                         if (asset_id[i].checked)
                             asset_id_list.push(asset_id[i].value);
+
+                        asset_id_name.push(asset_id[i].getAttribute('n'));
                     }
 
 
                     swal({
 
                         title: "你确定提交执行任务,无法取消",
-                        text: "主机ID " + asset_id_list + "\n" + "工具ID " + tool_id_list,
+                        text: "主机名称 " + asset_id_name + "\n" + "工具名称 " + tool_id_name,
                         type: "warning",
                         showCancelButton: true,
                         confirmButtonColor: "#DD6B55",
@@ -281,7 +289,7 @@
                                         window.location.reload();
                                     })
                                 } else {
-                                    swal("错误", "[ " + obj.error + " ]"  , "error");
+                                    swal("错误", "[ " + obj.error + " ]", "error");
                                 }
                             }
                         });

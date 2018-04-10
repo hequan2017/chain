@@ -31,12 +31,11 @@ class tools_script(models.Model):
         verbose_name_plural = verbose_name
 
 
-
+from  djcelery.models import TaskMeta
 
 class  tool_results(models.Model):
     task_id =  models.UUIDField(max_length=255, verbose_name='任务ID',unique=True)
     ctime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
-
 
 
     # def __str__(self):

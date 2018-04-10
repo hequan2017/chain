@@ -216,6 +216,7 @@ CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_IMPORTS = ('tasks.tasks',)
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'  #这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
 
+JET_DEFAULT_THEME = 'light-blue'
 
 # 主题
 JET_THEMES = [

@@ -1,6 +1,6 @@
 ## Chain
 
-一个基于django2.0版本，极简主义的云主机CMDB增删改查项目！
+linux 云主机 管理系统，包含 CMDB,webssh登录、命令执行、异步执行shell/python/yml等。持续更新中。。。
 
 非常适合django刚入门的人拿来参考！
 

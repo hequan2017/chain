@@ -33,7 +33,7 @@ class asset(models.Model):
     cpu = models.CharField(max_length=64,verbose_name='CPU',null=True,blank=True)
     memory = models.CharField(max_length=64, verbose_name='内存', null=True,blank=True)
     disk = models.CharField(max_length=256,verbose_name="硬盘",null=True,blank=True)
-    bandwidth = models.IntegerField(verbose_name='带宽', null=True,blank=True,default="1")
+    bandwidth = models.IntegerField(verbose_name='外网带宽', null=True,blank=True,default="1")
 
 
     platform =  models.CharField(max_length=128, choices=PLATFORM_CHOICES, verbose_name='平台')
@@ -90,4 +90,4 @@ class  asset_user(models.Model):
         }
 
     def __str__(self):
-        return self.username
+        return self.hostname

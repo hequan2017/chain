@@ -18,7 +18,6 @@ from django.urls import path
 from django.conf.urls import include
 from  index.views   import  index,login_view,logout,password_update,LoginHistorys
 
-
 urlpatterns = [
     path('admin/', admin.site.urls,name='admin'),
     path('jet/', include('jet.urls', 'jet')),  # Django JET URLS

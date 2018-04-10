@@ -9,8 +9,8 @@ from  tasks.form import ToolsForm
 from djcelery.models import TaskMeta
 from .tasks import ansbile_tools
 from  chain import settings
-
-from .ansible_2420.runner import AdHocRunner, PlayBookRunner
+from index.password_crypt import decrypt_p
+from .ansible_2420.runner import AdHocRunner
 from .ansible_2420.inventory import BaseInventory
 
 import os, json, threading, logging, random
@@ -81,15 +81,6 @@ def ThreadCmdJob(assets, tasks):
     retsult = runner.run(tasks, "all")
     hostname = assets[0]['hostname']
 
-    # ##测试 yml文件执行
-    # try:
-    #     path = "./data/test.yml"
-    #     runers = PlayBookRunner(playbook_path=path, inventory=inventory)
-    #     rets = runers.run()
-    #     print(rets['results_callback'])
-    # except Exception as  e:
-    #     logger.error(e)
-
     try:
         """执行成功"""
         data = retsult.results_raw['ok'][hostname]
@@ -149,7 +140,7 @@ class TasksPerform(LoginRequiredMixin, View):
                 "ip": i.network_ip,
                 "port": i.port,
                 "username": i.user.username,
-                "password": i.user.password,
+                "password": decrypt_p(i.user.password),
                 "private_key": i.user.private_key.name,
                 # "vars": {'name':123}, 变量
             }], )
@@ -307,7 +298,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     "ip": i.network_ip,
                     "port": i.port,
                     "username": i.user.username,
-                    "password": i.user.password,
+                    "password": decrypt_p(i.user.password),
                     "private_key": i.user.private_key.name,
                     # "vars": {'name':123}, 变量
                 }], )

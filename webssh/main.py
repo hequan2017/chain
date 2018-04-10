@@ -27,6 +27,17 @@ BUF_SIZE = 1024
 DELAY = 3
 workers = {}
 
+from cryptography.fernet import Fernet
+
+def  decrypt_p(password):  ## 解密
+        f = Fernet('Ow2Qd11KeZS_ahNOMicpWUr3nu3RjOUYa0_GEuMDlOc=')
+        p1 = password.encode()
+        token = f.decrypt(p1)
+        p2 = token.decode()
+        return p2
+
+
+
 
 class Worker(object):
     def __init__(self, ssh, chan, dst_addr):
@@ -214,7 +225,7 @@ class IndexHandler(MixinHandler, tornado.web.RequestHandler):
         password = self.get_argument('password')
         privatekey = self.get_privatekey()
         pkey = self.get_pkey(privatekey, password) if privatekey else None
-        args = (hostname, port, username, password, pkey)
+        args = (hostname, port, username, decrypt_p(password), pkey)
         logging.debug(args)
         return args
 

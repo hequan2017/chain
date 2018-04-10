@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 
 from .models import login_log
 
+
 @login_required(login_url="/login.html")
 def index(request):
     """

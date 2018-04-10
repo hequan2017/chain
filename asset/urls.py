@@ -27,7 +27,7 @@ urlpatterns = [
     path('asset-user-update-<int:pk>.html', views.AssetUserUpdate.as_view(), name='asset_user_update'),
 
     path('asset-webssh.html', views.AssetWeb.as_view(), name='asset_web'),
-
+    path('asset-hardware-update.html', views.AssetHardwareUpdate.as_view(), name='asset_hardware_update'),
 ]
 
 app_name="asset"

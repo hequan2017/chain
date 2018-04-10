@@ -11,9 +11,9 @@ from  asset.models import asset, asset_user
 from  asset.models import asset as Asset
 from io import StringIO
 from  chain import settings
-
+from  index.password_crypt import encrypt_p, decrypt_p
 from os import system
-
+from  tasks.tasks import ansbile_asset_hardware
 import csv, json, logging, codecs, chardet
 
 logger = logging.getLogger('asset')
@@ -153,6 +153,45 @@ class AssetAllDel(LoginRequiredMixin, View):
         except Exception as e:
             ret['status'] = False
             ret['error'] = '删除请求错误,没有权限{}'.format(e)
+        finally:
+            return HttpResponse(json.dumps(ret))
+
+
+class AssetHardwareUpdate(LoginRequiredMixin, View):
+    """
+    资产硬件 异步更新
+    """
+    model = asset
+
+    def post(self, request):
+        ret = {'status': True, 'error': None, }
+        try:
+            if request.POST.get('nid'):
+                id = request.POST.get('nid', None)
+
+                asset_obj = asset.objects.get(id=id)
+
+                try:
+                    test = asset_obj.user.hostname
+                except Exception as e:
+                    logger.error(e)
+                    ret['status'] = False
+                    ret['error'] = '未关联用户，请关联后再更新'.format(e)
+                    return HttpResponse(json.dumps(ret))
+
+                assets = [{"hostname": asset_obj.hostname,
+                           "ip": asset_obj.network_ip,
+                           "port": asset_obj.port,
+                           "username": asset_obj.user.username,
+                           "password": decrypt_p(asset_obj.user.password),
+                           "private_key": asset_obj.user.private_key.name,
+                           }]
+                exec = ansbile_asset_hardware.delay(id, assets)
+
+        except Exception as e:
+            logger.error(e)
+            ret['status'] = False
+            ret['error'] = '获取资产信息错误{}'.format(e)
         finally:
             return HttpResponse(json.dumps(ret))
 
@@ -386,6 +425,12 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         forms = form.save()
+        password_form = form.cleaned_data['password']
+        if password_form != None:
+            password = encrypt_p(password_form)
+            forms.password = password
+            forms.save()
+
         name = form.cleaned_data['hostname']
         obj = asset_user.objects.get(hostname=name).private_key.name
         system("chmod  600  {0}".format(obj))
@@ -412,17 +457,23 @@ class AssetUserUpdate(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         obj = asset_user.objects.get(id=pk)
-        old_password = obj.password
 
+        old_password = obj.password
         new_password = form.cleaned_data['password']
         forms = form.save()
+
+        if new_password != None:
+            password = encrypt_p(new_password)
+            forms.password = password
+            forms.save()
+        elif new_password == None:
+            forms.password = old_password
+            forms.save()
+
         name = form.cleaned_data['hostname']
         obj = asset_user.objects.get(hostname=name).private_key.name
         system("chmod  600  {0}".format(obj))
 
-        if new_password == None:
-            forms.password = old_password
-            forms.save()
         return super().form_valid(form)
 
 

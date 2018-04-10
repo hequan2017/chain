@@ -2,12 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://E:/AuditSQL/.idea/AuditSQL.iml" filepath="E:/AuditSQL/.idea/AuditSQL.iml" />
       <module fileurl="file://E:/autoops/.idea/autoops.iml" filepath="E:/autoops/.idea/autoops.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/chain.iml" filepath="$PROJECT_DIR$/.idea/chain.iml" />
       <module fileurl="file://E:/jumpserver/.idea/jumpserver.iml" filepath="E:/jumpserver/.idea/jumpserver.iml" />
       <module fileurl="file://E:/py/.idea/py.iml" filepath="E:/py/.idea/py.iml" />
-      <module fileurl="file://E:/webssh/.idea/webssh.iml" filepath="E:/webssh/.idea/webssh.iml" />
     </modules>
   </component>
 </project>

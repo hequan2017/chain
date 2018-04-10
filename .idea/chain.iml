@@ -15,10 +15,6 @@
     <orderEntry type="jdk" jdkName="Remote Python 3.6.4 (ssh://root@47.94.252.25:22/usr/bin/python)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="jumpserver" />
-    <orderEntry type="module" module-name="autoops" />
-    <orderEntry type="module" module-name="py" />
-    <orderEntry type="module" module-name="webssh" />
-    <orderEntry type="module" module-name="AuditSQL" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />

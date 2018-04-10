@@ -167,7 +167,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-web_ssh = "47.104.140.38"
+web_ssh = "47.94.252.25"
 web_port = 8002
 
 
@@ -216,7 +216,7 @@ CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_IMPORTS = ('tasks.tasks',)
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'  #这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
 
-JET_DEFAULT_THEME = 'light-blue'
+#JET_DEFAULT_THEME = ''
 
 # 主题
 JET_THEMES = [
@@ -249,7 +249,7 @@ JET_THEMES = [
         'theme': 'light-gray',
         'color': '#222',
         'title': 'Light Gray'
-    }
+    },
 ]
 # 是否展开所有菜单
 JET_SIDE_MENU_COMPACT = True  # 菜单不是很多时建议为TRUE

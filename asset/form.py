@@ -63,6 +63,7 @@ class AssetUserForm(forms.ModelForm):
         fields = '__all__'
 
         help_texts = {
+            'password': '* 如不修改密码，请保持为空',
             'private_key': '*  如私钥有密码，请先取消掉再上传',
         }
 

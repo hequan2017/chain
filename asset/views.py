@@ -157,6 +157,10 @@ class AssetAllDel(LoginRequiredMixin, View):
             return HttpResponse(json.dumps(ret))
 
 
+
+
+
+
 class AssetHardwareUpdate(LoginRequiredMixin, View):
     """
     资产硬件 异步更新
@@ -496,6 +500,18 @@ class AssetUserDetail(LoginRequiredMixin, DetailView):
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
+
+
+
+def AssetUserAsset(request,pk):
+    obj = asset.objects.filter(user=pk)
+    return render(request, "asset/asset-user-asset.html",
+                  {"nid": pk, "assets_list": obj,
+                   "asset_active": "active",
+                    "asset_user_list_active": "active"})
+
+
+
 
 
 class AssetUserAllDel(LoginRequiredMixin, View):

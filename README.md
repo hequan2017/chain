@@ -50,10 +50,6 @@ http://47.104.140.38:8001
 ###  部署
 
 
-修改 chain/settings.py
-
-
-
 ```bash
 git clone https://github.com/hequan2017/chain.git
 ```
@@ -75,10 +71,12 @@ yum  install   sshpass   redis -y
 systemctl start redis
 pip3   install -r   requirements.txt
 
+
 mv     db.sqlite3  /tmp/
 
 python3     manage.py   makemigrations
 python3     manage.py   migrate
+
 
 创建用户
 python manage.py  shell  << EOF
@@ -95,7 +93,10 @@ python3   manage.py runserver 0.0.0.0:80
 python3    webssh/main.py    ##启动终端登录功能
 
 python3   manage.py   celery worker  -c  4        --loglevel=info
+
 ```
+
+
 
 ```bash
 如果遇到报错 ImportError: No module named '_sqlite3' ,可以执行下面的操作

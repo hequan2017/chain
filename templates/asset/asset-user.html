@@ -25,7 +25,7 @@
                 </li>
             </ol>
         </div>
-        <div class="col-lg-2"  id="split-left">
+        <div class="col-lg-2" id="split-left">
 
         </div>
     </div>
@@ -33,8 +33,7 @@
         <div class="row">
 
 
-
-            <div class="col-lg-12"   id="split-right" >
+            <div class="col-lg-12" id="split-right">
 
                 <div class="ibox float-e-margins">
 
@@ -62,13 +61,13 @@
 
                         <div class="table-responsive">
 
-                                <a href="{% url    'asset:asset_user_add' %}" class="btn btn-sm btn-primary ">
-                                    添加</a>
+                            <a href="{% url    'asset:asset_user_add' %}" class="btn btn-sm btn-primary ">
+                                添加</a>
 
 
-                                <a class="btn btn-sm btn-danger  asset_user_all_del"
-                                >批量删除
-                                </a>
+                            <a class="btn btn-sm btn-danger  asset_user_all_del"
+                            >批量删除
+                            </a>
 
                             <form id="del_form_asset_all" class="form-horizontal  "
                                   action="{% url 'asset:asset_export' %}" method="post">
@@ -79,9 +78,9 @@
                                     <thead>
                                     <tr>
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
-                                         <th>名称</th>
+                                        <th>名称</th>
                                         <th>用户名</th>
-                                         <th>管理资产</th>
+                                        <th>关联资产</th>
                                         <th>备注</th>
 
                                         <th>动作</th>
@@ -92,13 +91,13 @@
                                     {% for   row   in   asset_user_list %}
 
                                         <tr class="gradeA" id="{{ row.id }}">
-                                            <td><input type="checkbox" value="{{ row.id }}"   name="id"></td>
+                                            <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
                                             <td class="center"><a
                                                     href="{% url  "asset:asset_user_detail"   pk=row.id %}">{{ row.hostname }}</a>
                                             </td>
-                                            <td class="center">{{ row.username}}</td>
+                                            <td class="center">{{ row.username }}</td>
                                             <td class="center">{{ row.asset_set.count }}</td>
-                                            <td class="center">{{ row.ps}}</td>
+                                            <td class="center">{{ row.ps }}</td>
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_user_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  asset_user_del"
@@ -131,8 +130,6 @@
 
 
         <script>
-
-
 
 
             $(function () {

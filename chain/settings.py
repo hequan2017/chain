@@ -43,9 +43,9 @@ INSTALLED_APPS = [
     'bootstrap3',
     'asset',
     'index',
+    'tasks',
     'rest_framework',
     'rest_framework.authtoken',
-    'tasks',
     'djcelery',
 ]
 
@@ -100,6 +100,18 @@ DATABASES = {
     }
 }
 
+# DATABASES = {
+#      'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'chain',
+#         'USER': 'root',
+#         'PASSWORD': '111111',
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#      }
+# }
+
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -139,7 +151,7 @@ DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATE_FORMAT = 'Y-m-d'
 
 
-# Static files (CSS, JavaScript, Images)
+
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
@@ -167,11 +179,12 @@ REST_FRAMEWORK = {
     ),
 }
 
+# webssh
 web_ssh = "47.94.252.25"
 web_port = 8002
 
 
-
+## logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -202,6 +215,7 @@ LOGGING = {
     },
 }
 
+#   celery
 djcelery.setup_loader()
 BROKER_URL = 'redis://127.0.0.1:6379/0'  #消息存储数据存储在仓库0
 
@@ -216,7 +230,10 @@ CELERY_TIMEZONE = 'Asia/Shanghai'
 CELERY_IMPORTS = ('tasks.tasks',)
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'  #这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
 
-#JET_DEFAULT_THEME = ''
+
+
+##jet
+JET_DEFAULT_THEME = 'default'
 
 # 主题
 JET_THEMES = [

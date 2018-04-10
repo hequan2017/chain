@@ -6,16 +6,19 @@ from django.db.models import Q
 from  asset.models import asset
 from  tasks.models import cmd_list, tools_script, tool_results
 from  tasks.form import ToolsForm
+from tasks.tasks import ansbile_tools
 from djcelery.models import TaskMeta
-from .tasks import ansbile_tools
-from  chain import settings
 from index.password_crypt import decrypt_p
-from .ansible_2420.runner import AdHocRunner
-from .ansible_2420.inventory import BaseInventory
-
+from  chain import settings
 import os, json, threading, logging, random
-
 logger = logging.getLogger('tasks')
+
+from tasks.ansible_2420.runner import AdHocRunner
+from tasks.ansible_2420.inventory import BaseInventory
+
+
+
+
 
 
 class TasksCmd(LoginRequiredMixin, ListView):
@@ -26,7 +29,7 @@ class TasksCmd(LoginRequiredMixin, ListView):
     model = asset
     context_object_name = "asset_list"
     queryset = asset.objects.all()
-    ordering = ('id',)
+    ordering = ('-id',)
 
     def get_queryset(self):
         self.queryset = super().get_queryset()
@@ -94,11 +97,11 @@ def ThreadCmdJob(assets, tasks):
             data_fatal_msg = retsult.results_raw['unreachable'][hostname]
 
     task = []
+
     for i in range(len(tasks)):
         try:
             """任务的返回结果  成功信息 """
-            tasks_std = data['task{}'.format(i)]['stdout']
-            task.append(tasks_std)
+            task.append(data['task{}'.format(i)]['stdout'])
         except Exception as e:
             logger.error("执行失败{0}".format(e))
             try:
@@ -134,7 +137,20 @@ class TasksPerform(LoginRequiredMixin, View):
         for x in range(len(module)):
             tasks.append({"action": {"module": module[x], "args": args[x]}, "name": 'task{}'.format(x)}, )
 
+        ret_data = {'data': []}
+
+
+
         for i in asset_obj:
+
+            try:
+                test = i.user.hostname
+            except Exception as e:
+                logger.error(e)
+                ret = {'hostname': i.hostname, 'data': '未关联用户,请关联后再操作  {0}'.format(e)}
+                ret_data['data'].append(ret)
+                return HttpResponse(json.dumps(ret_data))
+
             assets.append([{
                 "hostname": i.hostname,
                 "ip": i.network_ip,
@@ -152,7 +168,7 @@ class TasksPerform(LoginRequiredMixin, View):
             t_list.append(t)
             t.start()
 
-        ret_data = {'data': []}
+
 
         for j in t_list:
             j.join()
@@ -267,7 +283,6 @@ class ToolsExec(LoginRequiredMixin, ListView):
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 
-
     def post(self, request):
         """
         执行工具
@@ -306,7 +321,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
             file = "data/script/{0}".format(random.randint(0, 999999))
             file2 = "data/script/{0}".format(random.randint(1000000, 9999999))
 
-            if tool_obj.tool_run_type == 'shell'  or   tool_obj.tool_run_type == 'python':
+            if tool_obj.tool_run_type == 'shell' or tool_obj.tool_run_type == 'python':
 
                 with  open("{}.sh".format(file), 'w+') as f:
                     f.write(tool_obj.tool_script)
@@ -324,7 +339,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
 
         except Exception as e:
             ret['status'] = False
-            ret['error'] = '创建任务失败 {0}'.format(e)
+            ret['error'] = '创建任务失败,{0}'.format(e)
         finally:
             return HttpResponse(json.dumps(ret))
 

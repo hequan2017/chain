@@ -63,7 +63,7 @@
         </div>
     </div>
 
-   <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-lg-1" id="split-left">
                 <div class="ibox float-e-margins">
@@ -123,7 +123,6 @@
                                     添加</a>
 
 
-
                             </form>
                             <form id="del_form_asset_all" class="form-horizontal  "
                                   action="{% url 'asset:asset_export' %}" method="post">
@@ -140,7 +139,8 @@
                                         <th>平台</th>
                                         <th>负责人</th>
                                         <th>项目</th>
-                                        <th>动作{{ error_performance }}</th>
+                                        <th>动作</th>
+                                        <th>终端</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -154,15 +154,15 @@
                                             </td>
                                             <td class="center">{{ row.network_ip }}</td>
                                             <td class="center">{{ row.inner_ip }}</td>
-                                            <td class="center">{{ row.platform   }} --  {{ row.region  }}</td>
+                                            <td class="center">{{ row.platform }} -- {{ row.region }}</td>
                                             <td class="center">{{ row.manager }}</td>
                                             <td class="center">{{ row.project }}</td>
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  asset_del"
-                                                >删除</a>
-                                                <a type="button" class="btn btn-primary btn-xs webssh">终端
-                                                </a>
+                                                >删除</a></td>
+                                            <td><a type="button" class="btn btn-primary btn-xs webssh">终端
+                                            </a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -171,7 +171,7 @@
                                 </table>
                                 <button class="btn btn-sm btn-primary" type="submit">导出</button>
                                 <a href="{% url    'asset:asset_export' %}" class="btn btn-sm btn-primary ">导出全部</a>
-                                 <a class="btn btn-sm btn-danger  asset_all_del"
+                                <a class="btn btn-sm btn-danger  asset_all_del"
                                 >批量删除
                                 </a>
                                 <div>
@@ -381,7 +381,7 @@
                         closeOnConfirm: false
                     }, function () {
                         $.ajax({
-                             headers: {"X-CSRFToken": '{{ csrf_token }}'},
+                            headers: {"X-CSRFToken": '{{ csrf_token }}'},
                             url: "/asset/asset-all-del.html",
                             type: 'POST',
                             data: $('#del_form_asset_all').serialize(),
@@ -418,7 +418,7 @@
                         success: function (ret) {
 
                             var obj = JSON.parse(ret);
-                            var ips =  obj.ip;
+                            var ips = obj.ip;
                             var ports = obj.port;
                             var usernames = obj.username;
                             var passwords = obj.password;
@@ -457,7 +457,7 @@
                                     socket = new WebSocket(url),
                                     terminal = document.getElementById('#terminal'),
                                     geometry = current_geometry();
-                                term  =  new Terminal({cursorBlink: true, cols: geometry[0], rows: geometry[1]});
+                                term = new Terminal({cursorBlink: true, cols: geometry[0], rows: geometry[1]});
 
                                 console.log(url);
                                 term.on('data', function (data) {

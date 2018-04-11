@@ -23,7 +23,7 @@ class AssetForm(forms.ModelForm):
     def __init__(self, **kwargs):
         instance = kwargs.get('instance')
         if instance:
-            initial = kwargs.get('vars', {})
+            initial = kwargs.get('initial', {})
             initial.update({
                 'vars': instance.asset.all(),
             })

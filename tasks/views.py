@@ -4,8 +4,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
 from django.db.models import Q
 from  asset.models import asset
-from  tasks.models import cmd_list, tools_script, tool_results
-from  tasks.form import ToolsForm
+from  tasks.models import cmd_list, tools_script, tool_results,variable
+from  tasks.form import ToolsForm,VarsForm
 from tasks.tasks import ansbile_tools
 from djcelery.models import TaskMeta
 from index.password_crypt import decrypt_p
@@ -151,6 +151,12 @@ class TasksPerform(LoginRequiredMixin, View):
                 ret_data['data'].append(ret)
                 return HttpResponse(json.dumps(ret_data))
 
+            vars = {'hostname':i.hostname,'inner_ip':i.inner_ip,"network_ip":i.network_ip,"project":i.project }
+            try :
+                vars.update(variable.objects.get(assets__hostname=i).vars)
+            except Exception as e:
+                logger.error(e)
+
             assets.append([{
                 "hostname": i.hostname,
                 "ip": i.network_ip,
@@ -158,7 +164,7 @@ class TasksPerform(LoginRequiredMixin, View):
                 "username": i.user.username,
                 "password": decrypt_p(i.user.password),
                 "private_key": i.user.private_key.name,
-                # "vars": {'name':123}, 变量
+                "vars":vars ,
             }], )
 
         t_list = []
@@ -308,6 +314,14 @@ class ToolsExec(LoginRequiredMixin, ListView):
             assets = []
 
             for i in asset_obj:
+
+                vars = {'hostname': i.hostname, 'inner_ip': i.inner_ip, "network_ip": i.network_ip,
+                        "project": i.project}
+                try:
+                    vars.update(variable.objects.get(assets__hostname=i).vars)
+                except Exception as e:
+                    logger.error(e)
+
                 assets.append([{
                     "hostname": i.hostname,
                     "ip": i.network_ip,
@@ -315,7 +329,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     "username": i.user.username,
                     "password": decrypt_p(i.user.password),
                     "private_key": i.user.private_key.name,
-                    # "vars": {'name':123}, 变量
+                    "vars": vars,
                 }], )
 
             file = "data/script/{0}".format(random.randint(0, 999999))
@@ -386,8 +400,10 @@ class ToolsResultsDetail(LoginRequiredMixin, DetailView):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         task = tool_results.objects.get(id=pk)
 
-        results = TaskMeta.objects.get(task_id=task.task_id)
-
+        try:
+            results = TaskMeta.objects.get(task_id=task.task_id)
+        except Exception as e:
+            results = {'result':"还未完成,请稍后再查看！！！"}
         context = {
             "tasks_active": "active",
             "tools_results_active": "active",
@@ -396,3 +412,82 @@ class ToolsResultsDetail(LoginRequiredMixin, DetailView):
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
+
+
+
+
+class VarsList(LoginRequiredMixin, ListView):
+    """
+    Vars列表
+    """
+    template_name = 'tasks/vars.html'
+    model = variable
+    context_object_name = "vars_list"
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "tasks_active": "active",
+            "vars_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class VarsAdd(LoginRequiredMixin, CreateView):
+    """
+     Vars增加
+    """
+    model = variable
+    form_class = VarsForm
+    template_name = 'tasks/vars-add-update.html'
+    success_url = reverse_lazy('tasks:vars')
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "tasks_active": "active",
+            "vars_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class VarsUpdate(LoginRequiredMixin, UpdateView):
+    '''
+     Vars更新
+    '''
+    model = variable
+    form_class = VarsForm
+    template_name = 'tasks/vars-add-update.html'
+    success_url = reverse_lazy('tasks:vars')
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "tasks_active": "active",
+            "vars_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+
+class VarsAllDel(LoginRequiredMixin, View):
+    """
+    工具删除
+    """
+    model = variable
+
+    def post(self, request):
+        ret = {'status': True, 'error': None, }
+        try:
+            if request.POST.get('nid'):
+                id = request.POST.get('nid', None)
+                variable.objects.get(id=id).delete()
+            else:
+                ids = request.POST.getlist('id', None)
+                idstring = ','.join(ids)
+                variable.objects.extra(where=['id IN (' + idstring + ')']).delete()
+        except Exception as e:
+            ret['status'] = False
+            ret['error'] = '删除请求错误,没有权限{}'.format(e)
+        finally:
+            return HttpResponse(json.dumps(ret))

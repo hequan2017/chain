@@ -1,6 +1,8 @@
 from django.db import models
 import random
 
+
+
 class asset(models.Model):
     PLATFORM_CHOICES=(
         ("阿里云","阿里云"),
@@ -56,6 +58,9 @@ class asset(models.Model):
     ctime= models.DateTimeField(auto_now_add=True,null=True,verbose_name='创建时间',blank=True)
     utime = models.DateTimeField(auto_now=True, null=True,verbose_name='更新时间',blank=True)
 
+
+
+
     class  Meta:
         db_table ="asset"
         verbose_name="资产管理"
@@ -91,3 +96,5 @@ class  asset_user(models.Model):
 
     def __str__(self):
         return self.hostname
+
+

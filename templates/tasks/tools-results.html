@@ -15,7 +15,7 @@
                     <a href="/index.html">主页</a>
                 </li>
                 <li>
-                    <a>工具</a>
+                    <a>作业中心</a>
                 </li>
                 <li class="active">
                     <strong>任务结果</strong>
@@ -59,6 +59,7 @@
                                     <tr>
                                         <th width="20">ID</th>
                                         <th>task_id</th>
+                                        <th>状态</th>
                                         <th>创建时间</th>
 
 
@@ -72,6 +73,7 @@
                                             <td class="center"><a
                                                     href="{% url  "tasks:tools_results_detail"   pk=row.id %}">{{ row.id }}</a></td>
                                             <td class="center">{{ row.task_id }}  </td>
+                                               <td class="center">{{ row.status }}  </td>
                                             <td class="center">{{ row.ctime }}</td>
 
                                         </tr>

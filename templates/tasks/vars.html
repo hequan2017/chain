@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 
-{% block  title %}工具{% endblock %}
+{% block  title %}变量{% endblock %}
 
 {% block page-content %}
 
@@ -9,7 +9,7 @@
 
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>工具</h2>
+            <h2>变量</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="/index.html">主页</a>
@@ -18,7 +18,7 @@
                     <a>作业中心</a>
                 </li>
                 <li class="active">
-                    <strong>工具</strong>
+                    <strong>变量</strong>
                 </li>
             </ol>
         </div>
@@ -31,7 +31,7 @@
             <div class="col-lg-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>工具</h5>
+                        <h5>变量</h5>
                         <div class="ibox-tools">
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
@@ -54,10 +54,10 @@
 
                           <div class="table-responsive">
 
-                            <a href="{% url    'tasks:tools_add' %}" class="btn btn-primary  ">
+                            <a href="{% url    'tasks:vars_add' %}" class="btn btn-primary  ">
                                 添加</a>
 
-                            <a class="btn btn-danger tools_all_del"
+                            <a class="btn btn-danger vars_all_del"
                               >批量删除
                             </a>
 
@@ -72,28 +72,27 @@
                                     <tr>
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
                                         <th>名称</th>
-                                        <th>脚本类型</th>
-                                        <th>工具说明</th>
-                                        <th>更新时间</th>
+
+                                        <th>描述</th>
+
 
                                          <th>动作</th>
                                     </tr>
                                     </thead>
                                     <tbody>
 
-                                    {% for   row   in   tools_list %}
+                                    {% for   row   in   vars_list %}
 
                                         <tr class="gradeA" id="{{ row.id }}">
                                             <td><input  type="checkbox"   value="{{ row.id }}"   name="id"></td>
                                             <td class="center">{{ row.name }}</td>
-                                            <td class="center">{{ row.tool_run_type }}  </td>
-                                            <td class="center">{{ row.comment }}</td>
-                                            <td class="center">{{ row.utime }}</td>
+                                            <td class="center">{{ row.desc }}  </td>
+
 
                                             <td>
                                                 <a class="btn btn-primary  btn-xs "
-                                                   href="{% url  "tasks:tools_update"   pk=row.id   %}">编辑</a>
-                                                <a class="btn btn-danger  btn-xs  tools_del"
+                                                   href="{% url  "tasks:vars_update"   pk=row.id   %}">编辑</a>
+                                                <a class="btn btn-danger  btn-xs  vars_del"
                                                       >删除
                                                 </a>
                                             </td>
@@ -121,7 +120,7 @@
 
 <script>
             $(function () {
-                 $(document).on('click','.tools_del',function () {
+                 $(document).on('click','.vars_del',function () {
 
 
                     var   id = $(this).parent().parent().attr('id');
@@ -139,7 +138,7 @@
                         closeOnConfirm: false
                     }, function () {
                     $.ajax({
-                         url: "{% url "tasks:tools_bulk_delete" %}",
+                         url: "{% url  'tasks:vars_bulk_delete' %}",
                         type: 'POST',
                        data: {'nid': id},
                             success: function (data) {
@@ -156,7 +155,7 @@
                     });
                 });
 
-  $(document).on('click','.tools_all_del',function () {
+  $(document).on('click','.vars_all_del',function () {
 
 
 
@@ -173,7 +172,7 @@
                         closeOnConfirm: false
                     }, function () {
                     $.ajax({
-                        url: "{% url "tasks:tools_bulk_delete" %}",
+                        url: "{% url  'tasks:vars_bulk_delete' %}",
                         type: 'POST',
                         data: $('#del_form_tools_bulk').serialize(),
                          success: function (data) {

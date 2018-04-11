@@ -51,7 +51,7 @@ class variable(models.Model):
     name = models.CharField(max_length=200, verbose_name='变量组名字')
     desc = models.TextField(null=True, blank=True, verbose_name='描述')
     vars = JSONField(null=True, blank=True, default={}, verbose_name='变量')
-    assets = models.ManyToManyField(asset, verbose_name='关联资产', blank=True)
+    assets = models.ManyToManyField(asset, verbose_name='关联资产',related_name='asset', blank=True)
 
     def __str__(self):
         return self.name

@@ -61,6 +61,7 @@ class asset(models.Model):
 
 
 
+
     class  Meta:
         db_table ="asset"
         verbose_name="资产管理"

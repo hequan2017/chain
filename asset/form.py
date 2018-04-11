@@ -1,15 +1,50 @@
 from    django import forms
 from    asset.models import asset, asset_user
-
+from   tasks.models import variable
 
 class FileForm(forms.Form):
     file = forms.FileField(label="导入资产")
 
 
 class AssetForm(forms.ModelForm):
+
+    vars = forms.ModelMultipleChoiceField(
+        queryset=variable.objects.all(),
+        label=("变量组"),
+        widget=forms.SelectMultiple(
+            attrs={
+                'class': 'select2',
+                'data-placeholder': ('请选择变量组')
+            }
+        ),
+        required=False,
+    )
+
+    def __init__(self, **kwargs):
+        instance = kwargs.get('instance')
+        if instance:
+            initial = kwargs.get('vars', {})
+            initial.update({
+                'vars': instance.asset.all(),
+            })
+            kwargs['initial'] = initial
+        super().__init__(**kwargs)
+
+
+    def save(self, commit=True):
+        var = super().save(commit=commit)
+        users = self.cleaned_data['vars']
+        var.asset.set(users)
+        return var
+
+
     class Meta:
         model = asset
-        fields = '__all__'
+        # fields = '__all__'
+        fields = [
+            'hostname', 'network_ip', 'inner_ip','system', 'vars','cpu',
+            'memory','disk','bandwidth','project','platform','region','manager','user','Instance_id','buy_time','expire_time','port','ps','is_active'
+        ]
 
         labels = {
             "network_ip": "外网IP",

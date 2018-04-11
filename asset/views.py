@@ -100,7 +100,10 @@ class AssetUpdate(LoginRequiredMixin, UpdateView):
         if '__next__' in self.request.POST:
             context['i__next__'] = self.request.POST['__next__']
         else:
-            context['i__next__'] = self.request.META['HTTP_REFERER']
+            try:
+                context['i__next__'] = self.request.META['HTTP_REFERER']
+            except Exception as e:
+                pass
         kwargs.update(context)
         return super(AssetUpdate, self).get_context_data(**kwargs)
 

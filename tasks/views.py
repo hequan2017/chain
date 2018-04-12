@@ -16,6 +16,9 @@ logger = logging.getLogger('tasks')
 from tasks.ansible_2420.runner import AdHocRunner
 from tasks.ansible_2420.inventory import BaseInventory
 
+import pprint
+pp = pprint.PrettyPrinter(indent=4)
+
 
 
 
@@ -51,73 +54,60 @@ class TasksCmd(LoginRequiredMixin, ListView):
         return super().get_context_data(**kwargs)
 
 
-class MyThread(threading.Thread):
-    """
-    多线程执行ansible任务
-    """
-
-    def __init__(self, func, args=()):
-        super(MyThread, self).__init__()
-        self.func = func
-        self.args = args
-
-    def run(self):
-        self.result = self.func(*self.args)
-
-    def get_result(self):
-        try:
-            return self.result  # 如果子线程不使用join方法，此处可能会报没有self.result的错误
-        except Exception as e:
-            logger.error(e)
-            return None
 
 
 def ThreadCmdJob(assets, tasks):
     """
-    执行命令的线程
     :param assets:  资产帐号密码
     :param tasks:  执行的命令 和 模块
     :return:  执行结果
     """
+
+    hostname = []
+    for i in assets:
+        hostname.append(i['hostname'])
+
     inventory = BaseInventory(assets)
     runner = AdHocRunner(inventory)
     retsult = runner.run(tasks, "all")
-    hostname = assets[0]['hostname']
 
     try:
-        """执行成功"""
-        data = retsult.results_raw['ok'][hostname]
+        ok = retsult.results_raw['ok']
+        failed = retsult.results_raw['failed']
+        unreachable = retsult.results_raw['unreachable']
+        if  not ok  and  not failed  :
+            ret = unreachable
+        elif  not ok:
+            ret = failed
+        else:
+            ret = ok
     except Exception as e:
-        logger.error(e)
-        try:
-            """执行失败"""
-            data = retsult.results_raw['failed'][hostname]
-        except Exception as  e:
-            logger.error("连接不上  {0}".format(e))
-            data_fatal_msg = retsult.results_raw['unreachable'][hostname]
+        logger.error("{}".format(e))
 
-    task = []
+    retsult_data = []
 
-    for i in range(len(tasks)):
-        try:
-            """任务的返回结果  成功信息 """
-            task.append(data['task{}'.format(i)]['stdout'])
-        except Exception as e:
-            logger.error("执行失败{0}".format(e))
+    for i in range(len(hostname)):
+        std = []
+        ret_host = {}
+        n = hostname[i]
+        for t in range(len(tasks)):
             try:
-                """失败信息"""
-                task.append(retsult.results_raw['failed'][hostname]['task{}'.format(i)]['stderr'])
+                out = ret[n]['task{}'.format(t)]['stdout']
+                err = ret[n]['task{}'.format(t)]['stderr']
+                std.append("{0}{1}".format(out,err))
             except Exception as e:
-                logger.error("执行失败{0}".format(e))
+                logger.error(e)
                 try:
-                    """连接失败"""
-                    task.append("连接失败  {0}".format(data_fatal_msg['task{}'.format(i)]['msg']))
+                    std.append("{0} \n".format(ret[n]['task{}'.format(t)]['msg'],t+1))
                 except Exception as e:
-                    logger.error('未执行任务{0}，请检查修改上面任务！！！ \n {1}'.format(e, tasks))
-                    task.append('未执行任务{0},请检查修改上面任务！！！ \n \n {1}'.format(e, tasks))
+                    logger.error("第{0}个执行失败,此任务后面的任务未执行 {1}".format(t+1,e))
+                    std.append("第{0}个执行失败,此任务后面的任务未执行".format(t+1))
 
-    ret = {'hostname': hostname, 'data': '\n'.join(task)}
-    return ret
+        ret_host['hostname'] = n
+        ret_host['data'] = '\n'.join(std)
+        retsult_data.append(ret_host)
+
+    return retsult_data
 
 
 class TasksPerform(LoginRequiredMixin, View):
@@ -157,7 +147,7 @@ class TasksPerform(LoginRequiredMixin, View):
             except Exception as e:
                 logger.error(e)
 
-            assets.append([{
+            assets.append({
                 "hostname": i.hostname,
                 "ip": i.network_ip,
                 "port": i.port,
@@ -165,22 +155,11 @@ class TasksPerform(LoginRequiredMixin, View):
                 "password": decrypt_p(i.user.password),
                 "private_key": i.user.private_key.name,
                 "vars":vars ,
-            }], )
-
-        t_list = []
-
-        for i in range(asset_obj.count()):
-            t = MyThread(ThreadCmdJob, args=(assets[i], tasks,))
-            t_list.append(t)
-            t.start()
+            }, )
 
 
-
-        for j in t_list:
-            j.join()
-            ret = j.get_result()
-            ret_data['data'].append(ret)
-
+        t = ThreadCmdJob(assets, tasks)
+        ret_data['data']=t
         return HttpResponse(json.dumps(ret_data))
 
 
@@ -322,7 +301,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 except Exception as e:
                     logger.error(e)
 
-                assets.append([{
+                assets.append({
                     "hostname": i.hostname,
                     "ip": i.network_ip,
                     "port": i.port,
@@ -330,7 +309,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     "password": decrypt_p(i.user.password),
                     "private_key": i.user.private_key.name,
                     "vars": vars,
-                }], )
+                }, )
 
             file = "data/script/{0}".format(random.randint(0, 999999))
             file2 = "data/script/{0}".format(random.randint(1000000, 9999999))

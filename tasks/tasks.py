@@ -25,45 +25,80 @@ def debug_task(self):
 def  ansbile_tools(assets,tools,module):
     current_process()._config = {'semprefix': '/mp'}
 
-    ret=[]
-    if module == "script":
-        for i  in  assets:
-            inventory = BaseInventory(i)
-            runner = AdHocRunner(inventory)
-            tasks = [
-                    {"action": {"module": "{}".format(module), "args": "{}".format(tools)}, "name": "script"},
-            ]
-            retsult = runner.run(tasks, "all")
-            hostname = i[0]['hostname']
+    hostname = []
+    for i in assets:
+        hostname.append(i['hostname'])
+    inventory = BaseInventory(assets)
+    retsult_data = []
 
+    if   module == "script":
+        runner = AdHocRunner(inventory)
+        tasks = [
+            {"action": {"module": "{}".format(module), "args": "{}".format(tools)}, "name": "script"},
+        ]
+        retsult = runner.run(tasks, "all")
+
+        try:
+            ok = retsult.results_raw['ok']
+            failed = retsult.results_raw['failed']
+            unreachable = retsult.results_raw['unreachable']
+            if not ok and not failed:
+                ret = unreachable
+            elif not ok:
+                ret = failed
+            else:
+                ret = ok
+        except Exception as e:
+            logger.error("{}".format(e))
+
+        for i in range(len(hostname)):
+            std = []
+            ret_host = {}
+            n = hostname[i]
             try:
-                try:
-                    data = retsult.results_raw['ok'][hostname]
-                    ret.append(json.dumps(data))
-                except Exception as e:
+                out = ret[n]['script']['stdout']
+                err = ret[n]['script']['stderr']
+                std.append("{0}{1}".format(out, err))
+            except Exception as e:
                     logger.error(e)
                     try:
-                        data = retsult.results_raw['failed'][hostname]
-                        ret.append(json.dumps(data))
-                    except Exception as  e:
-                        logger.error(e)
-                        data = retsult.results_raw['unreachable'][hostname]
-                        ret.append(json.dumps(data))
-            except Exception as e:
-                logger.error(e)
+                        std.append("{0} \n".format(ret[n]['script']['msg']))
+                    except Exception as e:
+                        logger.error("执行失败{0}".format(e))
+            ret_host['hostname'] = n
+            ret_host['data'] = '\n'.join(std)
+            retsult_data.append(ret_host)
 
     elif  module == 'yml':
-        for i in assets:
-            try:
-                inventory = BaseInventory(i)
-                runers = PlayBookRunner(playbook_path=tools, inventory=inventory)
-                rets = runers.run()
-                print(rets['results_callback'])
-                ret.append(json.dumps(rets['results_callback']))
-            except Exception as  e:
-                logger.error(e)
 
-    return   ret
+            runers = PlayBookRunner(playbook_path=tools, inventory=inventory)
+            retsult = runers.run()
+
+            try:
+                ret = retsult['results_callback']
+            except Exception as e:
+                logger.error("{}".format(e))
+
+            for i in range(len(hostname)):
+                    std = []
+                    ret_host = {}
+                    n = hostname[i]
+                    try:
+                        print(ret)
+                        out = ret[n]['stdout']
+                        err = ret[n]['stderr']
+                        std.append("{0}{1}".format(out, err))
+                    except Exception as e:
+                        logger.error(e)
+                        try:
+                            std.append("{0} \n".format(ret[n]['msg']))
+                        except Exception as e:
+                            logger.error("执行失败{0}".format(e))
+                    ret_host['hostname'] = n
+                    ret_host['data'] = '\n'.join(std)
+                    retsult_data.append(ret_host)
+
+    return   retsult_data
 
 @app.task()
 def  ansbile_asset_hardware(id,assets):

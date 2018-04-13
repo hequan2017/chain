@@ -63,11 +63,13 @@ def ThreadCmdJob(assets, tasks):
     :return:  执行结果
     """
 
-    hostname = []
-    for i in assets:
-        hostname.append(i['hostname'])
 
-    inventory = BaseInventory(assets)
+
+    inventory = BaseInventory(host_list=assets)
+    hostname = []
+    for i in inventory.hosts:
+        hostname.append(i)
+
     runner = AdHocRunner(inventory)
     retsult = runner.run(tasks, "all")
 
@@ -86,24 +88,23 @@ def ThreadCmdJob(assets, tasks):
 
     retsult_data = []
 
-    for i in range(len(hostname)):
+    for i,element in enumerate(hostname):
         std = []
         ret_host = {}
-        n = hostname[i]
-        for t in range(len(tasks)):
+        for t  in range(len(tasks)):
             try:
-                out = ret[n]['task{}'.format(t)]['stdout']
-                err = ret[n]['task{}'.format(t)]['stderr']
+                out = ret[element]['task{}'.format(t)]['stdout']
+                err = ret[element]['task{}'.format(t)]['stderr']
                 std.append("{0}{1}".format(out,err))
             except Exception as e:
                 logger.error(e)
                 try:
-                    std.append("{0} \n".format(ret[n]['task{}'.format(t)]['msg'],t+1))
+                    std.append("{0} \n".format(ret[hostname[i]]['task{}'.format(t)]['msg'],t+1))
                 except Exception as e:
                     logger.error("第{0}个执行失败,此任务后面的任务未执行 {1}".format(t+1,e))
                     std.append("第{0}个执行失败,此任务后面的任务未执行".format(t+1))
 
-        ret_host['hostname'] = n
+        ret_host['hostname'] = element
         ret_host['data'] = '\n'.join(std)
         retsult_data.append(ret_host)
 

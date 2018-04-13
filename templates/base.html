@@ -16,7 +16,7 @@
 </head>
 
 <body>
-<div id="wrapper"   class="container1">
+<div id="wrapper" class="container1">
 
 
     {% include "_nav.html" %}
@@ -34,7 +34,7 @@
 </div>
 
 
-<div id="terminal"> </div>
+<div id="terminal"></div>
 
 {% include  "_js.html" %}
 {% block footer-js %}
@@ -42,9 +42,9 @@
 {% endblock %}
 
 {% block footer-js-ajax %}
-<script type="text/JavaScript">
- $.ajaxSetup({headers: {"X-CSRFToken": '{{ csrf_token }}'}});
-</script>
+    <script type="text/JavaScript">
+        $.ajaxSetup({headers: {"X-CSRFToken": '{{ csrf_token }}'}});
+    </script>
 {% endblock %}
 </body>
 

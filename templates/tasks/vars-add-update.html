@@ -95,7 +95,11 @@
     </div>
 
 
-    {% block footer-js %}
+
+
+{% endblock %}
+
+{% block footer-js %}
 
         <script src="{% static  "js/plugins/codemirror/codemirror.js" %}"></script>
         <script src="{% static "js/plugins/codemirror/mode/javascript.js" %}"></script>
@@ -137,9 +141,6 @@
             });
 
         </script>
-
-
-    {% endblock %}
 
 
 {% endblock %}

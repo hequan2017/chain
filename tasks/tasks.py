@@ -25,11 +25,10 @@ def debug_task(self):
 def  ansbile_tools(assets,tools,module):
     current_process()._config = {'semprefix': '/mp'}
 
-    hostname = []
-    for i in assets:
-        hostname.append(i['hostname'])
-    inventory = BaseInventory(assets)
-    retsult_data = []
+    inventory = BaseInventory(host_list=assets)
+    hostname,retsult_data = [],[]
+    for i in inventory.hosts:
+        hostname.append(i)
 
     if   module == "script":
         runner = AdHocRunner(inventory)
@@ -51,23 +50,24 @@ def  ansbile_tools(assets,tools,module):
         except Exception as e:
             logger.error("{}".format(e))
 
-        for i in range(len(hostname)):
+        for i, element in enumerate(hostname):
             std = []
             ret_host = {}
-            n = hostname[i]
             try:
-                out = ret[n]['script']['stdout']
-                err = ret[n]['script']['stderr']
-                std.append("{0}{1}".format(out, err))
+                out = ret[element]['script']['stdout']
+                if  not  out:
+                    out = ret[element]['script']['stderr']
+                std.append("{0}".format(out))
             except Exception as e:
                     logger.error(e)
                     try:
-                        std.append("{0} \n".format(ret[n]['script']['msg']))
+                        std.append("{0}".format(ret[element]['script']['msg']))
                     except Exception as e:
                         logger.error("执行失败{0}".format(e))
-            ret_host['hostname'] = n
+            ret_host['hostname'] = element
             ret_host['data'] = '\n'.join(std)
             retsult_data.append(ret_host)
+
 
     elif  module == 'yml':
 
@@ -79,22 +79,21 @@ def  ansbile_tools(assets,tools,module):
             except Exception as e:
                 logger.error("{}".format(e))
 
-            for i in range(len(hostname)):
+            for i, element in enumerate(hostname):
                     std = []
                     ret_host = {}
-                    n = hostname[i]
                     try:
-                        print(ret)
-                        out = ret[n]['stdout']
-                        err = ret[n]['stderr']
-                        std.append("{0}{1}".format(out, err))
+                        out = ret[element]['stdout']
+                        if not out:
+                          out= ret[element]['stderr']
+                        std.append("{0}".format(out))
                     except Exception as e:
                         logger.error(e)
                         try:
-                            std.append("{0} \n".format(ret[n]['msg']))
+                            std.append("{0}".format(ret[element]['msg']))
                         except Exception as e:
                             logger.error("执行失败{0}".format(e))
-                    ret_host['hostname'] = n
+                    ret_host['hostname'] = element
                     ret_host['data'] = '\n'.join(std)
                     retsult_data.append(ret_host)
 
@@ -111,9 +110,6 @@ def  ansbile_asset_hardware(id,assets):
         ]
         retsult = runner.run(tasks, "all")
         hostname = assets[0]['hostname']
-
-        print(retsult.results_raw['ok'][hostname])
-
 
         try:
             data = retsult.results_raw['ok'][hostname]['script']['ansible_facts']

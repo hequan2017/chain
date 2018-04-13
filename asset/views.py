@@ -14,6 +14,7 @@ from  chain import settings
 from  index.password_crypt import encrypt_p, decrypt_p
 from os import system
 from  tasks.tasks import ansbile_asset_hardware
+from tasks.models import variable
 import csv, json, logging, codecs, chardet
 
 logger = logging.getLogger('asset')
@@ -121,17 +122,20 @@ class AssetDetail(LoginRequiredMixin, DetailView):
      资产详细
     '''
     model = asset
+    form_class = AssetForm
     template_name = 'asset/asset-detail.html'
 
     def get_context_data(self, **kwargs):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         detail = asset.objects.get(id=pk)
-
+        vars = variable.objects.filter(assets=pk).values()
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
             "assets": detail,
             "nid": pk,
+            "vars":vars,
+
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
@@ -311,10 +315,9 @@ def AssetImport(request):
                         v = True if v in ['TRUE', 1, 'true'] else False
                     elif k in ['user']:
                         try:
-                            print("user",v)
-                            v = None
+                            v = asset_user.objects.get(hostname=v).id
                         except ValueError as e:
-                            v = e
+                            v = None
 
                     elif k in ['buy_time', "expire_time", 'ctime', 'utime']:
                         v = "1970-01-01 00:00"
@@ -327,9 +330,9 @@ def AssetImport(request):
                         v = True if v in ['TRUE', 1, 'true'] else False
                     elif k in ['user']:
                         try:
-                            v = None
+                            v = asset_user.objects.get(hostname=v).id
                         except ValueError as e:
-                            v = e
+                            v = None
 
                     elif k in ['buy_time', "expire_time", 'ctime', 'utime']:
                         v = "1970-01-01 00:00"

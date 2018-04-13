@@ -1,6 +1,10 @@
 from django.db import models
 import random
 
+__all__ = [
+    'asset',
+    'asset_user',
+]
 
 
 class asset(models.Model):
@@ -59,7 +63,10 @@ class asset(models.Model):
     utime = models.DateTimeField(auto_now=True, null=True,verbose_name='更新时间',blank=True)
 
 
-
+    @property
+    def  users(self):
+        users = asset_user.objects.get(hostname=self.user)
+        return users
 
 
     class  Meta:

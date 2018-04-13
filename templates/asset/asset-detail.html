@@ -115,6 +115,15 @@
                                             <td width="20%">项目:</td>
                                             <td><b>{{ assets.project }}</b></td>
                                         </tr>
+                                   <tr>
+                                            <td width="20%">用户:</td>
+                                            <td><b>{{ assets.users }} </b></td>
+                                        </tr>
+                                      <tr>
+                                            <td width="20%">变量:</td>
+                                            <td><b>{% for  i  in vars %}  {{ i.name }}{% endfor %}</b></td>
+                                        </tr>
+
 
                                         <tr>
                                             <td width="20%">系统版本:</td>

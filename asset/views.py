@@ -309,11 +309,13 @@ def AssetImport(request):
                 for k, v in asset_dict_id.items():
                     if k == 'is_active':
                         v = True if v in ['TRUE', 1, 'true'] else False
-                    elif k in ['bandwidth', 'memory', 'disk', 'cpu']:
+                    elif k in ['user']:
                         try:
-                            v = int(v)
-                        except ValueError:
-                            v = 0
+                            print("user",v)
+                            v = None
+                        except ValueError as e:
+                            v = e
+
                     elif k in ['buy_time', "expire_time", 'ctime', 'utime']:
                         v = "1970-01-01 00:00"
                     else:
@@ -323,11 +325,12 @@ def AssetImport(request):
                 for k, v in asset_dict.items():
                     if k == 'is_active':
                         v = True if v in ['TRUE', 1, 'true'] else False
-                    elif k in ['bandwidth', 'memory', 'disk', 'cpu']:
+                    elif k in ['user']:
                         try:
-                            v = int(v)
-                        except ValueError:
-                            v = 0
+                            v = None
+                        except ValueError as e:
+                            v = e
+
                     elif k in ['buy_time', "expire_time", 'ctime', 'utime']:
                         v = "1970-01-01 00:00"
                     else:

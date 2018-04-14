@@ -21,12 +21,9 @@ RUN wget http://download.redis.io/releases/redis-stable.tar.gz  && \
 
 WORKDIR   /opt/chain/
 
-RUN  mv db.sqlite3  /tmp/
 RUN  python -m pip  install -r   requirements.txt  && \
      python     manage.py   makemigrations  && \
      python     manage.py   migrate
-
-
 
 COPY  password.sh  /tmp/password.sh
 

@@ -17,8 +17,8 @@ linux 云主机 管理系统，包含 CMDB,webssh登录、命令执行、异步�
 ```bash
 http://47.104.140.38:8001
 
-账号 admin
-密码 1qaz.2wsx
+账号  admin
+密码  1qaz.2wsx
 
 ```
 
@@ -40,7 +40,7 @@ http://47.104.140.38:8001
 
 后端：
   * django==2.0.4
-  * Python3.6.5
+  * Python 3.6.5
 
 数据库：
   * 目前开发阶段 用的 sqlite3,可无缝切换为 mysql
@@ -72,13 +72,12 @@ systemctl start redis
 pip3   install -r   requirements.txt
 
 
-mv     db.sqlite3  /tmp/
 
 python3     manage.py   makemigrations
 python3     manage.py   migrate
 
 
-创建用户
+
 python manage.py  shell  << EOF
 from django.contrib.auth.models import User
 user=User.objects.create_superuser('admin','emailname@demon.com','1qaz.2wsx')
@@ -87,8 +86,8 @@ EOF
 
 
 
-python3   manage.py runserver 0.0.0.0:80
 
+python3   manage.py runserver 0.0.0.0:80
 
 python3    webssh/main.py    ##启动终端登录功能
 
@@ -103,13 +102,13 @@ python3   manage.py   celery worker     --loglevel=info
 
 yum -y install sqlite-devel
 
-重新编译python3.6.4
+重新编译python3.6.5
 
 想在windows 环境下运行，请注释 tasks/views.py  以下两行
 
 
-from   .ansible_2420.runner import AdHocRunner
-from   .ansible_2420.inventory import BaseInventory
+from   task.ansible_2420.runner import AdHocRunner
+from   task.ansible_2420.inventory import BaseInventory
 
 
 ```

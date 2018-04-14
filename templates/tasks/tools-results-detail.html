@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% block  title %}资产详情{% endblock %}
+{% load  mytags %}
+{% load bootstrap3 %}
 {% block header-css %}
 
-{% load bootstrap3 %}
 {% endblock %}
 
 
@@ -75,10 +76,6 @@
                                             </td>
                                         </tr>
 
-                                        <tr>
-                                            <td width="20%">结果:</td>
-                                            <td><b>{{ results.result }}</b></td>
-                                        </tr>
 
 
 
@@ -106,10 +103,19 @@
                                             <td><b>{{ task.ctime }}</b></td>
                                         </tr>
 
+                                        <tr>
+                                            <td width="20%" >结果:</td>
+                                             <td></td>
+                                            <td id="show_p"  hidden><b>{{ results.result | result }}</b></td>
+                                        </tr>
 
 
                                         </tbody>
                                     </table>
+
+
+                    <pre id="out_pre"></pre>
+
                                 </div>
                             </div>
                         </div>
@@ -142,7 +148,22 @@
 
 
 
-
 {% endblock %}
 
+{% block footer-js %}
 
+
+<script type="text/javascript">
+
+　 var text = document.getElementById('show_p').innerText; //获取json格式内容
+
+   var result = JSON.stringify(JSON.parse(text), null, 4);//将字符串转换成json对象
+
+   document.getElementById('out_pre').innerText= result ;
+　　
+
+</script>
+
+
+
+{% endblock %}

@@ -145,6 +145,7 @@ class TasksPerform(LoginRequiredMixin, View):
             vars = {'hostname':i.hostname,'inner_ip':i.inner_ip,"network_ip":i.network_ip,"project":i.project }
             try :
                 vars.update(variable.objects.get(assets__hostname=i).vars)
+                print(vars)
             except Exception as e:
                 logger.error(e)
 

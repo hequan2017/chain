@@ -53,6 +53,10 @@ class variable(models.Model):
     vars = JSONField(null=True, blank=True, default={}, verbose_name='变量')
     assets = models.ManyToManyField(asset, verbose_name='关联资产',related_name='asset', blank=True)
 
+    ctime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
+    utime = models.DateTimeField(auto_now=True, verbose_name='更新时间')
+
+
     def __str__(self):
         return self.name
 

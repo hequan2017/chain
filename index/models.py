@@ -1,7 +1,6 @@
 from django.db import models
 
 
-
 class login_log(models.Model):
     user = models.CharField(max_length=32, verbose_name='登录用户', null=True)
     ip = models.GenericIPAddressField(verbose_name='用户地址', null=True)

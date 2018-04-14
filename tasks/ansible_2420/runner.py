@@ -10,14 +10,13 @@ from ansible.executor.playbook_executor import PlaybookExecutor
 from ansible.playbook.play import Play
 import ansible.constants as C
 
-from  .callback import AdHocResultCallback, PlaybookResultCallBack, \
+from .callback import AdHocResultCallback, PlaybookResultCallBack, \
     CommandResultCallback
-from  .exceptions import AnsibleError
+from .exceptions import AnsibleError
 
 
 __all__ = ["AdHocRunner", "PlayBookRunner"]
 C.HOST_KEY_CHECKING = False
-
 
 
 Options = namedtuple('Options', [
@@ -26,8 +25,8 @@ Options = namedtuple('Options', [
     'ssh_common_args', 'ssh_extra_args', 'sftp_extra_args',
     'scp_extra_args', 'become', 'become_method', 'become_user',
     'verbosity', 'check', 'extra_vars', 'playbook_path', 'passwords',
-    'diff', 'gathering', 'remote_tmp',
-])
+    'diff', 'gathering', 'remote_tmp', ])
+
 
 def get_default_options():
     options = Options(
@@ -60,6 +59,8 @@ def get_default_options():
     return options
 
 #  执行 yml 文件
+
+
 class PlayBookRunner:
 
     # Default results callback
@@ -67,7 +68,6 @@ class PlayBookRunner:
     loader_class = DataLoader
     variable_manager_class = VariableManager
     options = get_default_options()
-
 
     def __init__(self, playbook_path, inventory=None, options=None):
         """
@@ -89,15 +89,15 @@ class PlayBookRunner:
             loader=self.loader, inventory=self.inventory
         )
         # self.passwords = options.passwords
-        self.passwords = {"passwords":''}#为了修改paramiko中的bug添加入，无实际意义
+        self.passwords = {"passwords": ''}  # 为了修改paramiko中的bug添加入，无实际意义
         self.__check()
 
     def __check(self):
         if self.options.playbook_path is None or \
                 not os.path.exists(self.options.playbook_path):
             raise AnsibleError(
-                "Not Found the playbook file: {}.".format(self.options.playbook_path)
-            )
+                "Not Found the playbook file: {}.".format(
+                    self.options.playbook_path))
         if not self.inventory.list_hosts('all'):
             raise AnsibleError('Inventory is empty')
 
@@ -116,14 +116,15 @@ class PlayBookRunner:
         executor.run()
         executor._tqm.cleanup()
         try:
-            results_callback=self.results_callback.output['plays'][0]['tasks'][1]['hosts']
-            status=self.results_callback.output['stats']
-            results={"results_callback":results_callback,"status":status}
+            results_callback = self.results_callback.output['plays'][0]['tasks'][1]['hosts']
+            status = self.results_callback.output['stats']
+            results = {"results_callback": results_callback, "status": status}
             return results
         except Exception as e:
-            raise AnsibleError('The hostname parameter or groups parameter in the BaseInventory \
-                               does not match the hosts parameter in the yaml file.')
 
+            raise AnsibleError(
+                'The hostname parameter or groups parameter in the BaseInventory \
+                               does not match the hosts parameter in the yaml file.{}'.format(e))
 
 
 class AdHocRunner:
@@ -164,7 +165,9 @@ class AdHocRunner:
     def clean_tasks(self, tasks):
         cleaned_tasks = []
         for task in tasks:
-            self.check_module_args(task['action']['module'], task['action'].get('args'))
+            self.check_module_args(
+                task['action']['module'],
+                task['action'].get('args'))
             cleaned_tasks.append(task)
         return cleaned_tasks
 
@@ -172,7 +175,12 @@ class AdHocRunner:
         kwargs = {k: v}
         self.options = self.options._replace(**kwargs)
 
-    def run(self, tasks, pattern, play_name='Ansible Ad-hoc', gather_facts='no'):
+    def run(
+            self,
+            tasks,
+            pattern,
+            play_name='Ansible Ad-hoc',
+            gather_facts='no', ):
         """
         :param tasks: [{'action': {'module': 'shell', 'args': 'ls'}, ...}, ]
         :param pattern: all, *, or others
@@ -205,7 +213,6 @@ class AdHocRunner:
             passwords=self.options.passwords,
         )
 
-
         try:
             tqm.run(play)
             return results_callback
@@ -222,7 +229,9 @@ class CommandRunner(AdHocRunner):
 
     def execute(self, cmd, pattern, module=None):
         if module and module not in self.modules_choices:
-            raise AnsibleError("Module should in {}".format(self.modules_choices))
+            raise AnsibleError(
+                "Module should in {}".format(
+                    self.modules_choices))
         else:
             module = "shell"
 
@@ -230,6 +239,6 @@ class CommandRunner(AdHocRunner):
             {"action": {"module": module, "args": cmd}}
         ]
         hosts = self.inventory.get_hosts(pattern=pattern)
-        name = "Run command {} on {}".format(cmd, ", ".join([host.name for host in hosts]))
+        name = "Run command {} on {}".format(
+            cmd, ", ".join([host.name for host in hosts]))
         return self.run(tasks, pattern, play_name=name)
-

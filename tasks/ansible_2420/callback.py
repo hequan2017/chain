@@ -8,6 +8,7 @@ class AdHocResultCallback(CallbackModule):
     """
     Task result Callback
     """
+
     def __init__(self, display=None, options=None):
         # result_raw example: {
         #   "ok": {"hostname": {"task_name": {}，...},..},
@@ -70,6 +71,7 @@ class CommandResultCallback(AdHocResultCallback):
     """
     Command result callback
     """
+
     def __init__(self, display=None):
         # results_command: {
         #   "cmd": "",
@@ -194,6 +196,3 @@ class PlaybookResultCallBack(CallbackBase):
 
     def v2_runner_item_on_skipped(self, res):
         self.gather_item_result(res)
-
-
-

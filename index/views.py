@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect,HttpResponse
+from django.shortcuts import render, redirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
-from django.contrib.auth.hashers import  check_password
+from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 
 from .models import login_log
@@ -33,7 +33,7 @@ def login_view(request):
     if request.method == "POST":
         u = request.POST.get("username")
         p = request.POST.get("password")
-        user = authenticate(request,username=u, password=p)
+        user = authenticate(request, username=u, password=p)
         if user is not None:
             if user.is_active:
                 login(request, user)
@@ -42,9 +42,11 @@ def login_view(request):
                 login_log.objects.create(user=request.user, ip=login_ip)
                 return redirect('/index.html')
             else:
-                return render(request, 'index/login.html', {'error_msg': error_msg1, })
+                return render(request, 'index/login.html',
+                              {'error_msg': error_msg1, })
         else:
-            return render(request, 'index/login.html', {'error_msg': error_msg1, })
+            return render(request, 'index/login.html',
+                          {'error_msg': error_msg1, })
 
 
 def logout(requset):
@@ -68,27 +70,30 @@ def password_update(request):
         form = UserPasswordForm(request.POST)
         if form.is_valid():
             old = User.objects.get(username=request.user)
-            old_pass=old.password
-            input_pass =form.cleaned_data['old_password']
-            check = check_password(input_pass,old_pass)
-            if  check  is True:
-                if  form.cleaned_data['new_password']  == form.cleaned_data['confirm_password'] :
-                    password=form.cleaned_data['new_password']
+            old_pass = old.password
+            input_pass = form.cleaned_data['old_password']
+            check = check_password(input_pass, old_pass)
+            if check is True:
+                if form.cleaned_data['new_password'] == form.cleaned_data['confirm_password']:
+                    password = form.cleaned_data['new_password']
                     old.set_password(password)
                     old.save()
-                    msg= "修改成功"
-                    return render(request, 'index/password.html', {'form': form, "msg": msg})
+                    msg = "修改成功"
+                    return render(request, 'index/password.html',
+                                  {'form': form, "msg": msg})
                 else:
-                    msg="两次输入的密码不一致"
+                    msg = "两次输入的密码不一致"
                 form = UserPasswordForm()
-                return render(request, 'index/password.html',{'form': form, "msg": msg})
+                return render(request, 'index/password.html',
+                              {'form': form, "msg": msg})
             else:
                 form = UserPasswordForm()
-                return render(request, 'index/password.html',{'form': form, "msg": "旧密码不对,请重新输入"})
+                return render(request, 'index/password.html',
+                              {'form': form, "msg": "旧密码不对,请重新输入"})
 
     else:
         form = UserPasswordForm()
-    return render(request, 'index/password.html',{'form': form, })
+    return render(request, 'index/password.html', {'form': form, })
 
 
 @login_required(login_url="/login.html")
@@ -99,4 +104,9 @@ def LoginHistorys(request):
     :return:
     """
     obj = login_log.objects.order_by('-ctime')
-    return render(request, 'index/login-history.html',{'login': obj,"index_active": "active", "index_login_active": "active", })
+    return render(request,
+                  'index/login-history.html',
+                  {'login': obj,
+                   "index_active": "active",
+                   "index_login_active": "active",
+                   })

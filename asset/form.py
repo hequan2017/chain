@@ -1,16 +1,16 @@
-from    django import forms
-from    asset.models import asset, asset_user
-from   tasks.models import variable
+from django import forms
+from asset.models import asset, asset_user
+from tasks.models import variable
+
 
 class FileForm(forms.Form):
     file = forms.FileField(label="导入资产")
 
 
 class AssetForm(forms.ModelForm):
-
     vars = forms.ModelMultipleChoiceField(
         queryset=variable.objects.all(),
-        label=("变量组"),
+        label=("变量组",),
         widget=forms.SelectMultiple(
             attrs={
                 'class': 'select2',
@@ -30,21 +30,36 @@ class AssetForm(forms.ModelForm):
             kwargs['initial'] = initial
         super().__init__(**kwargs)
 
-
     def save(self, commit=True):
         var = super().save(commit=commit)
         users = self.cleaned_data['vars']
         var.asset.set(users)
         return var
 
-
     class Meta:
         model = asset
         # fields = '__all__'
         fields = [
-            'hostname', 'network_ip', 'inner_ip','system', 'vars','cpu',
-            'memory','disk','bandwidth','project','platform','region','manager','user','Instance_id','buy_time','expire_time','port','ps','is_active'
-        ]
+            'hostname',
+            'network_ip',
+            'inner_ip',
+            'system',
+            'vars',
+            'cpu',
+            'memory',
+            'disk',
+            'bandwidth',
+            'project',
+            'platform',
+            'region',
+            'manager',
+            'user',
+            'Instance_id',
+            'buy_time',
+            'expire_time',
+            'port',
+            'ps',
+            'is_active']
 
         labels = {
             "network_ip": "外网IP",
@@ -63,19 +78,19 @@ class AssetForm(forms.ModelForm):
             ),
             'platform': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择平台----')}),
+                       'data-placeholder': ('----请选择平台----',)}),
             'manager': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择负责人----')}),
+                       'data-placeholder': ('----请选择负责人----',)}),
             'region': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择区域----')}),
+                       'data-placeholder': ('----请选择区域----',)}),
             'project': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择项目----')}),
+                       'data-placeholder': ('----请选择项目----',)}),
             'user': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择登录用户----')}),
+                       'data-placeholder': ('----请选择登录用户----',)}),
         }
 
         help_texts = {

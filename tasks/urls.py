@@ -1,6 +1,6 @@
-from django.urls  import path
+from django.urls import path
 
-from  tasks  import views
+from tasks import views
 
 urlpatterns = [
     path('cmd.html', views.TasksCmd.as_view(), name='cmd'),
@@ -22,4 +22,4 @@ urlpatterns = [
     path('vars-update-<int:pk>.html', views.VarsUpdate.as_view(), name='vars_update'),
 ]
 
-app_name="tasks"
+app_name = "tasks"

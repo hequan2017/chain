@@ -10,7 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os,sys
+import os
+import sys
 import djcelery
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -26,7 +27,7 @@ SECRET_KEY = 'npn1nb&p-eb%rseya)anzsi4uuvk5+enyt1m$_a8&&uy882ak3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*',]
+ALLOWED_HOSTS = ['*', ]
 
 
 # Application definition
@@ -64,8 +65,7 @@ ROOT_URLCONF = 'chain.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,7 +77,6 @@ TEMPLATES = [
         },
     },
 ]
-
 
 
 AUTHENTICATION_BACKENDS = (
@@ -110,7 +109,6 @@ DATABASES = {
 #         'PORT': '3306',
 #      }
 # }
-
 
 
 # Password validation
@@ -151,7 +149,6 @@ DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATE_FORMAT = 'Y-m-d'
 
 
-
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
@@ -161,12 +158,12 @@ STATICFILES_DIRS = (
 )
 
 
-TEMPLATE_DIRS = (os.path.join(BASE_DIR,  'templates'),)
+TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
 DISPLAY_PER_PAGE = 25
 
 
-#http://www.django-rest-framework.org/api-guide/permissions/#api-reference
-#rest-framework    权限分类，现在是默认所有人都可以访问
+# http://www.django-rest-framework.org/api-guide/permissions/#api-reference
+# rest-framework    权限分类，现在是默认所有人都可以访问
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
@@ -175,7 +172,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         # 'rest_framework.permissions.AllowAny',
-       'rest_framework.permissions.IsAdminUser',
+        'rest_framework.permissions.IsAdminUser',
     ),
 }
 
@@ -184,7 +181,7 @@ web_ssh = "47.94.252.25"
 web_port = 8002
 
 
-## logging
+# logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -217,9 +214,9 @@ LOGGING = {
 
 #   celery
 djcelery.setup_loader()
-BROKER_URL = 'redis://127.0.0.1:6379/0'  #消息存储数据存储在仓库0
+BROKER_URL = 'redis://127.0.0.1:6379/0'  # 消息存储数据存储在仓库0
 
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend' # 指定 Backend
+CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'  # 指定 Backend
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -233,21 +230,20 @@ CELERYD_MAX_TASKS_PER_CHILD = 100
 CELERY_DISABLE_RATE_LIMITS = True
 
 
-
 CELERY_IMPORTS = ('tasks.tasks',)
-CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'  #这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
+# 这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
 
-
-##jet
+# jet
 JET_DEFAULT_THEME = 'default'
 
 # 主题
 JET_THEMES = [
     {
-        'theme': 'default', # theme folder name
-        'color': '#47bac1', # color of the theme's button in user menu
-        'title': 'Default' # theme title
+        'theme': 'default',  # theme folder name
+        'color': '#47bac1',  # color of the theme's button in user menu
+        'title': 'Default'  # theme title
     },
     {
         'theme': 'green',
@@ -277,6 +273,3 @@ JET_THEMES = [
 ]
 # 是否展开所有菜单
 JET_SIDE_MENU_COMPACT = True  # 菜单不是很多时建议为TRUE
-
-
-

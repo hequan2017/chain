@@ -2,6 +2,8 @@ from django.db import models
 from djcelery.models import TaskMeta
 from jsonfield import JSONField
 from asset.models import asset
+
+
 cmd_list = [
     'shell',
     'raw',

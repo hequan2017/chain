@@ -4,8 +4,8 @@ import logging
 from multiprocessing import current_process
 from asset.models import asset
 
-# from tasks.ansible_2420.runner import AdHocRunner, PlayBookRunner
-# from tasks.ansible_2420.inventory import BaseInventory
+from tasks.ansible_2420.runner import AdHocRunner, PlayBookRunner
+from tasks.ansible_2420.inventory import BaseInventory
 
 
 
@@ -53,8 +53,7 @@ def ansbile_tools(assets, tools, modules):
             logger.error("{}".format(e))
 
         for i, element in enumerate(hostname):
-            std = []
-            ret_host = {}
+            std, ret_host = [], {}
             try:
                 out = ret[element]['script']['stdout']
                 if not out:
@@ -81,8 +80,7 @@ def ansbile_tools(assets, tools, modules):
             logger.error("{}".format(e))
 
         for i, element in enumerate(hostname):
-            std = []
-            ret_host = {}
+            std, ret_host = [], {}
             try:
                 out = ret[element]['stdout']
                 if not out:

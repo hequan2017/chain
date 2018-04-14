@@ -12,16 +12,12 @@ from index.password_crypt import decrypt_p
 from chain import settings
 import os
 import json
-import threading
 import logging
 import random
 logger = logging.getLogger('tasks')
-#
-# from tasks.ansible_2420.runner import AdHocRunner
-# from tasks.ansible_2420.inventory import BaseInventory
 
-import pprint
-pp = pprint.PrettyPrinter(indent=4)
+from tasks.ansible_2420.runner import AdHocRunner
+from tasks.ansible_2420.inventory import BaseInventory
 
 
 class TasksCmd(LoginRequiredMixin, ListView):
@@ -86,8 +82,7 @@ def cmdjob(assets, tasks):
     retsult_data = []
 
     for i, element in enumerate(hostname):
-        std = []
-        ret_host = {}
+        std ,ret_host= [],{}
         for t in range(len(tasks)):
             try:
                 out = ret[element]['task{}'.format(t)]['stdout']

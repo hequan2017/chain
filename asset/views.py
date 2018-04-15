@@ -2,19 +2,18 @@ from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .form import AssetForm, FileForm, AssetUserForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.models import User, Group
 from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DetailView
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
-from asset.models import asset, asset_user
-from asset.models import asset as Asset
+from asset.models import AssetInfo, AssetLoginUser
+from asset.models import AssetInfo as Asset
 from io import StringIO
 from chain import settings
 from index.password_crypt import encrypt_p, decrypt_p
 from os import system
+from tasks.models import Variable
 from tasks.tasks import ansbile_asset_hardware
-from tasks.models import variable
 import csv
 import json
 import logging
@@ -28,9 +27,9 @@ class AssetListAll(LoginRequiredMixin, ListView):
     """资产列表"""
     template_name = 'asset/asset.html'
     paginate_by = settings.DISPLAY_PER_PAGE
-    model = asset
+    model = AssetInfo
     context_object_name = "asset_list"
-    queryset = asset.objects.all()
+    queryset = AssetInfo.objects.all()
     ordering = ('id',)
 
     def get_context_data(self, **kwargs):
@@ -69,7 +68,7 @@ class AssetListAll(LoginRequiredMixin, ListView):
 
 class AssetAdd(LoginRequiredMixin, CreateView):
     """资产增加"""
-    model = asset
+    model = AssetInfo
     form_class = AssetForm
     template_name = 'asset/asset-add-update.html'
     success_url = reverse_lazy('asset:asset_list')
@@ -86,7 +85,7 @@ class AssetAdd(LoginRequiredMixin, CreateView):
 class AssetUpdate(LoginRequiredMixin, UpdateView):
     """资产更新"""
 
-    model = asset
+    model = AssetInfo
     form_class = AssetForm
     template_name = 'asset/asset-add-update.html'
     success_url = reverse_lazy('asset:asset_list')
@@ -119,14 +118,14 @@ class AssetDetail(LoginRequiredMixin, DetailView):
     """
      资产详细
     """
-    model = asset
+    model = AssetInfo
     form_class = AssetForm
     template_name = 'asset/asset-detail.html'
 
     def get_context_data(self, **kwargs):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
-        detail = asset.objects.get(id=pk)
-        varall = variable.objects.filter(assets=pk).values()
+        detail = AssetInfo.objects.get(id=pk)
+        varall = Variable.objects.filter(assets=pk).values()
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
@@ -143,7 +142,7 @@ class AssetAllDel(LoginRequiredMixin, View):
     """
     资产删除
     """
-    model = asset
+    model = AssetInfo
 
     @staticmethod
     def post(request):
@@ -151,11 +150,11 @@ class AssetAllDel(LoginRequiredMixin, View):
         try:
             if request.POST.get('nid'):
                 ids = request.POST.get('nid', None)
-                asset.objects.get(id=ids).delete()
+                AssetInfo.objects.get(id=ids).delete()
             else:
                 ids = request.POST.getlist('id', None)
                 idstring = ','.join(ids)
-                asset.objects.extra(
+                AssetInfo.objects.extra(
                     where=['id IN (' + idstring + ')']).delete()
         except Exception as e:
             ret['status'] = False
@@ -168,7 +167,7 @@ class AssetHardwareUpdate(LoginRequiredMixin, View):
     """
     资产硬件 异步更新
     """
-    model = asset
+    model = AssetInfo
 
     @staticmethod
     def post(request):
@@ -176,7 +175,7 @@ class AssetHardwareUpdate(LoginRequiredMixin, View):
         try:
             if request.POST.get('nid'):
                 ids = request.POST.get('nid', None)
-                asset_obj = asset.objects.get(id=ids)
+                asset_obj = AssetInfo.objects.get(id=ids)
                 try:
                     asset_obj.user.hostname
                 except Exception as e:
@@ -205,12 +204,9 @@ class AssetHardwareUpdate(LoginRequiredMixin, View):
 class AssetExport(View):
     """
     资产导出
-    :param request:
-    :return:
     """
 
-    @staticmethod
-    def get():
+    def get(self,request):
         # qs = asset.objects.all()
         # return render_to_csv_response(qs)
 
@@ -232,7 +228,7 @@ class AssetExport(View):
         header = [field.verbose_name for field in fields]
         writer.writerow(header)
 
-        assets = Asset.objects.all()
+        assets = AssetInfo.objects.all()
 
         for asset_ in assets:
             data = [getattr(asset_, field.name) for field in fields]
@@ -244,7 +240,7 @@ class AssetExport(View):
     def post(request):
         ids = request.POST.getlist('id', None)
         idstring = ','.join(ids)
-        qs = asset.objects.extra(where=['id IN (' + idstring + ')']).all()
+        qs = AssetInfo.objects.extra(where=['id IN (' + idstring + ')']).all()
 
         # return  render_to_csv_response(qs)
         fields = [
@@ -295,7 +291,7 @@ def AssetImport(request):
             csv_data = [row for row in reader]
 
             fields = [
-                field for field in asset._meta.fields
+                field for field in AssetInfo._meta.fields
                 if field.name not in [
                     'date_created'
                 ]
@@ -321,7 +317,7 @@ def AssetImport(request):
                         v = True if v in ['TRUE', 1, 'true'] else False
                     elif k in ['user']:
                         try:
-                            v = asset_user.objects.get(hostname=v).id
+                            v = AssetLoginUser.objects.get(hostname=v).id
                         except ValueError as e:
                             logger.error(e)
                             v = None
@@ -337,7 +333,7 @@ def AssetImport(request):
                         v = True if v in ['TRUE', 1, 'true'] else False
                     elif k in ['user']:
                         try:
-                            v = asset_user.objects.get(hostname=v).id
+                            v = AssetLoginUser.objects.get(hostname=v).id
                         except ValueError as e:
                             logger.error(e)
                             v = None
@@ -348,17 +344,17 @@ def AssetImport(request):
                         continue
                     asset_dict[k] = v
 
-                asset1 = asset.objects.filter(id=ids)  # 判断ID 是否存在
+                asset1 = AssetInfo.objects.filter(id=ids)  # 判断ID 是否存在
 
                 if not asset1:
                     try:
                         if len(
-                                asset.objects.filter(
+                                AssetInfo.objects.filter(
                                     hostname=asset_dict.get('hostname'))):
                             raise Exception(('already exists',))
-                        asset.objects.create(**asset_dict_id)
+                        AssetInfo.objects.create(**asset_dict_id)
                         created.append(asset_dict['hostname'])
-                        assets.append(asset)
+                        assets.append(AssetInfo)
                     except Exception as e:
                         failed.append(
                             '%s: %s' %
@@ -367,9 +363,9 @@ def AssetImport(request):
                 else:
                     for k, v in asset_dict.items():
                         if v:
-                            setattr(asset, k, v)
+                            setattr(AssetInfo, k, v)
                     try:
-                        asset.objects.filter(id=ids).update(**asset_dict)
+                        AssetInfo.objects.filter(id=ids).update(**asset_dict)
                         updated.append(asset_dict['hostname'])
                     except Exception as e:
                         failed.append(
@@ -411,7 +407,7 @@ def AssetZtree(request):
     :return:
     """
 
-    manager = asset.objects.values("project").distinct()
+    manager = AssetInfo.objects.values("project").distinct()
     data = [{"id": "1111", "pId": "0", "name": "项目"}, ]
     for i in manager:
         data.append({"id": i['project'], "pId": "1111",
@@ -425,9 +421,9 @@ class AssetUserListAll(LoginRequiredMixin, ListView):
     """
     template_name = 'asset/asset-user.html'
     paginate_by = settings.DISPLAY_PER_PAGE
-    model = asset_user
+    model = AssetLoginUser
     context_object_name = "asset_user_list"
-    queryset = asset_user.objects.all()
+    queryset = AssetLoginUser.objects.all()
     ordering = ('id',)
 
     def get_context_data(self, **kwargs):
@@ -444,7 +440,7 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
     """
     登录用户增加
     """
-    model = asset_user
+    model = AssetLoginUser
     form_class = AssetUserForm
     template_name = 'asset/asset-user-add-update.html'
     success_url = reverse_lazy('asset:asset_user_list')
@@ -467,7 +463,7 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
             forms.save()
 
         name = form.cleaned_data['hostname']
-        obj = asset_user.objects.get(hostname=name).private_key.name
+        obj = AssetLoginUser.objects.get(hostname=name).private_key.name
         system("chmod  600  {0}".format(obj))
         return super().form_valid(form)
 
@@ -475,7 +471,7 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
 class AssetUserUpdate(LoginRequiredMixin, UpdateView):
     """登录用户更新"""
 
-    model = asset_user
+    model = AssetLoginUser
     form_class = AssetUserForm
     template_name = 'asset/asset-user-add-update.html'
     success_url = reverse_lazy('asset:asset_user_list')
@@ -490,7 +486,7 @@ class AssetUserUpdate(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
-        obj = asset_user.objects.get(id=pk)
+        obj = AssetLoginUser.objects.get(id=pk)
 
         old_password = obj.password
         new_password = form.cleaned_data['password']
@@ -504,7 +500,7 @@ class AssetUserUpdate(LoginRequiredMixin, UpdateView):
 
         forms.save()
         name = form.cleaned_data['hostname']
-        obj = asset_user.objects.get(hostname=name).private_key.name
+        obj = AssetLoginUser.objects.get(hostname=name).private_key.name
         system("chmod  600  {0}".format(obj))
 
         return super().form_valid(form)
@@ -514,12 +510,12 @@ class AssetUserDetail(LoginRequiredMixin, DetailView):
     """
     登录用户详细
     """
-    model = asset_user
+    model = AssetLoginUser
     template_name = 'asset/asset-user-detail.html'
 
     def get_context_data(self, **kwargs):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
-        detail = asset_user.objects.get(id=pk)
+        detail = AssetLoginUser.objects.get(id=pk)
 
         context = {
             "asset_active": "active",
@@ -532,7 +528,7 @@ class AssetUserDetail(LoginRequiredMixin, DetailView):
 
 
 def AssetUserAsset(request, pk):
-    obj = asset.objects.filter(user=pk)
+    obj = AssetInfo.objects.filter(user=pk)
     return render(request, "asset/asset-user-asset.html",
                   {"nid": pk, "assets_list": obj,
                    "asset_active": "active",
@@ -543,7 +539,7 @@ class AssetUserAllDel(LoginRequiredMixin, View):
     """
     登录用户删除
     """
-    model = asset_user
+    model = AssetLoginUser
 
     @staticmethod
     def post(request):
@@ -551,11 +547,11 @@ class AssetUserAllDel(LoginRequiredMixin, View):
         try:
             if request.POST.get('nid'):
                 ids = request.POST.get('nid', None)
-                asset_user.objects.get(id=ids).delete()
+                AssetLoginUser.objects.get(id=ids).delete()
             else:
                 ids = request.POST.getlist('id', None)
                 idstring = ','.join(ids)
-                asset_user.objects.extra(
+                AssetLoginUser.objects.extra(
                     where=['id IN (' + idstring + ')']).delete()
         except Exception as e:
             ret['status'] = False
@@ -574,7 +570,7 @@ class AssetWeb(LoginRequiredMixin, View):
         ret = {'status': True, }
         try:
             ids = request.POST.get('id', None)
-            obj = asset.objects.get(id=ids)
+            obj = AssetInfo.objects.get(id=ids)
 
             ip = obj.network_ip
             port = obj.port

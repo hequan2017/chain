@@ -1,6 +1,6 @@
 from django import forms
-from asset.models import asset, asset_user
-from tasks.models import variable
+from asset.models import AssetInfo, AssetLoginUser
+from tasks.models import Variable
 
 
 class FileForm(forms.Form):
@@ -9,12 +9,12 @@ class FileForm(forms.Form):
 
 class AssetForm(forms.ModelForm):
     vars = forms.ModelMultipleChoiceField(
-        queryset=variable.objects.all(),
-        label=("变量组",),
+        queryset=Variable.objects.all(),
+        label="变量组",
         widget=forms.SelectMultiple(
             attrs={
                 'class': 'select2',
-                'data-placeholder': ('请选择变量组')
+                'data-placeholder': '--------请选择变量组--------',
             }
         ),
         required=False,
@@ -37,7 +37,7 @@ class AssetForm(forms.ModelForm):
         return var
 
     class Meta:
-        model = asset
+        model = AssetInfo
         # fields = '__all__'
         fields = [
             'hostname',
@@ -78,19 +78,19 @@ class AssetForm(forms.ModelForm):
             ),
             'platform': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择平台----',)}),
+                       'data-placeholder': '----请选择平台----'}),
             'manager': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择负责人----',)}),
+                       'data-placeholder': '----请选择负责人----'}),
             'region': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择区域----',)}),
+                       'data-placeholder': '----请选择区域----'}),
             'project': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择项目----',)}),
+                       'data-placeholder': '----请选择项目----'}),
             'user': forms.Select(
                 attrs={'class': 'select2',
-                       'data-placeholder': ('----请选择登录用户----',)}),
+                       'data-placeholder': '----请选择登录用户----'}),
         }
 
         help_texts = {
@@ -102,14 +102,14 @@ class AssetForm(forms.ModelForm):
         }
         error_messages = {
             'model': {
-                'max_length': ('太短了'),
+                'max_length': ('太短了', ),
             }
         }
 
 
 class AssetUserForm(forms.ModelForm):
     class Meta:
-        model = asset_user
+        model = AssetLoginUser
         fields = '__all__'
 
         help_texts = {

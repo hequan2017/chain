@@ -180,7 +180,7 @@ class AdHocRunner:
             tasks,
             pattern,
             play_name='Ansible Ad-hoc',
-            gather_facts='no', ):
+            gather_facts='no',):
         """
         :param tasks: [{'action': {'module': 'shell', 'args': 'ls'}, ...}, ]
         :param pattern: all, *, or others

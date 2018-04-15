@@ -1,5 +1,5 @@
 from django.contrib import admin
-from asset.models import asset, asset_user
+from asset.models import AssetInfo, AssetLoginUser
 
 
 class AssetAdmin(admin.ModelAdmin):
@@ -32,5 +32,5 @@ class AssetUserAdmin(admin.ModelAdmin):
     list_filter = ('hostname', 'username',)
 
 
-admin.site.register(asset, AssetAdmin)
-admin.site.register(asset_user, AssetUserAdmin)
+admin.site.register(AssetInfo, AssetAdmin)
+admin.site.register(AssetLoginUser, AssetUserAdmin)

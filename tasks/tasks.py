@@ -2,13 +2,10 @@ from celery import Celery, platforms
 from chain import settings
 import logging
 from multiprocessing import current_process
-from asset.models import asset
+from asset.models import AssetInfo
 
 from tasks.ansible_2420.runner import AdHocRunner, PlayBookRunner
 from tasks.ansible_2420.inventory import BaseInventory
-
-
-
 
 platforms.C_FORCE_ROOT = True
 app = Celery('chain')
@@ -30,13 +27,14 @@ def ansbile_tools(assets, tools, modules):
 
     inventory = BaseInventory(host_list=assets)
     hostname, retsult_data = [], []
+    ret = None
     for i in inventory.hosts:
         hostname.append(i)
 
     if modules == "script":
         runner = AdHocRunner(inventory)
         tasks = [{"action": {"module": "{}".format(
-            module), "args": "{}".format(tools)}, "name": "script"}, ]
+            modules), "args": "{}".format(tools)}, "name": "script"}, ]
         retsult = runner.run(tasks, "all")
 
         try:
@@ -125,7 +123,7 @@ def ansbile_asset_hardware(ids, assets):
         system = data['ansible_product_name'] + \
             " " + data['ansible_lsb']["description"]
 
-        asset.objects.filter(id=ids).update(hostname=nodename,
+        AssetInfo.objects.filter(id=ids).update(hostname=nodename,
                                                  disk=disk,
                                                  memory=mem,
                                                  cpu=cpu,

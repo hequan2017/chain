@@ -1,7 +1,7 @@
 from django.db import models
 from djcelery.models import TaskMeta
 from jsonfield import JSONField
-from asset.models import asset
+from asset.models import AssetInfo
 
 
 cmd_list = [
@@ -19,7 +19,7 @@ cmd_list = [
     'get_url']
 
 
-class tools_script(models.Model):
+class Tools(models.Model):
     TOOL_RUN_TYPE = (
         ('shell', 'shell'),
         ('python', 'python'),
@@ -41,12 +41,12 @@ class tools_script(models.Model):
         return self.name
 
     class Meta:
-        db_table = "tools_script"
+        db_table = "Tools"
         verbose_name = "工具"
         verbose_name_plural = verbose_name
 
 
-class tool_results(models.Model):
+class ToolsResults(models.Model):
     task_id = models.UUIDField(
         max_length=255,
         verbose_name='任务ID',
@@ -59,17 +59,17 @@ class tool_results(models.Model):
         return status
 
     class Meta:
-        db_table = "tool_results"
+        db_table = "ToolsResults"
         verbose_name = "任务"
         verbose_name_plural = verbose_name
 
 
-class variable(models.Model):
+class Variable(models.Model):
     name = models.CharField(max_length=200, verbose_name='变量组名字')
     desc = models.TextField(null=True, blank=True, verbose_name='描述')
     vars = JSONField(null=True, blank=True, default={}, verbose_name='变量')
     assets = models.ManyToManyField(
-        asset,
+        AssetInfo,
         verbose_name='关联资产',
         related_name='asset',
         blank=True)
@@ -81,6 +81,6 @@ class variable(models.Model):
         return self.name
 
     class Meta:
-        db_table = "variable"
+        db_table = "Variable"
         verbose_name = "变量组"
         verbose_name_plural = verbose_name

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from djcelery.models import TaskMeta, TaskSetMeta
-from .models import tools_script, tool_results, variable
+from .models import Tools, ToolsResults, Variable
 
 
 class TaskMetaAdmin(admin.ModelAdmin):
@@ -37,6 +37,6 @@ class VarsAdmin(admin.ModelAdmin):
     list_filter = ('name', 'desc', 'assets', 'ctime',)
 
 
-admin.site.register(tool_results, ToolResultsAdmin)
-admin.site.register(tools_script, ToolScriptAdmin)
-admin.site.register(variable, VarsAdmin)
+admin.site.register(ToolsResults, ToolResultsAdmin)
+admin.site.register(Tools, ToolScriptAdmin)
+admin.site.register(Variable, VarsAdmin)

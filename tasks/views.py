@@ -1,10 +1,10 @@
-from django.shortcuts import render, redirect, HttpResponse
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.shortcuts import  HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
 from django.db.models import Q
-from asset.models import asset
-from tasks.models import cmd_list, tools_script, tool_results, variable
+from asset.models import AssetInfo
+from tasks.models import cmd_list, Tools, ToolsResults, Variable
 from tasks.form import ToolsForm, VarsForm
 from tasks.tasks import ansbile_tools
 from djcelery.models import TaskMeta
@@ -25,9 +25,9 @@ class TasksCmd(LoginRequiredMixin, ListView):
     任务cmd 界面
     """
     template_name = 'tasks/cmd.html'
-    model = asset
+    model = AssetInfo
     context_object_name = "asset_list"
-    queryset = asset.objects.all()
+    queryset = AssetInfo.objects.all()
     ordering = ('-id',)
 
     def get_queryset(self):
@@ -115,7 +115,7 @@ class TasksPerform(LoginRequiredMixin, View):
         modules = request.POST.getlist('module', None)
 
         idstring = ','.join(ids)
-        asset_obj = asset.objects.extra(where=['id IN (' + idstring + ')'])
+        asset_obj = AssetInfo.objects.extra(where=['id IN (' + idstring + ')'])
 
         tasks, assets = [], []
         for x in range(len(modules)):
@@ -142,7 +142,7 @@ class TasksPerform(LoginRequiredMixin, View):
                 "network_ip": i.network_ip,
                 "project": i.project}
             try:
-                varall.update(variable.objects.get(assets__hostname=i).vars)
+                varall.update(Variable.objects.get(assets__hostname=i).vars)
             except Exception as e:
                 logger.error(e)
 
@@ -166,7 +166,7 @@ class ToolsList(LoginRequiredMixin, ListView):
     工具列表
     """
     template_name = 'tasks/tools.html'
-    model = tools_script
+    model = Tools
     context_object_name = "tools_list"
 
     def get_context_data(self, **kwargs):
@@ -182,7 +182,7 @@ class ToolsAdd(LoginRequiredMixin, CreateView):
     """
      工具增加
     """
-    model = tools_script
+    model = Tools
     form_class = ToolsForm
     template_name = 'tasks/tools-add-update.html'
     success_url = reverse_lazy('tasks:tools')
@@ -200,7 +200,7 @@ class ToolsUpdate(LoginRequiredMixin, UpdateView):
     """
      工具更新
     """
-    model = tools_script
+    model = Tools
     form_class = ToolsForm
     template_name = 'tasks/tools-add-update.html'
     success_url = reverse_lazy('tasks:tools')
@@ -218,7 +218,7 @@ class ToolsAllDel(LoginRequiredMixin, View):
     """
     工具删除
     """
-    model = tools_script
+    model = Tools
 
     @staticmethod
     def post(request):
@@ -226,11 +226,11 @@ class ToolsAllDel(LoginRequiredMixin, View):
         try:
             if request.POST.get('nid'):
                 ids = request.POST.get('nid', None)
-                tools_script.objects.get(id=ids).delete()
+                Tools.objects.get(id=ids).delete()
             else:
                 ids = request.POST.getlist('id', None)
                 idstring = ','.join(ids)
-                tools_script.objects.extra(
+                Tools.objects.extra(
                     where=['id IN (' + idstring + ')']).delete()
         except Exception as e:
             ret['status'] = False
@@ -244,9 +244,9 @@ class ToolsExec(LoginRequiredMixin, ListView):
     工具执行
     """
     template_name = 'tasks/tools-exec.html'
-    model = asset
+    model = AssetInfo
     context_object_name = "asset_list"
-    queryset = asset.objects.all()
+    queryset = AssetInfo.objects.all()
     ordering = ('-id',)
 
     def get_queryset(self):
@@ -259,7 +259,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
         return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        tools_list = tools_script.objects.all()
+        tools_list = Tools.objects.all()
         context = {
             "tasks_active": "active",
             "tools_exec_active": "active",
@@ -290,7 +290,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
 
             asset_obj = asset.objects.extra(
                 where=['id IN (' + asset_id_tring + ')'])
-            tool_obj = tools_script.objects.filter(id=int(tool_id[0])).first()
+            tool_obj = Tools.objects.filter(id=int(tool_id[0])).first()
 
             assets = []
 
@@ -302,7 +302,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     "network_ip": i.network_ip,
                     "project": i.project}
                 try:
-                    varall.update(variable.objects.get(assets__hostname=i).vars)
+                    varall.update(Variable.objects.get(assets__hostname=i).vars)
                 except Exception as e:
                     logger.error(e)
 
@@ -336,7 +336,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 rets = ansbile_tools.delay(
                     assets, '{}.yml'.format(file2), "yml")
 
-            task_obj = tool_results.objects.create(task_id=rets.task_id)
+            task_obj = ToolsResults.objects.create(task_id=rets.task_id)
             ret['id'] = task_obj.id
 
         except Exception as e:
@@ -353,7 +353,7 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
 
     ordering = ('-ctime',)
     template_name = 'tasks/tools-results.html'
-    model = tool_results
+    model = ToolsResults
     context_object_name = "tools_results_list"
     paginate_by = settings.DISPLAY_PER_PAGE
 
@@ -381,12 +381,12 @@ class ToolsResultsDetail(LoginRequiredMixin, DetailView):
      执行工具 结果详细
     """
 
-    model = tool_results
+    model =ToolsResults
     template_name = 'tasks/tools-results-detail.html'
 
     def get_context_data(self, **kwargs):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
-        task = tool_results.objects.get(id=pk)
+        task = ToolsResults.objects.get(id=pk)
 
         try:
             results = TaskMeta.objects.get(task_id=task.task_id)
@@ -409,7 +409,7 @@ class VarsList(LoginRequiredMixin, ListView):
     Vars列表
     """
     template_name = 'tasks/vars.html'
-    model = variable
+    model = Variable
     context_object_name = "vars_list"
 
     def get_context_data(self, **kwargs):
@@ -425,7 +425,7 @@ class VarsAdd(LoginRequiredMixin, CreateView):
     """
      Vars增加
     """
-    model = variable
+    model = Variable
     form_class = VarsForm
     template_name = 'tasks/vars-add-update.html'
     success_url = reverse_lazy('tasks:vars')
@@ -443,7 +443,7 @@ class VarsUpdate(LoginRequiredMixin, UpdateView):
     """
      Vars更新
     """
-    model = variable
+    model =Variable
     form_class = VarsForm
     template_name = 'tasks/vars-add-update.html'
     success_url = reverse_lazy('tasks:vars')
@@ -461,7 +461,7 @@ class VarsAllDel(LoginRequiredMixin, View):
     """
     工具删除
     """
-    model = variable
+    model = Variable
 
     @staticmethod
     def post(request):
@@ -469,11 +469,11 @@ class VarsAllDel(LoginRequiredMixin, View):
         try:
             if request.POST.get('nid'):
                 ids = request.POST.get('nid', None)
-                variable.objects.get(id=ids).delete()
+                Variable.objects.get(id=ids).delete()
             else:
                 ids = request.POST.getlist('id', None)
                 idstring = ','.join(ids)
-                variable.objects.extra(
+                Variable.objects.extra(
                     where=['id IN (' + idstring + ')']).delete()
         except Exception as e:
             ret['status'] = False

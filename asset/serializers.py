@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from .models import asset
+from .models import AssetInfo
 
 
 class AssetSerializer(serializers.ModelSerializer):
     class Meta:
-        model = asset
+        model = AssetInfo
         fields = '__all__'

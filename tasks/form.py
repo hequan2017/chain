@@ -1,10 +1,10 @@
 from django import forms
-from .models import tools_script, variable
+from .models import Tools,Variable
 
 
 class ToolsForm(forms.ModelForm):
     class Meta:
-        model = tools_script
+        model =  Tools
         fields = '__all__'
         widgets = {
             'comment': forms.Textarea(
@@ -24,7 +24,7 @@ class ToolsForm(forms.ModelForm):
 
 class VarsForm(forms.ModelForm):
     class Meta:
-        model = variable
+        model = Variable
         fields = '__all__'
         widgets = {
             'desc': forms.Textarea(

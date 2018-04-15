@@ -1,11 +1,11 @@
-from django.shortcuts import render, redirect, HttpResponse
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
 
-from .models import login_log
+from .models import LoginLogs
 
 
 @login_required(login_url="/login.html")
@@ -39,7 +39,7 @@ def login_view(request):
                 login(request, user)
                 request.session['is_login'] = True
                 login_ip = request.META['REMOTE_ADDR']
-                login_log.objects.create(user=request.user, ip=login_ip)
+                LoginLogs.objects.create(user=request.user, ip=login_ip)
                 return redirect('/index.html')
             else:
                 return render(request, 'index/login.html',
@@ -97,13 +97,12 @@ def password_update(request):
 
 
 @login_required(login_url="/login.html")
-def LoginHistorys(request):
+def login_historys(request):
     """
     登录历史
-    :param request:
-    :return:
     """
-    obj = login_log.objects.order_by('-ctime')
+
+    obj = LoginLogs.objects.order_by('-ctime')
     return render(request,
                   'index/login-history.html',
                   {'login': obj,

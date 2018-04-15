@@ -1,6 +1,6 @@
 
 from django.contrib import admin
-from index.models import login_log
+from index.models import LoginLogs
 
 
 class LogAdmin(admin.ModelAdmin):
@@ -10,4 +10,4 @@ class LogAdmin(admin.ModelAdmin):
     list_filter = ('user', 'ip', 'ctime')
 
 
-admin.site.register(login_log, LogAdmin)
+admin.site.register(LoginLogs, LogAdmin)

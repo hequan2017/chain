@@ -153,7 +153,7 @@ class TasksPerform(LoginRequiredMixin, View):
                 "username": i.user.username,
                 "password": decrypt_p(i.user.password),
                 "private_key": i.user.private_key.name,
-                "vars": vars,
+                "vars": varall,
             }, )
 
         t = cmdjob(assets, tasks)
@@ -288,7 +288,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
 
             asset_id_tring = ','.join(asset_id)
 
-            asset_obj = asset.objects.extra(
+            asset_obj = AssetInfo.objects.extra(
                 where=['id IN (' + asset_id_tring + ')'])
             tool_obj = Tools.objects.filter(id=int(tool_id[0])).first()
 
@@ -313,7 +313,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     "username": i.user.username,
                     "password": decrypt_p(i.user.password),
                     "private_key": i.user.private_key.name,
-                    "vars": vars,
+                    "vars": varall,
                 }, )
 
             file = "data/script/{0}".format(random.randint(0, 999999))

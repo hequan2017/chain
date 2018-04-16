@@ -104,7 +104,7 @@ yum -y install sqlite-devel
 
 重新编译python3.6.5
 
-想在windows 环境下运行，请注释 tasks/views.py  以下两行
+想在windows 环境下运行,请注释 tasks/views.py  以下两行
 
 
 from   task.ansible_2420.runner import AdHocRunner
@@ -119,10 +119,10 @@ from   task.ansible_2420.inventory import BaseInventory
 
 ```bash
 /opt
-├── chain
-├── password.sh
-├── dockerfile-chain
-└── dockerfile-python3
+    chain
+    password.sh
+    dockerfile-chain
+    dockerfile-python3
 
 
 cd /opt

@@ -2,7 +2,7 @@ from django.db import models
 import random
 
 __all__ = [
-    'asset',
+    'AssetInfo',
     'AssetLoginUser',
 ]
 
@@ -150,7 +150,7 @@ class AssetInfo(models.Model):
         default='22',
         null=True,
         blank=True)
-    is_active = models.BooleanField(default=True, verbose_name=('激活',))
+    is_active = models.BooleanField(default=True, verbose_name='激活')
 
     ctime = models.DateTimeField(
         auto_now_add=True,

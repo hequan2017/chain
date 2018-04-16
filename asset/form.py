@@ -94,7 +94,8 @@ class AssetForm(forms.ModelForm):
         }
 
         help_texts = {
-            'hostname': '*  必填项目,名字唯一',
+            'hostname': '*  必填项目,名字唯一,主机名这里请不要写IP',
+            'network_ip': '*  名字唯一,如果没有外网,可将内网IP写到此处！',
             'platform': '*  必填项目',
             'region': '*  必填项目',
             'manager': '*  必填项目',
@@ -102,7 +103,7 @@ class AssetForm(forms.ModelForm):
         }
         error_messages = {
             'model': {
-                'max_length': ('太短了', ),
+                'max_length': '太短了',
             }
         }
 

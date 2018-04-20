@@ -122,7 +122,7 @@ docker build -t chain .
 docker run -d --name chain -p 8001:8001 -p 8002:8002 chain
 ```
 
-访问： http://ip:8001  账号:`admin` 密码:`1qaz.2wsx`
+访问： `http://ip:8001`  账号:`admin` 密码:`1qaz.2wsx`
 
 
 ###   截图

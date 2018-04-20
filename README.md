@@ -115,35 +115,14 @@ from   task.ansible_2420.inventory import BaseInventory
 
 ### docker部署
 
-可以参考  data/dockerfile-*   文件部署
-
-```bash
-/opt
-    chain
-    password.sh
-    dockerfile-chain
-    dockerfile-python3
-
-
-cd /opt
-mv  /opt/chain/data/dockerfile-python3   .
-mv  /opt/chain/data/dockerfile-chain   .
-mv  /opt/chain/data/supervisord.conf  .
-mv  /opt/chain/data/password.sh  .
-
-
-修改password.sh 里面的密码
-
-
-
-docker build  -t python3.6.5  -f dockerfile-python3    .
-docker build  -t chain   -f dockerfile-chain  --build-arg  ip='47.104.140.38'  .
-
-docker  run  -itd  --name chain   -p 8001:8001  -p 8002:8002    chain
-
-docker  exec  -it   chain /bin/bash
 
 ```
+git clone https://github.com/hequan2017/chain.git && cd chain
+docker build -t chain .
+docker run -d --name chain -p 8001:8001 -p 8002:8002 chain
+```
+
+访问： `http://ip:8001`  账号:`admin` 密码:`1qaz.2wsx`
 
 
 ###   截图

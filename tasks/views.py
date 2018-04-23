@@ -333,7 +333,6 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     f.write(tool_obj.tool_script)
                 os.system(
                     "sed  's/\r//'  {0}.yml >  {1}.yml".format(file, file2))
-                print( '{}.yml'.format(file2))
                 rets = ansbile_tools.delay(
                     assets,tools='{}.yml'.format(file2), modules="yml")
 

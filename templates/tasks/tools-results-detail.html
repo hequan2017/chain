@@ -3,7 +3,9 @@
 {% load  mytags %}
 {% load bootstrap3 %}
 {% block header-css %}
+<style>
 
+</style>
 {% endblock %}
 
 
@@ -87,7 +89,7 @@
                                         </tr>
                                         <tr>
                                             <td width="20%">traceback:</td>
-                                            <td><b>{{ results.traceback }}</b></td>
+                                            <td><b>{{ results.traceback  | traceback | safe }}</b></td>
                                         </tr>
                                         <tr>
                                             <td width="20%">data_done:</td>
@@ -106,15 +108,14 @@
                                         <tr>
                                             <td width="20%" >结果:</td>
                                              <td></td>
-                                            <td id="show_p"  hidden><b>{{ results.result | result }}</b></td>
+                                            <td></td>
                                         </tr>
 
 
                                         </tbody>
                                     </table>
 
-
-                    <pre id="out_pre"></pre>
+                    <pre > <b>{{ results.result  | result | safe }}</b> </pre>
 
                                 </div>
                             </div>
@@ -151,19 +152,5 @@
 {% endblock %}
 
 {% block footer-js %}
-
-
-<script type="text/javascript">
-
-　 var text = document.getElementById('show_p').innerText; //获取json格式内容
-
-   var result = JSON.stringify(JSON.parse(text), null, 4);//将字符串转换成json对象
-
-   document.getElementById('out_pre').innerText= result ;
-　　
-
-</script>
-
-
 
 {% endblock %}

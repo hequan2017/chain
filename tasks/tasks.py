@@ -76,7 +76,6 @@ def ansbile_tools(assets, tools, modules):
             ret = retsult['results_callback']
         except Exception as e:
             logger.error("{}".format(e))
-
         for i, element in enumerate(hostname):
             std, ret_host = [], {}
             try:

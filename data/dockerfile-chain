@@ -6,18 +6,11 @@ ARG  ip="127.0.0.1"
 WORKDIR  /tmp
 RUN  wget https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-7.noarch.rpm  && \
      rpm -ivh epel-release-latest-7.noarch.rpm   && \
-     yum  install supervisor   redis sshpass  net-tools -y
+     yum  install supervisor   sshpass  net-tools -y
 
 COPY    chain  /opt/chain
 
-WORKDIR  /usr/local/src
-
-RUN wget http://download.redis.io/releases/redis-stable.tar.gz  && \
-    tar -zxvf redis-stable.tar.gz   -C  /usr/local/   && \
-    cd /usr/local/   && \
-    mv redis-stable redis   && \
-    cd redis   && \
-    make
+RUN   mkdir /etc/ansible/
 
 WORKDIR   /opt/chain/
 

@@ -65,6 +65,7 @@ web_port = 8002
 
 
 ```bash
+mkdir /etc/ansible/
 cd chain/
 
 yum  install   sshpass   redis -y

@@ -25,6 +25,14 @@ RUN ./configure   --enable-shared --enable-loadable-sqlite-extensions --with-zli
     python -V  && \
     rm -rf  /usr/local/src/Python-3.6.5*
 
+WORKDIR  /usr/local/src
+
+RUN wget http://download.redis.io/releases/redis-stable.tar.gz  && \
+    tar -zxvf redis-stable.tar.gz   -C  /usr/local/   && \
+    cd /usr/local/   && \
+    mv redis-stable redis   && \
+    cd redis   && \
+    make
 
 WORKDIR  /opt/
 ENTRYPOINT   ["/bin/bash"]

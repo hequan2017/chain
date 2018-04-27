@@ -189,9 +189,9 @@ class AssetHardwareUpdate(LoginRequiredMixin, View):
                            "port": asset_obj.port,
                            "username": asset_obj.user.username,
                            "password": decrypt_p(asset_obj.user.password),
-                           "private_key": asset_obj.user.private_key.name,
+                           "private_key": asset_obj.user.private_key.name
                            }]
-                ansbile_asset_hardware.delay(id, assets)
+                ansbile_asset_hardware.delay(ids, assets)
 
         except Exception as e:
             logger.error(e)

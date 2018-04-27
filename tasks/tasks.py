@@ -100,13 +100,15 @@ def ansbile_tools(assets, tools, modules):
 def ansbile_asset_hardware(ids, assets):
     current_process()._config = {'semprefix': '/mp'}
 
-    inventory = BaseInventory(assets)
+
+    inventory = BaseInventory(host_list=assets)
     runner = AdHocRunner(inventory)
     tasks = [
         {"action": {"module": "setup", "args": ""}, "name": "script"},
     ]
     retsult = runner.run(tasks, "all")
     hostname = assets[0]['hostname']
+
 
     try:
         data = retsult.results_raw['ok'][hostname]['script']['ansible_facts']
@@ -115,7 +117,7 @@ def ansbile_asset_hardware(ids, assets):
                                     int(data["ansible_devices"][i]["sectorsize"]) / 1024 / 1024 / 1024
                                     for i in data["ansible_devices"] if
                                     i[0:2] in ("vd", "ss", "sd")])) + str(" GB"))
-        mem = int(data['ansible_memtotal_mb'] / 1024)
+        mem = round(data['ansible_memtotal_mb'] / 1024 )
         cpu = int("{}".format(
             data['ansible_processor_count'] * data["ansible_processor_cores"]))
 

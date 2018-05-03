@@ -31,11 +31,8 @@
                     <span class="fa arrow"> </span></a>
                 <ul class="nav nav-second-level">
                     <li class="{{ asset_list_active }}"><a href="{% url    'asset:asset_list' %}">资产信息</a></li>
-                    <li class="{{ asset_user_list_active }}"><a href="{% url    'asset:asset_user_list' %}">登录用户</a>
-                    </li>
-                    <li class="{{ asset_import_active }}"><a href="{% url    'asset:asset_import' %}">资产导入</a></li>
-
-
+                      <li class="{{ asset_project_list_active }}"><a href="{% url    'asset:asset_project_list' %}">资产项目</a></li>
+                    <li class="{{ asset_user_list_active }}"><a href="{% url    'asset:asset_user_list' %}">登录用户</a></li>
                 </ul>
             </li>
             <li class="{{ tasks_active }}">

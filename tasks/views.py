@@ -34,7 +34,7 @@ class TasksCmd(LoginRequiredMixin, ListView):
         self.queryset = super().get_queryset()
         if self.request.GET.get('name'):
             query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(Q(project=query)).order_by('-id')
+            queryset = self.queryset.filter(Q(project__projects=query)).order_by('-id')
         else:
             queryset = super().get_queryset()
         return queryset
@@ -253,7 +253,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
         self.queryset = super().get_queryset()
         if self.request.GET.get('name'):
             query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(Q(project=query)).order_by('-id')
+            queryset = self.queryset.filter(Q(project__projects=query)).order_by('-id')
         else:
             queryset = super().get_queryset()
         return queryset

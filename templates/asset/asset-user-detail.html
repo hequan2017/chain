@@ -41,7 +41,7 @@
                                 <a  href="{% url  "asset:asset_user_detail"   nid %}" class="text-center"><i class="fa fa-laptop"></i>登录用户</a>
                             </li>
                               <li>
-                                <a  href="{% url  "asset:asset_user_asset"   nid %}" class="text-center" ><i class="fa fa-laptop"></i>关联资产</a>
+                                <a  href="{% url  "asset:asset_user_asset"   nid %}" class="text-center" ><i class="fa fa-laptop"></i>管理资产</a>
                             </li>
 
 
@@ -92,11 +92,7 @@
                                             <td><b>{{ assets.username }}</b>
                                             </td>
                                         </tr>
-                                        <tr>
-                                            <td width="20%">管理资产:</td>
-                                            <td><b>{{ assets.assetinfo_set.count }}</b>
-                                            </td>
-                                        </tr>
+
 
 
                                         <tr>

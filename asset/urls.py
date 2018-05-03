@@ -26,6 +26,11 @@ urlpatterns = [
 
     path('asset-webssh.html', views.AssetWeb.as_view(), name='asset_web'),
     path('asset-hardware-update.html', views.AssetHardwareUpdate.as_view(), name='asset_hardware_update'),
+
+    path('asset-project.html', views.AssetProjectListAll.as_view(), name='asset_project_list'),
+    path('asset-project-add.html', views.AssetProjectAdd.as_view(), name='asset_project_add'),
+    path('asset-project-all-del.html', views.AssetProjectAllDel.as_view(), name='asset_project_all_del'),
+    path('asset-project-update-<int:pk>.html', views.AssetProjectUpdate.as_view(), name='asset_project_update'),
 ]
 
 app_name = "asset"

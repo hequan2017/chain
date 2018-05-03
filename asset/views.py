@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .form import AssetForm, FileForm, AssetUserForm
+from .form import AssetForm, FileForm, AssetUserForm,AssetProjectForm
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DetailView
 from django.urls import reverse_lazy
 from django.conf import settings
 from django.db.models import Q
-from asset.models import AssetInfo, AssetLoginUser
+from asset.models import AssetInfo, AssetLoginUser,AssetProject
 from asset.models import AssetInfo as Asset
 from io import StringIO
 from chain import settings
@@ -19,7 +19,7 @@ import json
 import logging
 import codecs
 import chardet
-
+import time
 logger = logging.getLogger('asset')
 
 
@@ -57,10 +57,11 @@ class AssetListAll(LoginRequiredMixin, ListView):
         :return:
         """
         self.queryset = super().get_queryset()
+
         if self.request.GET.get('name'):
             query = self.request.GET.get('name', None)
             queryset = self.queryset.filter(Q(network_ip=query) | Q(hostname=query) | Q(
-                inner_ip=query) | Q(project=query) | Q(manager=query)).order_by('-id')
+                inner_ip=query) | Q(project__projects=query) | Q(manager__managers=query)).order_by('-id')
         else:
             queryset = super().get_queryset()
         return queryset
@@ -312,34 +313,42 @@ def AssetImport(request):
                 ids = asset_dict['id']
                 asset_dict.pop('id', 0)
 
+                ##用于添加 新增
                 for k, v in asset_dict_id.items():
                     if k == 'is_active':
                         v = True if v in ['TRUE', 1, 'true'] else False
                     elif k in ['user']:
                         try:
                             v = AssetLoginUser.objects.get(hostname=v).id
-                        except ValueError as e:
-                            logger.error(e)
+                        except Exception as e:
                             v = None
-
-                    elif k in ['buy_time', "expire_time", 'ctime', 'utime']:
-                        v = "1970-01-01 00:00"
+                    elif k in ['project']:
+                        try:
+                            v = AssetProject.objects.get(projects=v).id
+                        except Exception as e:
+                            v = None
+                    elif k in ['ctime', 'utime']:
+                        v = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
                     else:
                         continue
                     asset_dict_id[k] = v
 
+                ##用于更新
                 for k, v in asset_dict.items():
                     if k == 'is_active':
                         v = True if v in ['TRUE', 1, 'true'] else False
                     elif k in ['user']:
                         try:
                             v = AssetLoginUser.objects.get(hostname=v).id
-                        except ValueError as e:
-                            logger.error(e)
+                        except Exception as e:
                             v = None
-
-                    elif k in ['buy_time', "expire_time", 'ctime', 'utime']:
-                        v = "1970-01-01 00:00"
+                    elif k in ['project']:
+                        try:
+                            v = AssetProject.objects.get(projects=v).id
+                        except Exception as e:
+                            v = None
+                    elif k in ['ctime', 'utime']:
+                        v = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
                     else:
                         continue
                     asset_dict[k] = v
@@ -391,11 +400,8 @@ def AssetImport(request):
                            "asset_import_active": "active",
                            "msg": data})
 
-    return render(request,
-                  'asset/asset-import.html',
-                  {'form': form,
-                   "asset_active": "active",
-                   "asset_import_active": "active",
+    return render(request, 'asset/asset-import.html',
+                  {'form': form,"asset_active": "active","asset_list_active": "active",
                    })
 
 
@@ -407,11 +413,11 @@ def AssetZtree(request):
     :return:
     """
 
-    manager = AssetInfo.objects.values("project").distinct()
+    manager = AssetProject.objects.values("projects").distinct()
     data = [{"id": "1111", "pId": "0", "name": "项目"}, ]
     for i in manager:
-        data.append({"id": i['project'], "pId": "1111",
-                     "name": i['project'], "page": "xx.action"}, )
+        data.append({"id": i['projects'], "pId": "1111",
+                     "name": i['projects'], "page": "xx.action"}, )
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
@@ -591,3 +597,82 @@ class AssetWeb(LoginRequiredMixin, View):
             ret['error'] = '请求错误,{}'.format(e)
         finally:
             return HttpResponse(json.dumps(ret))
+
+
+class AssetProjectListAll(LoginRequiredMixin, ListView):
+    """
+    资产项目列表
+    """
+    template_name = 'asset/asset-project.html'
+    paginate_by = settings.DISPLAY_PER_PAGE
+    model = AssetProject
+    context_object_name = "asset_project_list"
+    queryset = AssetProject.objects.all()
+    ordering = ('id',)
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_project_list_active": "active",
+
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class AssetProjectAdd(LoginRequiredMixin, CreateView):
+    """
+    资产项目增加
+    """
+    model = AssetProject
+    form_class = AssetProjectForm
+    template_name = 'asset/asset-project-add-update.html'
+    success_url = reverse_lazy('asset:asset_project_list')
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_project_list_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+class AssetProjectAllDel(LoginRequiredMixin, View):
+    """
+    资产项目删除
+    """
+    model = AssetProject
+
+    @staticmethod
+    def post(request):
+        ret = {'status': True, 'error': None, }
+        try:
+            if request.POST.get('nid'):
+                ids = request.POST.get('nid', None)
+                AssetProject.objects.get(id=ids).delete()
+            else:
+                ids = request.POST.getlist('id', None)
+                idstring = ','.join(ids)
+                AssetProject.objects.extra(
+                    where=['id IN (' + idstring + ')']).delete()
+        except Exception as e:
+            ret['status'] = False
+            ret['error'] = '删除请求错误,没有权限{}'.format(e)
+        finally:
+            return HttpResponse(json.dumps(ret))
+
+
+class AssetProjectUpdate(LoginRequiredMixin, UpdateView):
+    """登录用户更新"""
+    model = AssetProject
+    form_class = AssetProjectForm
+    template_name = 'asset/asset-project-add-update.html'
+    success_url = reverse_lazy('asset:asset_project_list')
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_project_list_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)

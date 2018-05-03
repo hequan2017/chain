@@ -24,6 +24,7 @@ http://47.104.140.38:8001
 
 ### 目录结构
   *  asset     资产
+        * api   asset/api/asset.html
   *  chain     主配置目录
   *  data      测试数据/Dockerfile目录
   *  index     首页及用户处理

@@ -1,5 +1,5 @@
 from django import forms
-from asset.models import AssetInfo, AssetLoginUser
+from asset.models import AssetInfo, AssetLoginUser,AssetProject
 from tasks.models import Variable
 
 
@@ -39,31 +39,9 @@ class AssetForm(forms.ModelForm):
     class Meta:
         model = AssetInfo
         # fields = '__all__'
-        fields = [
-            'hostname',
-            'network_ip',
-            'inner_ip',
-            'system',
-            'vars',
-            'cpu',
-            'memory',
-            'disk',
-            'bandwidth',
-            'project',
-            'platform',
-            'region',
-            'manager',
-            'user',
-            'Instance_id',
-            'buy_time',
-            'expire_time',
-            'port',
-            'ps',
-            'is_active']
-
-        labels = {
-            "network_ip": "外网IP",
-        }
+        fields = [ 'hostname', 'network_ip','inner_ip', 'system','vars','cpu', 'memory','disk', 'bandwidth','project','platform',
+            'region','user', 'Instance_id','port','ps', 'is_active']
+        labels = {"network_ip": "外网IP",}
         widgets = {
             'buy_time': forms.DateInput(
                 attrs={'type': 'date', }
@@ -79,9 +57,6 @@ class AssetForm(forms.ModelForm):
             'platform': forms.Select(
                 attrs={'class': 'select2',
                        'data-placeholder': '----请选择平台----'}),
-            'manager': forms.Select(
-                attrs={'class': 'select2',
-                       'data-placeholder': '----请选择负责人----'}),
             'region': forms.Select(
                 attrs={'class': 'select2',
                        'data-placeholder': '----请选择区域----'}),
@@ -92,14 +67,11 @@ class AssetForm(forms.ModelForm):
                 attrs={'class': 'select2',
                        'data-placeholder': '----请选择登录用户----'}),
         }
-
         help_texts = {
             'hostname': '*  必填项目,名字唯一,主机名这里请不要写IP',
             'network_ip': '*  名字唯一,如果没有外网,可将内网IP写到此处！',
             'platform': '*  必填项目',
             'region': '*  必填项目',
-            'manager': '*  必填项目',
-            'project': '*  必填项目'
         }
         error_messages = {
             'model': {
@@ -109,9 +81,37 @@ class AssetForm(forms.ModelForm):
 
 
 class AssetUserForm(forms.ModelForm):
+    assets = forms.ModelMultipleChoiceField(
+        queryset=AssetInfo.objects.all(),
+        label="资产列表",
+        widget=forms.SelectMultiple(
+            attrs={
+                'class': 'select2',
+                'data-placeholder': '--------请选择资产列表--------',
+            }
+        ),
+        required=False,
+    )
+
+    def __init__(self, **kwargs):
+        instance = kwargs.get('instance')
+        if instance:
+            initial = kwargs.get('initial', {})
+            initial.update({
+                'assets': instance.asset.all(),
+            })
+            kwargs['initial'] = initial
+        super().__init__(**kwargs)
+
+    def save(self, commit=True):
+        var = super().save(commit=commit)
+        users = self.cleaned_data['assets']
+        var.asset.set(users)
+        return var
+
     class Meta:
         model = AssetLoginUser
-        fields = '__all__'
+        fields = ['hostname','username','password','private_key','ps','assets']
 
         help_texts = {
             'password': '* 如不修改密码，请保持为空',
@@ -123,4 +123,46 @@ class AssetUserForm(forms.ModelForm):
             ),
             'ps': forms.Textarea(
                 attrs={'cols': 80, 'rows': 3}),
+        }
+
+
+class AssetProjectForm(forms.ModelForm):
+
+    assets = forms.ModelMultipleChoiceField(
+        queryset=AssetInfo.objects.all(),
+        label="资产列表",
+        widget=forms.SelectMultiple(
+            attrs={
+                'class': 'select2',
+                'data-placeholder': '--------请选择资产列表--------',
+            }
+        ),
+        required=False,
+    )
+
+    def __init__(self, **kwargs):
+        instance = kwargs.get('instance')
+        if instance:
+            initial = kwargs.get('initial', {})
+            initial.update({
+                'assets': instance.asset.all(),
+            })
+            kwargs['initial'] = initial
+        super().__init__(**kwargs)
+
+    def save(self, commit=True):
+        var = super().save(commit=commit)
+        users = self.cleaned_data['assets']
+        var.asset.set(users)
+        return var
+
+    class Meta:
+        model = AssetProject
+        fields = ['projects','assets','ps']
+
+
+        widgets = {
+
+            'ps': forms.Textarea(
+                attrs={'cols': 80, 'rows': 4}),
         }

@@ -16,7 +16,7 @@
                     <a href="/index.html">主页</a>
                 </li>
                 <li>
-                    <a href="asset.html">资产管理</a>
+                     <a href="{% url    'asset:asset_list' %}" >资产管理</a>
                 </li>
                 <li class="active">
                     <strong>资产详情</strong>
@@ -143,14 +143,7 @@
                                             <td width="20%">硬盘:</td>
                                             <td><b>{{ assets.disk }}</b></td>
                                         </tr>
-                                        <tr>
-                                            <td width="20%">购买时间:</td>
-                                            <td><b>{{ assets.buy_time }}</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td width="20%">到期时间:</td>
-                                            <td><b>{{ assets.expire_time }}</b></td>
-                                        </tr>
+
 
                                        <tr>
                                             <td width="20%">创建时间:</td>

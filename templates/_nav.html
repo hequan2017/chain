@@ -46,6 +46,16 @@
                     <li class="{{ tools_results_active }}"><a href="{% url    'tasks:tools_results' %}">任务结果</a></li>
                 </ul>
             </li>
+            <li class="{{ name_active }}">
+                <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">系统用户</span>
+                    <span class="fa arrow"> </span></a>
+                <ul class="nav nav-second-level">
+                    <li class="{{ name_list_active }}"><a href="{% url  'name:name_list' %}">用户管理</a></li>
+
+
+                </ul>
+            </li>
+
             <li class="{{ index_active }}">
                 <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">后台</span>
                     <span class="fa arrow"> </span></a>

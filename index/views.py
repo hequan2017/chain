@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import User
-
+from  name.models import Names
 from .models import LoginLogs
 
 

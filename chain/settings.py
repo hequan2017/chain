@@ -45,9 +45,11 @@ INSTALLED_APPS = [
     'asset',
     'index',
     'tasks',
+    'name',
     'rest_framework',
     'rest_framework.authtoken',
     'djcelery',
+    'guardian',
 ]
 
 MIDDLEWARE = [
@@ -61,6 +63,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'chain.urls'
+
+AUTH_USER_MODEL='name.Names'
+
 
 TEMPLATES = [
     {
@@ -81,6 +86,7 @@ TEMPLATES = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # default
+    'guardian.backends.ObjectPermissionBackend',
 )
 
 ANONYMOUS_USER_ID = -1

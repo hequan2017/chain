@@ -11,3 +11,4 @@ celery-with-redis==3.0
 django-celery==3.2.2
 FeedParser
 jsonfield
+django-guardian

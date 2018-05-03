@@ -61,7 +61,7 @@ class AssetListAll(LoginRequiredMixin, ListView):
         if self.request.GET.get('name'):
             query = self.request.GET.get('name', None)
             queryset = self.queryset.filter(Q(network_ip=query) | Q(hostname=query) | Q(
-                inner_ip=query) | Q(project__projects=query) | Q(manager__managers=query)).order_by('-id')
+                inner_ip=query) | Q(project__projects=query)).order_by('-id')
         else:
             queryset = super().get_queryset()
         return queryset

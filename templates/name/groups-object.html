@@ -1,27 +1,28 @@
 {% extends "base.html" %}
 {% load	bootstrap3 %}
 {% load static %}
+{% load mytags %}
 {% block header-css %}
 
 {% endblock %}
 
-{% block  title %}登录用户{% endblock %}
+{% block  title %}组管理{% endblock %}
 
 
 
 {% block page-content %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>登录用户</h2>
+            <h2>组对象管理</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{% url "index" %}">主页</a>
                 </li>
                 <li>
-                    <a>登录用户</a>
+                    <a>系统用户</a>
                 </li>
                 <li class="active">
-                    <strong>登录用户</strong>
+                    <strong>组对象管理</strong>
                 </li>
             </ol>
         </div>
@@ -38,7 +39,7 @@
                 <div class="ibox float-e-margins">
 
                     <div class="ibox-title">
-                        <h5>登录用户</h5>
+                        <h5>组对象管理</h5>
                         <div class="ibox-tools">
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
@@ -61,13 +62,8 @@
 
                         <div class="table-responsive">
 
-                            <a href="{% url    'asset:asset_user_add' %}" class="btn btn-sm btn-primary ">
-                                添加</a>
-
-
-                            <a class="btn btn-sm btn-danger  asset_user_all_del"
-                            >批量删除
-                            </a>
+                            <a href="{% url    'name:groups_object_add' %}"  class="btn btn-sm btn-primary ">添加</a>
+                            <a class="btn btn-sm btn-danger  groups_all_del">批量删除</a>
 
                             <form id="del_form_asset_all" class="form-horizontal">
 
@@ -75,31 +71,27 @@
                                     <thead>
                                     <tr>
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
-                                        <th>名称</th>
-                                        <th>用户名</th>
-                                        <th>关联资产</th>
-                                        <th>备注</th>
+                                        <th>组名</th>
+                                         <th>类型</th>
+                                         <th>资产</th>
+                                        <th>权限</th>
 
                                         <th>动作</th>
                                     </tr>
                                     </thead>
                                     <tbody>
 
-                                    {% for   row   in   asset_user_list %}
+                                    {% for   row   in   groups_object_list %}
 
                                         <tr class="gradeA" id="{{ row.id }}">
                                             <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
-                                            <td class="center"><a
-                                                    href="{% url  "asset:asset_user_detail"   pk=row.id %}">{{ row.hostname }}</a>
-                                            </td>
-                                            <td class="center">{{ row.username }}</td>
-                                            <td class="center">总和:{{ row.user_name.count }} <br>
-                                                具体:{% for  i in row.user_name.get_queryset %}{{ i }}|{% endfor %}</td>
-                                            <td class="center">{{ row.ps }}</td>
-                                            <td><a class="btn btn-primary  btn-xs "
-                                                   href="{% url  "asset:asset_user_update"  pk=row.id %}">编辑</a>
-                                                <a class="btn btn-danger  btn-xs  asset_user_del"
-                                                >删除</a>
+                                            <td class="center"> {{ row.group }}</td>
+                                            <td class="center"> {{ row.content_type }}</td>
+                                            <td class="center"> {{ row.object_pk |  objectasset }}</td>
+                                             <td class="center"> {{ row.permission }}</td>
+
+                                            <td><a class="btn btn-primary  btn-xs " href="{% url  "name:groups_object_update"  pk=row.id %}">编辑</a>
+                                                <a class="btn btn-danger  btn-xs  groups_del">删除</a>
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -132,7 +124,7 @@
 
             $(function () {
 
-                $(document).on('click', '.asset_user_del', function () {
+                $(document).on('click', '.groups_del', function () {
                     var id = $(this).parent().parent().attr('id');
                     swal({
                         title: "你确定删除",
@@ -144,7 +136,7 @@
                         closeOnConfirm: false
                     }, function () {
                         $.ajax({
-                            url: "/asset/asset-user-all-del.html",
+                            url: "/name/groups-object-all-del.html",
                             type: 'POST',
                             data: {'nid': id},
                             success: function (data) {
@@ -164,11 +156,11 @@
 
                 });
 
-                $(document).on('click', '.asset_user_all_del', function () {
+                $(document).on('click', '.groups_all_del', function () {
 
                     swal({
 
-                        title: "你确定删除 user",
+                        title: "你确定删除 系统组",
                         text: "你将无法恢复",
                         type: "warning",
                         showCancelButton: true,
@@ -178,7 +170,7 @@
                         closeOnConfirm: false
                     }, function () {
                         $.ajax({
-                            url: "/asset/asset-user-all-del.html",
+                            url: "/name/groups-object-all-del.html",
                             type: 'POST',
                             data: $('#del_form_asset_all').serialize(),
                             success: function (data) {

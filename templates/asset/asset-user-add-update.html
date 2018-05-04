@@ -55,7 +55,7 @@
 
                     <form enctype="multipart/form-data" method="post" class="form-horizontal" action="">
                         {% csrf_token %}
-                        {% if form.no_field_errors %}
+                        {% if form.non_field_errors %}
                             <div class="alert alert-danger" style="margin: 20px auto 0px">
                                 {{ form.non_field_errors }}
                             </div>
@@ -72,7 +72,7 @@
                                 {% bootstrap_field form.username layout="horizontal" %}
                                 {% bootstrap_field form.password layout="horizontal" %}
                                 {% bootstrap_field form.private_key layout="horizontal" %}
-                                {% bootstrap_field form.assets layout="horizontal" %}
+                                {% bootstrap_field form.user_name layout="horizontal" %}
                                 {% bootstrap_field form.ps layout="horizontal" %}
 
 

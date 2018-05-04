@@ -3,7 +3,11 @@ from djcelery.models import TaskMeta
 from jsonfield import JSONField
 from asset.models import AssetInfo
 
-
+__all__ = [
+    'Tools',
+    'ToolsResults',
+    'Variable'
+]
 cmd_list = [
     'shell',
     'raw',

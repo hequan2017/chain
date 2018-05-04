@@ -81,7 +81,7 @@ class AssetForm(forms.ModelForm):
 
 
 class AssetUserForm(forms.ModelForm):
-    assets = forms.ModelMultipleChoiceField(
+    user_name = forms.ModelMultipleChoiceField(
         queryset=AssetInfo.objects.all(),
         label="资产列表",
         widget=forms.SelectMultiple(
@@ -98,20 +98,20 @@ class AssetUserForm(forms.ModelForm):
         if instance:
             initial = kwargs.get('initial', {})
             initial.update({
-                'assets': instance.asset.all(),
+                'user_name': instance.user_name.all(),
             })
             kwargs['initial'] = initial
         super().__init__(**kwargs)
 
     def save(self, commit=True):
         var = super().save(commit=commit)
-        users = self.cleaned_data['assets']
-        var.asset.set(users)
+        users = self.cleaned_data['user_name']
+        var.user_name.set(users)
         return var
 
     class Meta:
         model = AssetLoginUser
-        fields = ['hostname','username','password','private_key','ps','assets']
+        fields = ['hostname','username','password','private_key','ps','user_name']
 
         help_texts = {
             'password': '* 如不修改密码，请保持为空',

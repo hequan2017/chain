@@ -69,10 +69,10 @@ def password_update(request):
     if request.method == 'POST':
         form = UserPasswordForm(request.POST)
         if form.is_valid():
-            old = User.objects.get(username=request.user)
+            old = Names.objects.get(username=request.user)
             old_pass = old.password
             input_pass = form.cleaned_data['old_password']
-            check = check_password(input_pass, old_pass)
+            check = check_password(input_pass,old_pass)
             if check is True:
                 if form.cleaned_data['new_password'] == form.cleaned_data['confirm_password']:
                     password = form.cleaned_data['new_password']
@@ -103,9 +103,6 @@ def login_historys(request):
     """
 
     obj = LoginLogs.objects.order_by('-ctime')
-    return render(request,
-                  'index/login-history.html',
-                  {'login': obj,
+    return render(request,'index/login-history.html',{'login': obj,
                    "index_active": "active",
-                   "index_login_active": "active",
-                   })
+                   "index_login_active": "active", })

@@ -4,6 +4,7 @@ import random
 __all__ = [
     'AssetInfo',
     'AssetLoginUser',
+    'AssetProject'
 ]
 
 # 登录用户
@@ -69,7 +70,7 @@ class AssetInfo(models.Model):
 
 
     project = models.ForeignKey(verbose_name='资产项目',to='AssetProject',related_name='asset',on_delete=models.SET_NULL,null=True,blank=True)
-    user  = models.ForeignKey(verbose_name="登录用户",to='AssetLoginUser',related_name='asset',on_delete=models.SET_NULL,null=True,blank=True)
+    user  = models.ForeignKey(verbose_name="登录用户",to='AssetLoginUser',related_name='user_name',on_delete=models.SET_NULL,null=True,blank=True)
 
     Instance_id = models.CharField(max_length=64,verbose_name='实例ID', null=True,blank=True)
 
@@ -89,9 +90,7 @@ class AssetInfo(models.Model):
         db_table = "AssetInfo"
         verbose_name = "资产管理"
         verbose_name_plural = '资产管理'
-        permissions = {
-            ('read_asset', u"只读资产管理"),
-        }
+
 
     def __str__(self):
         return self.hostname

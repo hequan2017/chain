@@ -1,12 +1,7 @@
 {% extends "base.html" %}
-{% load static %}
-{% load	bootstrap3 %}
-{% block  title %}变量{% endblock %}
+{% block  title %}登录用户{% endblock %}
 {% block header-css %}
-    <link href="{% static  "css/plugins/codemirror/codemirror.css" %}" rel="stylesheet">
-    <link href="{% static  "css/plugins/codemirror/ambiance.css" %}" rel="stylesheet">
-    <link href="{% static  "css/plugins/codemirror/fold/foldgutter.css" %}" rel="stylesheet">
-
+{% load bootstrap3 %}
 {% endblock %}
 
 
@@ -14,16 +9,16 @@
 
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>变量</h2>
+            <h2>组管理</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="/index.html">主页</a>
                 </li>
                 <li>
-                   <a>作业中心</a>
+                    <a>系统用户</a>
                 </li>
                 <li class="active">
-                    <strong>变量</strong>
+                    <strong>组管理</strong>
                 </li>
             </ol>
         </div>
@@ -37,8 +32,7 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>变量</h5>
-
+                    <h5>组管理</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -58,6 +52,7 @@
                     </div>
                 </div>
                 <div class="ibox-content">
+
                     <form enctype="multipart/form-data" method="post" class="form-horizontal" action="">
                         {% csrf_token %}
                         {% if form.non_field_errors %}
@@ -68,26 +63,31 @@
 
                         <div class="form-group">
                             <div class="col-sm-10 col-sm-offset-0">
+                                <h3>基本</h3>
+
+
+
                                 {% bootstrap_field form.name layout="horizontal" %}
-                                {% bootstrap_field form.vars layout="horizontal" %}
-                                {% bootstrap_field form.assets  layout="horizontal" %}
-                                {% bootstrap_field form.desc layout="horizontal" %}
+                                {% bootstrap_field form.permissions layout="horizontal" %}
+                                 {% bootstrap_field form.ps layout="horizontal" %}
+
                             </div>
                         </div>
-
                         <div class="hr-line-dashed"></div>
 
 
                         <div class="form-group">
                             <div class="col-sm-4 col-sm-offset-3">
 
-                                <button class="btn btn-primary" type="submit">保存</button>
-                                <button class="btn btn-white" type="reset">重置</button>
+                                {% bootstrap_button "保存" button_type="submit" button_class="btn-primary" %}
+
+                                <button class="btn btn-white" href="{{ i__next__ }}">取消</button>
                             </div>
                         </div>
 
-
                     </form>
+
+
                 </div>
             </div>
         </div>
@@ -95,52 +95,29 @@
     </div>
 
 
-
-
-{% endblock %}
-
-{% block footer-js %}
-
-        <script src="{% static  "js/plugins/codemirror/codemirror.js" %}"></script>
-        <script src="{% static "js/plugins/codemirror/mode/javascript.js" %}"></script>
-
-
-        <script src="{% static "js/plugins/codemirror/fold/brace-fold.js" %} "></script>
-        <script src="{% static "js/plugins/codemirror/fold/comment-fold.js" %} "></script>
-        <script src="{% static "js/plugins/codemirror/fold/foldcode.js" %} "></script>
-        <script src="{% static "js/plugins/codemirror/fold/foldgutter.js" %} "></script>
-        <script src="{% static "js/plugins/codemirror/fold/indent-fold.js" %} "></script>
-        <script src="{% static "js/plugins/codemirror/fold/markdown-fold.js" %} "></script>
-        <script src="{% static "js/plugins/codemirror/fold/xml-fold.js" %} "></script>
-
-        <script src="{% static "js/plugins/codemirror/edit/matchbrackets.js" %} "></script>
+    {% block footer-js %}
 
 
 
         <script>
             $(document).ready(function () {
-                $("#id_assets").select2({
+                $('.select2').select2();
+                $("#id_tags").select2({
                     tags: true,
                     {#                                maximumSelectionLength: 8,  //最多能够选择的个数#}
                     closeOnSelect: false
                 });
-
-
-                var editor_two = CodeMirror.fromTextArea(document.getElementById("id_vars"), {
-                    lineNumbers: true,
-                    matchBrackets: true,
-                    styleActiveLine: true,
-                    lineWrapping: true,
-                    foldGutter: true,
-                    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
-
-
-                });
-
-
             });
+
+
 
         </script>
 
 
+    {% endblock %}
+
+
+
 {% endblock %}
+
+

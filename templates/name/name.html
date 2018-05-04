@@ -62,7 +62,7 @@
                         <div class="table-responsive">
 
                             <a href="{% url    'name:name_add' %}"  class="btn btn-sm btn-primary ">添加</a>
-                            <a class="btn btn-sm btn-danger  name_del">批量删除</a>
+                            <a class="btn btn-sm btn-danger  name_all_del">批量删除</a>
 
                             <form id="del_form_asset_all" class="form-horizontal">
 
@@ -72,6 +72,7 @@
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
                                         <th>用户名</th>
                                         <th>管理员</th>
+                                        <th>组</th>
                                         <th>是否激活</th>
 
 
@@ -86,6 +87,7 @@
                                             <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
                                             <td class="center">{{ row.username }}</td>
                                             <td class="center">{{ row.is_superuser }}</td>
+                                             <td class="center">{% for i  in row.groups.get_queryset %}  {{ i }} | {% endfor %}</td>
                                             <td class="center">{{ row.is_active }}</td>
 
                                             <td><a class="btn btn-primary  btn-xs " href="{% url  "name:name_update"  pk=row.id %}">编辑</a>
@@ -158,7 +160,7 @@
 
                     swal({
 
-                        title: "你确定删除 user",
+                        title: "你确定删除 系统用户",
                         text: "你将无法恢复",
                         type: "warning",
                         showCancelButton: true,

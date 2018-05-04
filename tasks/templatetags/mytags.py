@@ -4,7 +4,7 @@ register = template.Library()
 import json
 import logging
 logger = logging.getLogger('tasks')
-
+from asset.models import AssetProject
 
 @register.filter
 def result(text):
@@ -24,6 +24,15 @@ def result(text):
 def traceback(text):
     try:
         a = text.replace('\n', '<br>')
+    except Exception as e:
+        a = text
+    return a
+
+
+@register.filter
+def objectasset(text):
+    try:
+        a = AssetProject.objects.get(id=text).projects
     except Exception as e:
         a = text
     return a

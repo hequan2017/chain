@@ -261,24 +261,9 @@ class GroupsObjectAdd(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         forms = form.save(commit=False)
         obj = form.cleaned_data['object_pk1']
-        forms.object_pk=obj[0]
+        forms.object_pk=obj
         forms.save()
-
-        try:
-            for i  in  obj[1:]:
-                GroupObjectPermission.objects.create(content_type=form.cleaned_data['content_type'],object_pk=i,group=form.cleaned_data['group'],
-                                                     permission=form.cleaned_data['permission'])
-        except Exception as e:
-            logging.error(e)
-
         return super().form_valid(form)
-
-
-
-
-
-
-
 
 
 class GroupsObjectAllDel(LoginRequiredMixin, View):

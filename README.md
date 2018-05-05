@@ -21,7 +21,6 @@ http://47.104.140.38:8001
 密码  1qaz.2wsx
 
 ```
-
 ### 目录结构
   *  asset     资产
         * api   asset/api/asset.html
@@ -29,9 +28,28 @@ http://47.104.140.38:8001
   *  data      测试数据/Dockerfile目录
   *  index     首页及用户处理
   *  tasks     任务
+  *  name      系统用户
   *  static    css | js
   *  templates 静态模板
   *  webssh    终端登录     参考的  https://github.com/huashengdun/webssh   此项目
+
+###  权限
+
+关于权限,采用的为 django-guardian  对象权限  和 django自带auth权限 相结合
+
+
+```
+举个例子：
+0 新建一个资产项目  运维  新建一个资产 web01  和 资产用户 web01-root 分配到 运维 项目下.
+1 新建一个用户  hequan  , 将hequan 分配到用户组  ops.
+2 系统用户  --  组对象权限   添加    对象类型： 资产项目     资产项目： 运维   组： ops   权限：asset | 资产项目 | 只读资产项目
+3 这样   hequan  用户  就获得了    资产 web01  资产用户web01-root  资产项目 运维的  可读权限
+4 小权限分5类：  可读   添加（没用到）  修改   删除   执行（后面用来执行cmd 和工具）
+5 admin  默认有所有权限
+6 如果想让  hequan 有添加资产权限 怎么操作。 选择  系统用户 -- 用户或者组   选择  Can  add  资产管理,就可以了。想添加项目,就需要选择  Can add 资产项目。
+```
+
+目前权限还在完善中。
 
 ###  环境
 

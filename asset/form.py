@@ -72,6 +72,7 @@ class AssetForm(forms.ModelForm):
             'network_ip': '*  名字唯一,如果没有外网,可将内网IP写到此处！',
             'platform': '*  必填项目',
             'region': '*  必填项目',
+            'project': '*  必填项目',
         }
         error_messages = {
             'model': {
@@ -111,11 +112,12 @@ class AssetUserForm(forms.ModelForm):
 
     class Meta:
         model = AssetLoginUser
-        fields = ['hostname','username','password','private_key','ps','user_name']
+        fields = ['hostname','username','password','private_key','ps','user_name','project']
 
         help_texts = {
             'password': '* 如不修改密码，请保持为空',
             'private_key': '*  如私钥有密码，请先取消掉再上传',
+            'project': '* 必填项目'
         }
 
         widgets = {
@@ -139,6 +141,17 @@ class AssetProjectForm(forms.ModelForm):
         ),
         required=False,
     )
+    project = forms.ModelMultipleChoiceField(
+        queryset=AssetLoginUser.objects.all(),
+        label="资产列表",
+        widget=forms.SelectMultiple(
+            attrs={
+                'class': 'select2',
+                'data-placeholder': '--------请选择资产用户列表--------',
+            }
+        ),
+        required=False,
+    )
 
     def __init__(self, **kwargs):
         instance = kwargs.get('instance')
@@ -146,6 +159,7 @@ class AssetProjectForm(forms.ModelForm):
             initial = kwargs.get('initial', {})
             initial.update({
                 'assets': instance.asset.all(),
+                'project': instance.project.all(),
             })
             kwargs['initial'] = initial
         super().__init__(**kwargs)
@@ -153,12 +167,14 @@ class AssetProjectForm(forms.ModelForm):
     def save(self, commit=True):
         var = super().save(commit=commit)
         users = self.cleaned_data['assets']
+        projects = self.cleaned_data['project']
         var.asset.set(users)
+        var.project.set(projects)
         return var
 
     class Meta:
         model = AssetProject
-        fields = ['projects','assets','ps']
+        fields = ['projects','assets','ps','project']
 
 
         widgets = {

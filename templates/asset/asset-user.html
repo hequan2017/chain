@@ -12,16 +12,16 @@
 {% block page-content %}
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>登录用户</h2>
+            <h2>资产用户</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="{% url "index" %}">主页</a>
                 </li>
                 <li>
-                    <a>登录用户</a>
+                    <a>资产管理</a>
                 </li>
                 <li class="active">
-                    <strong>登录用户</strong>
+                    <strong>资产用户</strong>
                 </li>
             </ol>
         </div>
@@ -38,7 +38,7 @@
                 <div class="ibox float-e-margins">
 
                     <div class="ibox-title">
-                        <h5>登录用户</h5>
+                        <h5>资产用户</h5>
                         <div class="ibox-tools">
                             <a class="collapse-link">
                                 <i class="fa fa-chevron-up"></i>
@@ -76,10 +76,10 @@
                                     <tr>
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
                                         <th>名称</th>
-                                        <th>用户名</th>
-                                        <th>关联资产</th>
+                                        <th>用户</th>
+                                        <th>资产</th>
+                                        <th>项目</th>
                                         <th>备注</th>
-
                                         <th>动作</th>
                                     </tr>
                                     </thead>
@@ -95,6 +95,7 @@
                                             <td class="center">{{ row.username }}</td>
                                             <td class="center">总和:{{ row.user_name.count }} <br>
                                                 具体:{% for  i in row.user_name.get_queryset %}{{ i }}|{% endfor %}</td>
+                                          <td class="center">{{ row.project }}</td>
                                             <td class="center">{{ row.ps }}</td>
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_user_update"  pk=row.id %}">编辑</a>

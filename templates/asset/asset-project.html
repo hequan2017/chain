@@ -68,10 +68,10 @@
                                     <thead>
                                     <tr>
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
-                                        <th>资产项目</th>
-                                        <th>管理资产</th>
+                                        <th>项目</th>
+                                        <th>资产</th>
+                                        <th>用户</th>
                                         <th>备注</th>
-
                                         <th>动作</th>
                                     </tr>
                                     </thead>
@@ -85,6 +85,9 @@
                                             </td>
                                             <td class="center">总和:{{ row.asset.count }} <br>
                                                 具体:{% for  i in row.asset.get_queryset %}{{ i }}|{% endfor %}</td>
+                                           <td class="center">总和:{{ row.project.count }} <br>
+                                                具体:{% for  i in row.project.get_queryset %}{{ i }}|{% endfor %}</td>
+
                                             <td class="center">{{ row.ps }}</td>
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_project_update"  pk=row.id %}">编辑</a>

@@ -39,14 +39,12 @@ class GroupsForm(forms.ModelForm):
 
 class GroupsObjectForm(forms.ModelForm):
 
-    object_pk1 = forms.ModelMultipleChoiceField(
+    object_pk1 = forms.ModelChoiceField(
         queryset= AssetProject.objects.all(),
-        label="资产列表",
-        widget=forms.SelectMultiple(
-
+        label="资产项目",
+        widget=forms.Select(
             attrs={
-                'class': 'select2',
-                'data-placeholder': '--------请选择资产列表--------',
+                'data-placeholder': '--------请选择资产项目--------',
             }
         ),
     )
@@ -75,8 +73,5 @@ class GroupsObjectForm(forms.ModelForm):
 
     def clean_object_pk1(self):
         obj = self.cleaned_data.get('object_pk1')
-        if obj:
-            a = []
-            for i in obj:
-                a.append(AssetProject.objects.get(projects=i).id)
-            return a
+        ret = AssetProject.objects.get(projects=obj).id
+        return ret

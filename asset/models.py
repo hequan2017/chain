@@ -13,6 +13,8 @@ class AssetLoginUser(models.Model):
     username = models.CharField(max_length=64,verbose_name="用户名",default='root',null=True,blank=True)
     password = models.CharField(max_length=256,blank=True,null=True,verbose_name='密码')
     private_key = models.FileField(upload_to='upload/privatekey/%Y%m%d{}'.format(random.randint(0, 99999)), verbose_name="私钥", null=True, blank=True)
+    project = models.ForeignKey(verbose_name='资产项目', to='AssetProject', related_name='project', on_delete=models.SET_NULL,null=True)
+
     ps = models.CharField(max_length=10240,verbose_name="备注", null=True,blank=True)
     ctime = models.DateTimeField(auto_now_add=True,null=True, verbose_name='创建时间',blank=True)
     utime = models.DateTimeField(auto_now=True, null=True,verbose_name='更新时间',blank=True)
@@ -20,9 +22,7 @@ class AssetLoginUser(models.Model):
         db_table = "AssetLoginUser"
         verbose_name = "资产用户"
         verbose_name_plural = '资产用户'
-        # permissions = {
-        #     ('read_asset_user', u"只读资产用户"),
-        # }
+
 
     def __str__(self):
         return self.hostname
@@ -36,6 +36,11 @@ class AssetProject(models.Model):
         db_table = "AssetProject"
         verbose_name = "资产项目"
         verbose_name_plural = '资产项目'
+        permissions = {
+            ('read_assetproject', u"只读资产项目"),
+            ('cmd_assetproject', u"执行资产项目"),
+        }
+
 
     def __str__(self):
         return self.projects
@@ -69,7 +74,7 @@ class AssetInfo(models.Model):
     region = models.CharField(max_length=128,choices=REGION_CHOICES,verbose_name='区域')
 
 
-    project = models.ForeignKey(verbose_name='资产项目',to='AssetProject',related_name='asset',on_delete=models.SET_NULL,null=True,blank=True)
+    project = models.ForeignKey(verbose_name='资产项目',to='AssetProject',related_name='asset',on_delete=models.SET_NULL,null=True)
     user  = models.ForeignKey(verbose_name="登录用户",to='AssetLoginUser',related_name='user_name',on_delete=models.SET_NULL,null=True,blank=True)
 
     Instance_id = models.CharField(max_length=64,verbose_name='实例ID', null=True,blank=True)

@@ -1,9 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import  redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
 from django.contrib.auth.hashers import check_password
-from django.contrib.auth.models import User
 from  name.models import Names
 from .models import LoginLogs
 
@@ -121,3 +120,5 @@ def page_error(request):
 
 def permission_denied(request):
     return render(request, 'index/403.html')
+
+

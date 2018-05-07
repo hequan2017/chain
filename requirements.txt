@@ -12,3 +12,12 @@ django-celery==3.2.2
 FeedParser
 jsonfield
 django-guardian
+channels==2.0.2
+channels-redis==2.1.0
+amqp==1.4.9
+anyjson==0.3.3
+asgi-redis==1.4.3
+asgiref==2.1.6
+async-timeout==2.0.0
+attrs==17.4.0
+Twisted==17.9.0

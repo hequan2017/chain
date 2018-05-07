@@ -11,14 +11,47 @@
 {% block page-content %}
 
 
+<div id="output_append"></div>
 
 {% endblock %}
 
-
 {% block footer-js %}
 
-
 <script>
+
+  $(document).ready(function () {
+          CreateWebSocket();
+       });
+
+
+function CreateWebSocket() {
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/');
+    socket.onmessage = function (message) {
+        document.getElementById('typediv1').style.visibility = "visible";
+        var result = JSON.parse(message.data);
+        var status = result.status;
+        var data = result.data;
+        var output_html = '';
+
+        if (status === 0) {
+            $('#output_append').empty();
+            output_html = renderIncepExecResult(data);
+        }
+        else if (status === 1) {
+            $('#output_append').empty();
+            output_html = renderIncepOSCResult(data)
+        }
+        $("#output_append").append(output_html);
+    }
+}
+
+
+
+
+
+
+
+
 
               toastr.options = {
                                       "closeButton": true,

@@ -10,7 +10,7 @@ RUN  wget https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-7.noarch
 
 COPY    chain  /opt/chain
 
-RUN   mkdir /etc/ansible/
+RUN   mkdir  /etc/ansible/
 
 WORKDIR   /opt/chain/
 

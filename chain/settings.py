@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djcelery',
     'guardian',
+    'channels',
 ]
 
 MIDDLEWARE = [
@@ -162,6 +163,20 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
+
+# django-channels配置
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
+
+# 配置ASGI
+ASGI_APPLICATION = "chain.routing.application"
 
 
 

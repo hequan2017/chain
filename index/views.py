@@ -5,6 +5,21 @@ from .form import UserPasswordForm
 from django.contrib.auth.hashers import check_password
 from  name.models import Names
 from .models import LoginLogs
+import time
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+import json
+
+
+
+def a(request):
+    channel_layer = get_channel_layer()
+    user = request.user.username
+    result = {"status": 0 ,'data': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) }
+    result_all = json.dumps(result)
+    async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
+                                                   'text': result_all})
+
 
 
 @login_required(login_url="/login.html")
@@ -14,6 +29,7 @@ def index(request):
     :param request:
     :return:
     """
+
     return render(request, 'index/index.html',)
 
 
@@ -55,6 +71,7 @@ def logout(requset):
     :return:
     """
     requset.session.clear()
+
     return redirect('/login.html')
 
 
@@ -65,6 +82,8 @@ def password_update(request):
     :param request:
     :return:
     """
+    a(request, )
+
     if request.method == 'POST':
         form = UserPasswordForm(request.POST)
         if form.is_valid():

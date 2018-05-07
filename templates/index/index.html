@@ -10,7 +10,8 @@
 
 {% block page-content %}
 
-
+彩蛋: 点击修改密码页面,下面会出现当前时间  <br>
+    刷新一次  下面更新一次<br>
 <div id="output_append"></div>
 
 {% endblock %}
@@ -27,19 +28,18 @@
 function CreateWebSocket() {
     var socket = new WebSocket('ws://' + window.location.host + '/ws/');
     socket.onmessage = function (message) {
-        document.getElementById('typediv1').style.visibility = "visible";
+{#        document.getElementById('typediv1').style.visibility = "visible";#}
         var result = JSON.parse(message.data);
         var status = result.status;
         var data = result.data;
         var output_html = '';
-
         if (status === 0) {
             $('#output_append').empty();
-            output_html = renderIncepExecResult(data);
+            output_html = data;
         }
         else if (status === 1) {
             $('#output_append').empty();
-            output_html = renderIncepOSCResult(data)
+            output_html = data;
         }
         $("#output_append").append(output_html);
     }

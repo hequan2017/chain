@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load	bootstrap3 %}
+{% load guardian_tags %}
 {% load static %}
 {% block header-css %}
 
@@ -60,8 +61,10 @@
                     <div class="ibox-content">
 
                         <div class="table-responsive">
-
+                            {% if perms.asset.add_assetproject %}
                             <a href="{% url    'asset:asset_project_add' %}" class="btn btn-sm btn-primary ">添加</a>
+                            {% endif %}
+
                             <a class="btn btn-sm btn-danger  asset_project_all_del">批量删除</a>
                             <form id="del_form_asset_all" class="form-horizontal"  >
                                 <table class="table table-striped table-bordered table-hover dataTables-example">
@@ -89,9 +92,15 @@
                                                 具体:{% for  i in row.project.get_queryset %}{{ i }}|{% endfor %}</td>
 
                                             <td class="center">{{ row.ps }}</td>
-                                            <td><a class="btn btn-primary  btn-xs "
+                                          {% get_obj_perms request.user for row as "flatpage_perms" %}
+                                            <td>
+                                                  {% if "change_assetproject" in flatpage_perms %}
+                                                      <a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_project_update"  pk=row.id %}">编辑</a>
+                                                   {% endif %}
+                                                        {% if "delete_assetproject" in flatpage_perms %}
                                                 <a class="btn btn-danger  btn-xs  asset_project_del">删除</a>
+                                            {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}

@@ -46,6 +46,8 @@
                     <li class="{{ tools_results_active }}"><a href="{% url    'tasks:tools_results' %}">任务结果</a></li>
                 </ul>
             </li>
+
+         {% ifequal  user.is_superuser  1 %}
             <li class="{{ name_active }}">
                 <a href="#"><i class="fa fa-gears"></i> <span class="nav-label">系统用户</span>
                     <span class="fa arrow"> </span></a>
@@ -67,7 +69,7 @@
 
                 </ul>
             </li>
-
+        {% endifequal %}
         </ul>
 
     </div>

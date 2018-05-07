@@ -20,7 +20,7 @@ import logging
 import codecs
 import chardet
 import time
-
+from django.db import transaction
 logger = logging.getLogger('asset')
 
 from django.utils.decorators import method_decorator
@@ -35,13 +35,13 @@ class AssetListAll(LoginRequiredMixin, ListView):
     """
     资产信息列表
     """
+
     template_name = 'asset/asset.html'
     paginate_by = settings.DISPLAY_PER_PAGE
     model = AssetInfo
-
-    # context_object_name = "asset_list"
-    # queryset = AssetInfo.objects.all()
-    # ordering = ('id',)
+    context_object_name = "asset_list"
+    queryset = AssetInfo.objects.all()
+    ordering = ('-id',)
 
     def get_context_data(self, **kwargs):
         """
@@ -50,26 +50,16 @@ class AssetListAll(LoginRequiredMixin, ListView):
         :param kwargs:
         :return:  返回有 读取权限的资产
         """
-        name = Names.objects.get(username=self.request.user)
-        assets = []
-        for i in AssetInfo.objects.all():
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
-            ret = name.has_perm('read_assetproject', proj)
-            if ret == True:
-                assets.append(i)
         context = super().get_context_data(**kwargs)
         search_data = self.request.GET.copy()
         try:
             search_data.pop("page")
         except BaseException as e:
             logger.error(e)
-
         context.update(search_data.dict())
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
-            "asset_list": assets,
             "search_data": search_data.urlencode(),
             "web_ssh": getattr(settings, 'web_ssh'),
             "web_port": getattr(settings, 'web_port'),
@@ -77,49 +67,31 @@ class AssetListAll(LoginRequiredMixin, ListView):
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 
-    # def get_queryset(self):
-    #     """
-    #      资产查询功能
-    #     :return:
-    #     """
-    #     self.queryset = super().get_queryset()
-    #
-    #     if self.request.GET.get('name'):
-    #         query = self.request.GET.get('name', None)
-    #         queryset = self.queryset.filter(Q(network_ip=query) | Q(hostname=query) | Q(
-    #             inner_ip=query) | Q(project__projects=query)).order_by('-id')
-    #     else:
-    #         queryset = super().get_queryset()
-    #     return queryset
-
-    @staticmethod
-    def post(self, request):
-        query = request.POST.get("name")
-        ret = AssetInfo.objects.filter(
-            Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project__projects=query)).order_by('-id')
-        search_data = self.request.GET.copy()
-
+    def get_queryset(self):
+        """
+         资产查询功能
+        """
         name = Names.objects.get(username=self.request.user)
         assets = []
-        for i in ret:
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
+        self.queryset = super().get_queryset()
+        for i in self.queryset:
+            pro = AssetInfo.objects.get(hostname=i)
+            proj = AssetProject.objects.filter(projects=pro)
             ret = name.has_perm('read_assetproject', proj)
             if ret == True:
                 assets.append(i)
 
-        context = {
-            "asset_active": "active",
-            "asset_list_active": "active",
-            "asset_list": assets,
-            "search_data": search_data.urlencode(),
-            "web_ssh": getattr(settings, 'web_ssh'),
-            "web_port": getattr(settings, 'web_port'),
-        }
-        return render(request, 'asset/asset.html', context)
+        if self.request.GET.get('name'):
+            self.queryset = super().get_queryset()
+            query = self.request.GET.get('name', None)
+            queryset = self.queryset.filter(
+                Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project__projects=query)).order_by('-id')
+        else:
+            queryset = assets
+        return queryset
 
 
-class AssetAdd(LoginRequiredMixin,CreateView):
+class AssetAdd(LoginRequiredMixin, CreateView):
     """
     资产增加
     """
@@ -144,7 +116,7 @@ class AssetAdd(LoginRequiredMixin,CreateView):
 
 class AssetUpdate(LoginRequiredMixin, UpdateView):
     """
-    资产更新
+    资产信息更新
     """
 
     model = AssetInfo
@@ -184,7 +156,7 @@ class AssetUpdate(LoginRequiredMixin, UpdateView):
 
 class AssetDetail(LoginRequiredMixin, DetailView):
     """
-     资产详细
+     资产信息详细
     """
     model = AssetInfo
     form_class = AssetForm
@@ -375,6 +347,14 @@ class AssetExport(View):
         return response
 
 
+def get_object_or_none(model, **kwargs):
+    try:
+        obj = model.objects.get(**kwargs)
+    except model.DoesNotExist:
+        return None
+    return obj
+
+
 @login_required
 def AssetImport(request):
     """
@@ -390,103 +370,69 @@ def AssetImport(request):
             f = form.cleaned_data['file']
             det_result = chardet.detect(f.read())
             f.seek(0)  # reset file seek index
-
-            file_data = f.read().decode(
-                det_result['encoding']).strip(
-                codecs.BOM_UTF8.decode())
+            file_data = f.read().decode(det_result['encoding']).strip(codecs.BOM_UTF8.decode())
             csv_file = StringIO(file_data)
             reader = csv.reader(csv_file)
             csv_data = [row for row in reader]
-
             fields = [
-                field for field in AssetInfo._meta.fields
+                field for field in Asset._meta.fields
                 if field.name not in [
                     'date_created'
                 ]
             ]
             header_ = csv_data[0]
-            mapping_reverse = {
-                field.verbose_name: field.name for field in fields}
+            mapping_reverse = {field.verbose_name: field.name for field in fields}
             attr = [mapping_reverse.get(n, None) for n in header_]
 
             created, updated, failed = [], [], []
             assets = []
-
             for row in csv_data[1:]:
                 if set(row) == {''}:
                     continue
+
                 asset_dict = dict(zip(attr, row))
-                asset_dict_id = dict(zip(attr, row))
-                ids = asset_dict['id']
-                asset_dict.pop('id', 0)
-
-                ##用于添加 新增
-                for k, v in asset_dict_id.items():
-                    if k == 'is_active':
-                        v = True if v in ['TRUE', 1, 'true'] else False
-                    elif k in ['user']:
-                        try:
-                            v = AssetLoginUser.objects.get(hostname=v).id
-                        except Exception as e:
-                            v = None
-                    elif k in ['project']:
-                        try:
-                            v = AssetProject.objects.get(projects=v).id
-                        except Exception as e:
-                            v = None
-                    elif k in ['ctime', 'utime']:
-                        v = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-                    else:
-                        continue
-                    asset_dict_id[k] = v
-
-                ##用于更新
+                id_ = asset_dict.pop('id', 0)
                 for k, v in asset_dict.items():
+                    v = v.strip()
                     if k == 'is_active':
                         v = True if v in ['TRUE', 1, 'true'] else False
-                    elif k in ['user']:
+                    elif k in ['port',]:
                         try:
-                            v = AssetLoginUser.objects.get(hostname=v).id
+                            v = int(v)
+                        except ValueError:
+                            v = 22
+                    elif k in ['project'] :
+                        try:
+                            v = AssetProject.objects.get(projects=v)
                         except Exception as e:
                             v = None
-                    elif k in ['project']:
+                    elif k in ['user',] :
                         try:
-                            v = AssetProject.objects.get(projects=v).id
+                            v = AssetLoginUser.objects.get(hostname=v)
                         except Exception as e:
                             v = None
-                    elif k in ['ctime', 'utime']:
-                        v = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-                    else:
-                        continue
                     asset_dict[k] = v
 
-                asset1 = AssetInfo.objects.filter(id=ids)  # 判断ID 是否存在
-
-                if not asset1:
+                asset = get_object_or_none(Asset, id=id_) if id_ else None
+                if not asset:
                     try:
-                        if len(
-                                AssetInfo.objects.filter(
-                                    hostname=asset_dict.get('hostname'))):
-                            raise Exception(('already exists',))
-                        AssetInfo.objects.create(**asset_dict_id)
-                        created.append(asset_dict['hostname'])
-                        assets.append(AssetInfo)
+                        if len(Asset.objects.filter(hostname=asset_dict.get('hostname'))):
+                            raise Exception(('already exists'))
+                        with transaction.atomic():
+                            asset = Asset.objects.create(**asset_dict)
+                            created.append(asset_dict['hostname'])
+                            assets.append(asset)
                     except Exception as e:
-                        failed.append(
-                            '%s: %s' %
-                            (asset_dict['hostname'], str(e)))
-
+                        failed.append('%s: %s' % (asset_dict['hostname'], str(e)))
                 else:
                     for k, v in asset_dict.items():
                         if v:
-                            setattr(AssetInfo, k, v)
+                            setattr(asset, k, v)
                     try:
-                        AssetInfo.objects.filter(id=ids).update(**asset_dict)
+                        asset.save()
                         updated.append(asset_dict['hostname'])
                     except Exception as e:
-                        failed.append(
-                            '%s: %s' %
-                            (asset_dict['hostname'], str(e)))
+                        failed.append('%s: %s' % (asset_dict['hostname'], str(e)))
 
             data = {
                 'created': created,
@@ -500,16 +446,13 @@ def AssetImport(request):
                     len(created), len(updated), len(failed))
             }
 
-            return render(request,
-                          'asset/asset-import.html',
-                          {'form': form,
-                           "asset_active": "active",
-                           "asset_import_active": "active",
-                           "msg": data})
+            return render(request, 'asset/asset-import.html', {'form': form,
+                                                               "asset_active": "active",
+                                                               "asset_import_active": "active",
+                                                               "msg": data})
 
     return render(request, 'asset/asset-import.html',
-                  {'form': form, "asset_active": "active", "asset_list_active": "active",
-                   })
+                  {'form': form, "asset_active": "active", "asset_list_active": "active", })
 
 
 @login_required
@@ -541,7 +484,6 @@ class AssetUserListAll(LoginRequiredMixin, ListView):
     资产用户列表
     """
     template_name = 'asset/asset-user.html'
-    paginate_by = settings.DISPLAY_PER_PAGE
     model = AssetLoginUser
 
     def get_context_data(self, **kwargs):
@@ -592,10 +534,12 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
             password = encrypt_p(password_form)
             forms.password = password
             forms.save()
-
-        name = form.cleaned_data['hostname']
-        obj = AssetLoginUser.objects.get(hostname=name).private_key.name
-        system("chmod  600  {0}".format(obj))
+        try:
+            name = form.cleaned_data['hostname']
+            obj = AssetLoginUser.objects.get(hostname=name).private_key.name
+            system("chmod  600  {0}".format(obj))
+        except Exception as e:
+            logger.error(e)
         return super().form_valid(form)
 
 
@@ -715,7 +659,7 @@ class AssetUserAllDel(LoginRequiredMixin, View):
             else:
                 ids = request.POST.getlist('id', None)
                 idstring = ','.join(ids)
-                assets = AssetInfo.objects.extra(where=['id IN (' + idstring + ')'])
+                assets = AssetLoginUser.objects.extra(where=['id IN (' + idstring + ')'])
                 for i in assets:
                     pro = AssetLoginUser.objects.get(hostname=i).project
                     proj = AssetProject.objects.get(projects=pro)
@@ -756,6 +700,7 @@ class AssetWeb(LoginRequiredMixin, View):
                 port = obj.port
                 username = obj.user.username
                 password = obj.user.password
+
                 try:
                     privatekey = obj.user.private_key.path
                 except Exception as e:
@@ -764,6 +709,7 @@ class AssetWeb(LoginRequiredMixin, View):
 
                 ret.update({"ip": ip, 'port': port, "username": username,
                             'password': password, "privatekey": privatekey})
+
                 # login_ip = request.META['REMOTE_ADDR']
         except Exception as e:
             logger.error(e)
@@ -778,7 +724,6 @@ class AssetProjectListAll(LoginRequiredMixin, ListView):
     资产项目列表
     """
     template_name = 'asset/asset-project.html'
-    paginate_by = settings.DISPLAY_PER_PAGE
     model = AssetProject
 
     def get_context_data(self, **kwargs):

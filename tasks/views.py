@@ -1,9 +1,9 @@
-from django.shortcuts import  HttpResponse
+from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
 from django.db.models import Q
-from asset.models import AssetInfo
+from asset.models import AssetInfo, AssetProject
 from tasks.models import cmd_list, Tools, ToolsResults, Variable
 from tasks.form import ToolsForm, VarsForm
 from tasks.tasks import ansbile_tools
@@ -15,7 +15,7 @@ import json
 import logging
 import random
 logger = logging.getLogger('tasks')
-
+from  name.models import Names
 from tasks.ansible_2420.runner import AdHocRunner
 from tasks.ansible_2420.inventory import BaseInventory
 
@@ -26,22 +26,39 @@ class TasksCmd(LoginRequiredMixin, ListView):
     """
     template_name = 'tasks/cmd.html'
     model = AssetInfo
-    context_object_name = "asset_list"
-    queryset = AssetInfo.objects.all()
-    ordering = ('-id',)
 
-    def get_queryset(self):
-        self.queryset = super().get_queryset()
-        if self.request.GET.get('name'):
-            query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(Q(project__projects=query)).order_by('-id')
-        else:
-            queryset = super().get_queryset()
-        return queryset
+    @staticmethod
+    def post(self, request):
+        query = request.POST.get("name")
+        ret = AssetInfo.objects.filter(Q(project__projects=query)).order_by('-id')
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        for i in ret:
+            pro = AssetInfo.objects.get(hostname=i).project
+            proj = AssetProject.objects.get(projects=pro)
+            ret = name.has_perm('cmd_assetproject', proj)
+            if ret == True:
+                assets.append(i)
+        context = {
+            "asset_list": assets,
+            "tasks_active": "active",
+            "tasks_cmd_active": "active",
+            "cmd_list": cmd_list,
+        }
+        return render(request, 'tasks/cmd.html', context)
+
 
     def get_context_data(self, *, object_list=None, **kwargs):
-
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        for i in AssetInfo.objects.all():
+            pro = AssetInfo.objects.get(hostname=i).project
+            proj = AssetProject.objects.get(projects=pro)
+            ret = name.has_perm('cmd_assetproject', proj)
+            if ret == True:
+                assets.append(i)
         context = {
+            "asset_list": assets,
             "tasks_active": "active",
             "tasks_cmd_active": "active",
             "cmd_list": cmd_list,
@@ -61,10 +78,8 @@ def cmdjob(assets, tasks):
     hostname = []
     for i in inventory.hosts:
         hostname.append(i)
-
     runner = AdHocRunner(inventory)
     retsult = runner.run(tasks, "all")
-
     ret = None
     try:
         ok = retsult.results_raw['ok']
@@ -82,7 +97,7 @@ def cmdjob(assets, tasks):
     retsult_data = []
 
     for i, element in enumerate(hostname):
-        std ,ret_host= [],{}
+        std, ret_host = [], {}
         for t in range(len(tasks)):
             try:
                 out = ret[element]['task{}'.format(t)]['stdout']
@@ -108,14 +123,23 @@ class TasksPerform(LoginRequiredMixin, View):
     """
     执行 cmd  命令
     """
+
     @staticmethod
     def post(request):
+        name = Names.objects.get(username=request.user)
         ids = request.POST.getlist('id')
         args = request.POST.getlist('args', None)
         modules = request.POST.getlist('module', None)
 
         idstring = ','.join(ids)
         asset_obj = AssetInfo.objects.extra(where=['id IN (' + idstring + ')'])
+
+        for i in asset_obj:
+            pro = AssetInfo.objects.get(hostname=i).project
+            proj = AssetProject.objects.get(projects=pro)
+            rets = name.has_perm('cmd_assetproject', proj)
+            if rets == False:
+                return HttpResponse(status=403)
 
         tasks, assets = [], []
         for x in range(len(modules)):
@@ -125,7 +149,6 @@ class TasksPerform(LoginRequiredMixin, View):
         ret_data = {'data': []}
 
         for i in asset_obj:
-
             try:
                 i.user.hostname
             except Exception as e:
@@ -140,7 +163,7 @@ class TasksPerform(LoginRequiredMixin, View):
                 'hostname': i.hostname,
                 'inner_ip': i.inner_ip,
                 "network_ip": i.network_ip,
-                "project": i.project}
+                "project": i.project.projects}
             try:
                 varall.update(Variable.objects.get(assets__hostname=i).vars)
             except Exception as e:
@@ -155,7 +178,6 @@ class TasksPerform(LoginRequiredMixin, View):
                 "private_key": i.user.private_key.name,
                 "vars": varall,
             }, )
-
         t = cmdjob(assets, tasks)
         ret_data['data'] = t
         return HttpResponse(json.dumps(ret_data))
@@ -245,28 +267,49 @@ class ToolsExec(LoginRequiredMixin, ListView):
     """
     template_name = 'tasks/tools-exec.html'
     model = AssetInfo
-    context_object_name = "asset_list"
-    queryset = AssetInfo.objects.all()
-    ordering = ('-id',)
 
-    def get_queryset(self):
-        self.queryset = super().get_queryset()
-        if self.request.GET.get('name'):
-            query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(Q(project__projects=query)).order_by('-id')
-        else:
-            queryset = super().get_queryset()
-        return queryset
-
-    def get_context_data(self, *, object_list=None, **kwargs):
+    @staticmethod
+    def post(self, request):
+        query = request.POST.get("name")
+        ret = AssetInfo.objects.filter(Q(project__projects=query)).order_by('-id')
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        for i in ret:
+            pro = AssetInfo.objects.get(hostname=i).project
+            proj = AssetProject.objects.get(projects=pro)
+            ret = name.has_perm('cmd_assetproject', proj)
+            if ret == True:
+                assets.append(i)
         tools_list = Tools.objects.all()
         context = {
+            "asset_list": assets,
+            "tasks_active": "active",
+            "tools_exec_active": "active",
+            "tools_list": tools_list
+        }
+        return render(request, 'tasks/cmd.html', context)
+
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        for i in AssetInfo.objects.all():
+            pro = AssetInfo.objects.get(hostname=i).project
+            proj = AssetProject.objects.get(projects=pro)
+            ret = name.has_perm('cmd_assetproject', proj)
+            if ret == True:
+                assets.append(i)
+
+        tools_list = Tools.objects.all()
+        context = {
+            "asset_list": assets,
             "tasks_active": "active",
             "tools_exec_active": "active",
             "tools_list": tools_list
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
+
 
     @staticmethod
     def post(request):
@@ -276,7 +319,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
         :return:  ret
         """
         ret = {'status': True, 'error': None, }
-
+        name = Names.objects.get(username=request.user)
         try:
             asset_id = request.POST.getlist('asset[]', None)
             tool_id = request.POST.getlist('tool[]', None)
@@ -290,17 +333,23 @@ class ToolsExec(LoginRequiredMixin, ListView):
 
             asset_obj = AssetInfo.objects.extra(
                 where=['id IN (' + asset_id_tring + ')'])
-            tool_obj = Tools.objects.filter(id=int(tool_id[0])).first()
-
-            assets = []
 
             for i in asset_obj:
+                pro = AssetInfo.objects.get(hostname=i).project
+                proj = AssetProject.objects.get(projects=pro)
+                rets = name.has_perm('cmd_assetproject', proj)
+                if rets == False:
+                    return HttpResponse(status=403)
 
+            tool_obj = Tools.objects.filter(id=int(tool_id[0])).first()
+            assets = []
+            for i in asset_obj:
                 varall = {
                     'hostname': i.hostname,
                     'inner_ip': i.inner_ip,
                     "network_ip": i.network_ip,
-                    "project": i.project}
+                    "project": i.project.projects
+                }
                 try:
                     varall.update(Variable.objects.get(assets__hostname=i).vars)
                 except Exception as e:
@@ -318,7 +367,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
 
             file = "data/script/{0}".format(random.randint(0, 999999))
             file2 = "data/script/{0}".format(random.randint(1000000, 9999999))
-            rets=None
+            rets = None
             if tool_obj.tool_run_type == 'shell' or tool_obj.tool_run_type == 'python':
 
                 with open("{}.sh".format(file), 'w+') as f:
@@ -334,15 +383,14 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 os.system(
                     "sed  's/\r//'  {0}.yml >  {1}.yml".format(file, file2))
                 rets = ansbile_tools.delay(
-                    assets,tools='{}.yml'.format(file2), modules="yml")
+                    assets, tools='{}.yml'.format(file2), modules="yml")
 
             task_obj = ToolsResults.objects.create(task_id=rets.task_id)
             ret['id'] = task_obj.id
-
+            return HttpResponse(json.dumps(ret))
         except Exception as e:
             ret['status'] = False
             ret['error'] = '创建任务失败,{0}'.format(e)
-        finally:
             return HttpResponse(json.dumps(ret))
 
 
@@ -381,7 +429,7 @@ class ToolsResultsDetail(LoginRequiredMixin, DetailView):
      执行工具 结果详细
     """
 
-    model =ToolsResults
+    model = ToolsResults
     template_name = 'tasks/tools-results-detail.html'
 
     def get_context_data(self, **kwargs):
@@ -443,7 +491,7 @@ class VarsUpdate(LoginRequiredMixin, UpdateView):
     """
      Vars更新
     """
-    model =Variable
+    model = Variable
     form_class = VarsForm
     template_name = 'tasks/vars-add-update.html'
     success_url = reverse_lazy('tasks:vars')

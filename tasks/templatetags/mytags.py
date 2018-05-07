@@ -25,6 +25,7 @@ def traceback(text):
     try:
         a = text.replace('\n', '<br>')
     except Exception as e:
+        logger.error(e)
         a = text
     return a
 
@@ -34,5 +35,6 @@ def objectasset(text):
     try:
         a = AssetProject.objects.get(id=text).projects
     except Exception as e:
+        logger.error(e)
         a = text
     return a

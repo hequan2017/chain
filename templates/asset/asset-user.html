@@ -60,10 +60,10 @@
                     <div class="ibox-content">
 
                         <div class="table-responsive">
-
+ {% if perms.asset.add_assetloginuser %}
                             <a href="{% url    'asset:asset_user_add' %}" class="btn btn-sm btn-primary ">
                                 添加</a>
-
+ {% endif %}
 
                             <a class="btn btn-sm btn-danger  asset_user_all_del"
                             >批量删除

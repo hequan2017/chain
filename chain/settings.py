@@ -158,14 +158,15 @@ DATE_FORMAT = 'Y-m-d'
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATIC_ROOT = '/hequan/chain/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
 
 
+
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
-DISPLAY_PER_PAGE = 25
+DISPLAY_PER_PAGE = 15
 
 
 # http://www.django-rest-framework.org/api-guide/permissions/#api-reference
@@ -182,7 +183,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-web_ssh = "47.94.252.25"
+web_ssh = "47.104.140.38"
 web_port = 8002
 
 

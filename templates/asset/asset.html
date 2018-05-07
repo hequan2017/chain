@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+
 {% load  bootstrap3 %}
 {% load  static %}
 {% block header-css %}
@@ -115,10 +116,10 @@
 
                                 <button class="btn btn-sm btn-primary" type="submit">查询</button>
 
-
+                                {% if perms.asset.add_assetinfo %}
                                 <a href="{% url    'asset:asset_add' %}" class="btn btn-sm btn-primary ">
                                     添加</a>
-
+                                {% endif %}
 
                             </form>
                             <form id="del_form_asset_all" class="form-horizontal  " action="{% url 'asset:asset_export' %}" method="post">
@@ -136,7 +137,6 @@
                                         <th>动作</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
 
                                     {% for   row   in   asset_list %}
 

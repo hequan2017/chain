@@ -10,9 +10,8 @@
 
 {% block page-content %}
 
-彩蛋: 点击修改密码页面,下面会出现当前时间  <br>
-    刷新一次  下面更新一次<br>
-<div id="output_append"></div>
+
+<pre id="output_append"></pre>
 
 {% endblock %}
 
@@ -20,21 +19,20 @@
 
 <script>
 
-  $(document).ready(function () {
-          CreateWebSocket();
-       });
+$(document).ready(function () {
+    CreateWebSocket();
+});
 
 
 function CreateWebSocket() {
     var socket = new WebSocket('ws://' + window.location.host + '/ws/');
     socket.onmessage = function (message) {
-{#        document.getElementById('typediv1').style.visibility = "visible";#}
         var result = JSON.parse(message.data);
         var status = result.status;
         var data = result.data;
         var output_html = '';
         if (status === 0) {
-            $('#output_append').empty();
+{#            $('#output_append').empty();#}
             output_html = data;
         }
         else if (status === 1) {
@@ -44,16 +42,7 @@ function CreateWebSocket() {
         $("#output_append").append(output_html);
     }
 }
-
-
-
-
-
-
-
-
-
-              toastr.options = {
+toastr.options = {
                                       "closeButton": true,
                                       "debug": false,
                                       "progressBar": true,
@@ -69,10 +58,7 @@ function CreateWebSocket() {
                                       "showMethod": "fadeIn",
                                       "hideMethod": "fadeOut"
                                     };
-
-
-
-               toastr.success("欢迎来到Chain!", "欢迎")
+toastr.success("欢迎来到Chain!", "欢迎")
 
 </script>
 {% endblock %}

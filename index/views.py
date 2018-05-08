@@ -9,16 +9,24 @@ import time
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import json
+import paramiko
 
 
-
-def a(request):
-    channel_layer = get_channel_layer()
-    user = request.user.username
-    result = {"status": 0 ,'data': time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) }
-    result_all = json.dumps(result)
-    async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
-                                                   'text': result_all})
+# def a(request):
+#     channel_layer = get_channel_layer()
+#     user = request.user.username
+#
+#     ssh = paramiko.SSHClient()  # 创建ssh对象
+#     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+#     ssh.connect(hostname="47.104.140.38", port=22, username="root", password="", )
+#     cmd= "tailf /tmp/yum_save_tx.2018-05-07.16-20.rYuX1P.yumtx"
+#     stdin, stdout, stderr = ssh.exec_command(cmd,get_pty=True)
+#
+#     for  line  in iter(stdout.readline,""):
+#         result = {"status": 0 ,'data': line}
+#         result_all = json.dumps(result)
+#         async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
+#                                                        'text': result_all})
 
 
 
@@ -82,7 +90,6 @@ def password_update(request):
     :param request:
     :return:
     """
-    a(request, )
 
     if request.method == 'POST':
         form = UserPasswordForm(request.POST)

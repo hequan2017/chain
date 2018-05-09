@@ -30,44 +30,42 @@ class TasksCmd(LoginRequiredMixin, ListView):
     """
     template_name = 'tasks/cmd.html'
     model = AssetInfo
-
-    @staticmethod
-    def post(self, request):
-        query = request.POST.get("name")
-        ret = AssetInfo.objects.filter(Q(project__projects=query)).order_by('-id')
-        name = Names.objects.get(username=self.request.user)
-        assets = []
-        for i in ret:
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
-                assets.append(i)
-        context = {
-            "asset_list": assets,
-            "tasks_active": "active",
-            "tasks_cmd_active": "active",
-            "cmd_list": cmd_list,
-        }
-        return render(request, 'tasks/cmd.html', context)
+    context_object_name = "asset_list"
+    queryset = AssetInfo.objects.all()
+    ordering = ('-id',)
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        name = Names.objects.get(username=self.request.user)
-        assets = []
-        for i in AssetInfo.objects.all():
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
-                assets.append(i)
         context = {
-            "asset_list": assets,
             "tasks_active": "active",
             "tasks_cmd_active": "active",
             "cmd_list": cmd_list,
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        """
+         资产查询功能
+        """
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        self.queryset = super().get_queryset()
+        for i in self.queryset:
+            pro = AssetInfo.objects.get(hostname=i)
+            proj = AssetProject.objects.filter(projects=pro)
+            ret = name.has_perm('read_assetproject', proj)
+            if ret == True:
+                assets.append(i)
+
+        if self.request.GET.get('name'):
+            self.queryset = super().get_queryset()
+            query = self.request.GET.get('name', None)
+            queryset = self.queryset.filter(
+                Q(project__projects=query)).order_by('-id')
+        else:
+            queryset = assets
+        return queryset
+
 
 
 class TasksTail(LoginRequiredMixin, ListView):
@@ -76,38 +74,12 @@ class TasksTail(LoginRequiredMixin, ListView):
     """
     template_name = 'tasks/tail.html'
     model = AssetInfo
-
-    @staticmethod
-    def post(self, request):
-        query = request.POST.get("name")
-        ret = AssetInfo.objects.filter(Q(project__projects=query)).order_by('-id')
-        name = Names.objects.get(username=self.request.user)
-        assets = []
-        for i in ret:
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
-                assets.append(i)
-        context = {
-            "asset_list": assets,
-            "tasks_active": "active",
-            "tasks_cmd_active": "active",
-            "cmd_list": cmd_list,
-        }
-        return render(request, 'tasks/cmd.html', context)
+    context_object_name = "asset_list"
+    queryset = AssetInfo.objects.all()
+    ordering = ('-id',)
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        name = Names.objects.get(username=self.request.user)
-        assets = []
-        for i in AssetInfo.objects.all():
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
-                assets.append(i)
         context = {
-            "asset_list": assets,
             "tasks_active": "active",
             "tasks_tail_active": "active",
             "cmd_list": cmd_list,
@@ -115,6 +87,28 @@ class TasksTail(LoginRequiredMixin, ListView):
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 
+    def get_queryset(self):
+        """
+         资产查询功能
+        """
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        self.queryset = super().get_queryset()
+        for i in self.queryset:
+            pro = AssetInfo.objects.get(hostname=i)
+            proj = AssetProject.objects.filter(projects=pro)
+            ret = name.has_perm('read_assetproject', proj)
+            if ret == True:
+                assets.append(i)
+
+        if self.request.GET.get('name'):
+            self.queryset = super().get_queryset()
+            query = self.request.GET.get('name', None)
+            queryset = self.queryset.filter(
+                Q(project__projects=query)).order_by('-id')
+        else:
+            queryset = assets
+        return queryset
 
 def cmdjob(assets, tasks):
     """
@@ -376,47 +370,45 @@ class ToolsExec(LoginRequiredMixin, ListView):
     """
     template_name = 'tasks/tools-exec.html'
     model = AssetInfo
+    context_object_name = "asset_list"
+    queryset = AssetInfo.objects.all()
+    ordering = ('-id',)
 
-    @staticmethod
-    def post(self, request):
-        query = request.POST.get("name")
-        ret = AssetInfo.objects.filter(Q(project__projects=query)).order_by('-id')
-        name = Names.objects.get(username=self.request.user)
-        assets = []
-        for i in ret:
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
-                assets.append(i)
-        tools_list = Tools.objects.all()
-        context = {
-            "asset_list": assets,
-            "tasks_active": "active",
-            "tools_exec_active": "active",
-            "tools_list": tools_list
-        }
-        return render(request, 'tasks/cmd.html', context)
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        name = Names.objects.get(username=self.request.user)
-        assets = []
-        for i in AssetInfo.objects.all():
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
-                assets.append(i)
-
         tools_list = Tools.objects.all()
         context = {
-            "asset_list": assets,
             "tasks_active": "active",
             "tools_exec_active": "active",
             "tools_list": tools_list
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        """
+         资产查询功能
+        """
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        self.queryset = super().get_queryset()
+        for i in self.queryset:
+            pro = AssetInfo.objects.get(hostname=i)
+            proj = AssetProject.objects.filter(projects=pro)
+            ret = name.has_perm('cmd_assetproject', proj)
+            if ret == True:
+                assets.append(i)
+
+        if self.request.GET.get('name'):
+            self.queryset = super().get_queryset()
+            query = self.request.GET.get('name', None)
+            queryset = self.queryset.filter(
+                Q(project__projects=query)).order_by('-id')
+        else:
+            queryset = assets
+        return queryset
+
+
 
     @staticmethod
     def post(request):

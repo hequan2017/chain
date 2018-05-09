@@ -6,6 +6,10 @@ urlpatterns = [
     path('cmd.html', views.TasksCmd.as_view(), name='cmd'),
     path('perform.html', views.TasksPerform.as_view(), name='perform'),
 
+    path('tail.html', views.TasksTail.as_view(), name='tail'),
+    path('tailperform.html', views.taskstailperform, name='tail_perform'),
+    path('tailperform-stop.html', views.taskstailstopperform, name='tail_perform_stop'),
+
 
     path('tools.html', views.ToolsList.as_view(), name='tools'),
     path('tools-add.html', views.ToolsAdd.as_view(), name='tools_add'),

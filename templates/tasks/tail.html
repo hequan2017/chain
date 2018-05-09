@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% load static %}
+{% block  title %}命令行{% endblock %}
+{% block header-css %}
+   <link href="{% static 'css/plugins/ztree/awesomeStyle/awesome.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block page-content %}
+
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>日志接口</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/index.html">主页</a>
+                </li>
+                <li>
+                    <a>作业中心</a>
+                </li>
+                <li class="active">
+                    <strong>日志接口</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+         <div class="col-lg-1" id="split-left">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content mailbox-content" style="padding-top: 0">
+                        <div class="file-manager ">
+
+                            <div class="clearfix">
+                                <div data-options="iconCls:'icon-save'" title="ztree事件">
+                                    <ul id="ztree4" class="ztree"></ul>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-11">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>日志接口</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">选项 1</a>
+                                </li>
+                                <li><a href="#">选项 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="table-responsive">
+                            <form class="form-horizontal  cmd_from">
+                     <table class="table table-striped table-bordered table-hover dataTables-example">
+                                    <thead>
+                                    <tr>
+                                        <th width="20"></th>
+                                        <th>主机名</th>
+                                        <th>外网IP</th>
+                                        <th>用户</th>
+                                        <th>产品线</th>
+
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for   row   in   asset_list %}
+
+                                        <tr class="gradeA" id="{{ row.id }}">
+                                            <td><input type="radio" value="{{ row.id }}" name="id"></td>
+                                            <td class="center"><a
+                                                    href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.hostname }}</a>
+                                            </td>
+                                            <td class="center">{{ row.network_ip }}</td>
+                                            <td class="center">{{ row.user }}</td>
+                                            <td class="center">{{ row.project }} </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+
+                                </table>
+
+                                <div class="ibox-content">
+                                <div class="form-group">
+
+
+                                        <div>
+
+                                          <input class="form-control"    placeholder="输入参数  日志路径  例如   -f /tmp/1.log"   name="tail" title="" style="width:500px;"  required="">
+
+
+                                        </div>
+
+
+                                    </div>
+
+                                    <div class="form-group">
+                                            <a id="tail" class="btn btn-primary"  type="submit">查看</a>
+                                            <a id="tail_stop" class="btn btn-danger"  type="submit">不看了,必须点停止</a>
+
+
+                                    </div>
+                            </div>
+                                </form>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>日志输出结果
+                        </h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-links">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">配置选项 1</a>
+                                </li>
+                                <li><a href="#">配置选项 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content" >
+                        <pre id="output_append" ></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% block footer-js %}
+ <script>
+toastr.options = {
+                                      "closeButton": true,
+                                      "debug": false,
+                                      "progressBar": true,
+                                      "preventDuplicates": true,
+                                      "positionClass": "toast-top-right",
+                                      "onclick": null,
+                                      "showDuration": "400",
+                                      "hideDuration": "1000",
+                                      "timeOut": "7000",
+                                      "extendedTimeOut": "1000",
+                                      "showEasing": "swing",
+                                      "hideEasing": "linear",
+                                      "showMethod": "fadeIn",
+                                      "hideMethod": "fadeOut"
+                                    };
+
+
+$(function () {
+
+            $(document).on('click','#tail',function () {
+
+
+                    $.ajax({
+                        url: "{% url 'tasks:tail_perform' %}",
+                        timeout : 5000, //超时时间设置，单位毫秒
+                        type: 'POST',
+                        data: $('.cmd_from').serialize(),
+                        success: function (data) {
+                            var obj = JSON.parse(data);
+                                if (obj.status) {
+                                    toastr.success("执行成功！")
+                            } else {
+                                 toastr.success("执行失败！")
+                            }
+
+                        }
+                    })
+                });
+
+              $(document).on('click','#tail_stop',function () {
+
+
+                    $.ajax({
+                        url: "{% url 'tasks:tail_perform_stop' %}",
+                        timeout : 5000, //超时时间设置，单位毫秒
+                        type: 'POST',
+                        data: {"status":"stop"},
+                        success: function (data) {
+                            var obj = JSON.parse(data);
+                                if (obj.status) {
+                                    toastr.success("停止成功！")
+                            } else {
+                                 toastr.success("停止失败！")
+                            }
+
+                        }
+                    })
+                });
+            });
+
+            function clearBody() {
+                location.reload()
+            }
+
+
+ </script>
+
+
+
+ <script>
+
+ $(document).ready(function () {
+    CreateWebSocket();
+});
+
+
+function CreateWebSocket() {
+    var socket = new WebSocket('ws://' + window.location.host + '/ws/');
+    socket.onmessage = function (message) {
+        var result = JSON.parse(message.data);
+        var status = result.status;
+        var data = result.data;
+        var output_html = '';
+        if (status === 0) {
+{#            $('#output_append').empty();#}
+            output_html = data;
+        }
+        else if (status === 1) {
+            $('#output_append').empty();
+            output_html = data;
+        }
+        $("#output_append").prepend(output_html);
+    }
+}
+
+
+
+            $(function () {
+                $(document).ready(function () {
+                $('.dataTables-asset').DataTable({
+
+                    "oLanguage": {
+                        "sLengthMenu": "每页显示 _MENU_ 条记录",
+                        "sZeroRecords": "对不起，查询不到任何相关数据",
+                        "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_条记录",
+                        "sInfoEmtpy": "找不到相关数据",
+                        "sInfoFiltered": " 数据表中共为 _MAX_ 条记录",
+                        "sProcessing": "正在加载中...",
+                        "sSearch": "搜索",
+                        "oPaginate": {
+                            "sFirst": "第一页",
+                            "sPrevious": " 上一页 ",
+                            "sNext": " 下一页 ",
+                            "sLast": " 最后一页 "
+                        }
+                    },
+                    "order": [[1, 'desc']],
+                    destroy: true,
+
+
+                    bPaginate: false,
+                    dom: '<"html5buttons"B>lTfgitp,'
+
+                });
+            });
+
+            });
+
+
+
+            $(function () {
+                var setting = {
+                    view: {
+                        showLine: true,
+                        selectedMulti: false,
+                        dblClickExpand: false
+                    },
+
+                    data: {
+                        simpleData: {
+                            enable: true,
+                            idKey: "id",
+                            pIdKey: "pId",
+                            rootPId: 0
+                        }
+                    },
+
+                    callback: {
+                        beforeClick: getCurrentNode,
+                        {#                         onClick : zTreeOnClick#}
+                    }
+                };
+
+                $.ajax({
+                    url: '{% url  'asset:asset_ztree' %}',
+                    type: 'get',
+                    data: '',
+                    dataType: 'json',
+                    success: function (data) {
+                        zTreeObj = $.fn.zTree.init($("#ztree4"), setting, data);
+                        zTreeObj.expandAll(true);
+                    }
+                });
+            });
+
+            function getCurrentNode(treeId, treeNode) {
+                curNode = treeNode;
+                zTreeOnClick(curNode);
+            }
+
+            function zTreeOnClick(treeNode) {
+
+                if (treeNode.id == 1111) {
+                    window.location.href = '{% url  "tasks:tail"  %}'
+                }
+                else {
+
+                    window.location.href = '/tasks/tail.html?name=' + treeNode.name
+
+                }
+            }
+
+
+        </script>
+
+    {% endblock %}
+
+{% endblock %}

@@ -1,33 +1,10 @@
-from django.shortcuts import  redirect
+from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
 from django.contrib.auth.hashers import check_password
 from  name.models import Names
 from .models import LoginLogs
-import time
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-import json
-import paramiko
-
-
-# def a(request):
-#     channel_layer = get_channel_layer()
-#     user = request.user.username
-#
-#     ssh = paramiko.SSHClient()  # 创建ssh对象
-#     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-#     ssh.connect(hostname="47.104.140.38", port=22, username="root", password="", )
-#     cmd= "tailf /tmp/yum_save_tx.2018-05-07.16-20.rYuX1P.yumtx"
-#     stdin, stdout, stderr = ssh.exec_command(cmd,get_pty=True)
-#
-#     for  line  in iter(stdout.readline,""):
-#         result = {"status": 0 ,'data': line}
-#         result_all = json.dumps(result)
-#         async_to_sync(channel_layer.group_send)(user, {"type": "user.message",
-#                                                        'text': result_all})
-
 
 
 @login_required(login_url="/login.html")
@@ -37,8 +14,7 @@ def index(request):
     :param request:
     :return:
     """
-
-    return render(request, 'index/index.html',)
+    return render(request, 'index/index.html', )
 
 
 def login_view(request):
@@ -97,7 +73,7 @@ def password_update(request):
             old = Names.objects.get(username=request.user)
             old_pass = old.password
             input_pass = form.cleaned_data['old_password']
-            check = check_password(input_pass,old_pass)
+            check = check_password(input_pass, old_pass)
             if check is True:
                 if form.cleaned_data['new_password'] == form.cleaned_data['confirm_password']:
                     password = form.cleaned_data['new_password']
@@ -126,11 +102,10 @@ def login_historys(request):
     """
     登录历史
     """
-
     obj = LoginLogs.objects.order_by('-ctime')
-    return render(request,'index/login-history.html',{'login': obj,
-                   "index_active": "active",
-                   "index_login_active": "active", })
+    return render(request, 'index/login-history.html', {'login': obj,
+                                                        "index_active": "active",
+                                                        "index_login_active": "active", })
 
 
 from django.shortcuts import render
@@ -146,5 +121,3 @@ def page_error(request):
 
 def permission_denied(request):
     return render(request, 'index/403.html')
-
-

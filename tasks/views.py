@@ -10,10 +10,14 @@ from tasks.tasks import ansbile_tools
 from djcelery.models import TaskMeta
 from index.password_crypt import decrypt_p
 from chain import settings
-import os
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 import json
+import paramiko
+import os
 import logging
 import random
+
 logger = logging.getLogger('tasks')
 from  name.models import Names
 from tasks.ansible_2420.runner import AdHocRunner
@@ -47,7 +51,6 @@ class TasksCmd(LoginRequiredMixin, ListView):
         }
         return render(request, 'tasks/cmd.html', context)
 
-
     def get_context_data(self, *, object_list=None, **kwargs):
         name = Names.objects.get(username=self.request.user)
         assets = []
@@ -61,6 +64,52 @@ class TasksCmd(LoginRequiredMixin, ListView):
             "asset_list": assets,
             "tasks_active": "active",
             "tasks_cmd_active": "active",
+            "cmd_list": cmd_list,
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class TasksTail(LoginRequiredMixin, ListView):
+    """
+    任务cmd 界面
+    """
+    template_name = 'tasks/tail.html'
+    model = AssetInfo
+
+    @staticmethod
+    def post(self, request):
+        query = request.POST.get("name")
+        ret = AssetInfo.objects.filter(Q(project__projects=query)).order_by('-id')
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        for i in ret:
+            pro = AssetInfo.objects.get(hostname=i).project
+            proj = AssetProject.objects.get(projects=pro)
+            ret = name.has_perm('cmd_assetproject', proj)
+            if ret == True:
+                assets.append(i)
+        context = {
+            "asset_list": assets,
+            "tasks_active": "active",
+            "tasks_cmd_active": "active",
+            "cmd_list": cmd_list,
+        }
+        return render(request, 'tasks/cmd.html', context)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        name = Names.objects.get(username=self.request.user)
+        assets = []
+        for i in AssetInfo.objects.all():
+            pro = AssetInfo.objects.get(hostname=i).project
+            proj = AssetProject.objects.get(projects=pro)
+            ret = name.has_perm('cmd_assetproject', proj)
+            if ret == True:
+                assets.append(i)
+        context = {
+            "asset_list": assets,
+            "tasks_active": "active",
+            "tasks_tail_active": "active",
             "cmd_list": cmd_list,
         }
         kwargs.update(context)
@@ -117,6 +166,30 @@ def cmdjob(assets, tasks):
         retsult_data.append(ret_host)
 
     return retsult_data
+
+
+def taillog(request, hostname, port, username, password, private, tail):
+    """
+    执行 tail log 接口
+    """
+    channel_layer = get_channel_layer()
+    user = request.user.username
+    os.environ["".format(user)] = "true"
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    if password:
+        ssh.connect(hostname=hostname, port=port, username=username, password=decrypt_p(password))
+    else:
+        pkey = paramiko.RSAKey.from_private_key_file(private)
+        ssh.connect(hostname=hostname, port=port, username=username, pkey=pkey)
+    cmd = "tail " + tail
+    stdin, stdout, stderr = ssh.exec_command(cmd, get_pty=True)
+    for line in iter(stdout.readline, ""):
+        if os.environ.get("".format(user)) == 'false':
+            break
+        result = {"status": 0, 'data': line}
+        result_all = json.dumps(result)
+        async_to_sync(channel_layer.group_send)(user, {"type": "user.message", 'text': result_all})
 
 
 class TasksPerform(LoginRequiredMixin, View):
@@ -181,6 +254,42 @@ class TasksPerform(LoginRequiredMixin, View):
         t = cmdjob(assets, tasks)
         ret_data['data'] = t
         return HttpResponse(json.dumps(ret_data))
+
+
+def taskstailperform(request):
+    """
+    执行 tail_log  命令
+    """
+    if request.method == "POST":
+        ret = {'status': True, 'error': None, }
+        name = Names.objects.get(username=request.user)
+        ids = request.POST.get('id')
+        tail = request.POST.get('tail', None)
+
+        obj = AssetInfo.objects.get(id=ids)
+        pro = obj.project
+        proj = AssetProject.objects.get(projects=pro)
+        rets = name.has_perm('cmd_assetproject', proj)
+        if rets == False:
+            return HttpResponse(status=403)
+        try:
+            taillog(request, obj.network_ip, obj.port, obj.user.username, obj.user.password, obj.user.private_key, tail)
+        except Exception as e:
+            ret['status'] = False
+            ret['error'] = "错误{0}".format(e)
+            logger.error(e)
+        return HttpResponse(json.dumps(ret))
+
+
+def taskstailstopperform(request):
+    """
+    执行 tail_log  命令
+    """
+    if request.method == "POST":
+        ret = {'status': True, 'error': None, }
+        name = request.user.username
+        os.environ["".format(name)] = "false"
+        return HttpResponse(json.dumps(ret))
 
 
 class ToolsList(LoginRequiredMixin, ListView):
@@ -289,7 +398,6 @@ class ToolsExec(LoginRequiredMixin, ListView):
         }
         return render(request, 'tasks/cmd.html', context)
 
-
     def get_context_data(self, *, object_list=None, **kwargs):
         name = Names.objects.get(username=self.request.user)
         assets = []
@@ -309,7 +417,6 @@ class ToolsExec(LoginRequiredMixin, ListView):
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
-
 
     @staticmethod
     def post(request):

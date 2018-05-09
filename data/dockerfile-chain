@@ -6,7 +6,7 @@ ARG  ip="127.0.0.1"
 WORKDIR  /tmp
 RUN  wget https://mirrors.tuna.tsinghua.edu.cn/epel/epel-release-latest-7.noarch.rpm  && \
      rpm -ivh epel-release-latest-7.noarch.rpm   && \
-     yum  install supervisor   sshpass  net-tools -y  && \
+     yum  install supervisor  bzip2 sshpass  net-tools -y  && \
      mkdir  /etc/ansible/
 
 RUN  wget https://files.pythonhosted.org/packages/12/2a/e9e4fb2e6b2f7a75577e0614926819a472934b0b85f205ba5d5d2add54d0/Twisted-18.4.0.tar.bz2  && \

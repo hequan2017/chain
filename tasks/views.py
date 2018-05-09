@@ -53,7 +53,7 @@ class TasksCmd(LoginRequiredMixin, ListView):
         for i in self.queryset:
             pro = AssetInfo.objects.get(hostname=i)
             proj = AssetProject.objects.filter(projects=pro)
-            ret = name.has_perm('read_assetproject', proj)
+            ret = name.has_perm('cmd_assetproject', proj)
             if ret == True:
                 assets.append(i)
 
@@ -67,10 +67,9 @@ class TasksCmd(LoginRequiredMixin, ListView):
         return queryset
 
 
-
 class TasksTail(LoginRequiredMixin, ListView):
     """
-    任务cmd 界面
+    任务 tail_log  界面
     """
     template_name = 'tasks/tail.html'
     model = AssetInfo
@@ -97,7 +96,7 @@ class TasksTail(LoginRequiredMixin, ListView):
         for i in self.queryset:
             pro = AssetInfo.objects.get(hostname=i)
             proj = AssetProject.objects.filter(projects=pro)
-            ret = name.has_perm('read_assetproject', proj)
+            ret = name.has_perm('cmd_assetproject', proj)
             if ret == True:
                 assets.append(i)
 
@@ -109,6 +108,7 @@ class TasksTail(LoginRequiredMixin, ListView):
         else:
             queryset = assets
         return queryset
+
 
 def cmdjob(assets, tasks):
     """
@@ -197,6 +197,11 @@ class TasksPerform(LoginRequiredMixin, View):
         ids = request.POST.getlist('id')
         args = request.POST.getlist('args', None)
         modules = request.POST.getlist('module', None)
+        ret_data = {'data': []}
+        if not ids or args == [''] or not modules:
+            ret = {'hostname': None, 'data': "请选中服务器,输入要执行的命令"}
+            ret_data['data'].append(ret)
+            return HttpResponse(json.dumps(ret_data))
 
         idstring = ','.join(ids)
         asset_obj = AssetInfo.objects.extra(where=['id IN (' + idstring + ')'])
@@ -212,8 +217,6 @@ class TasksPerform(LoginRequiredMixin, View):
         for x in range(len(modules)):
             tasks.append(
                 {"action": {"module": modules[x], "args": args[x]}, "name": 'task{}'.format(x)}, )
-
-        ret_data = {'data': []}
 
         for i in asset_obj:
             try:
@@ -234,7 +237,7 @@ class TasksPerform(LoginRequiredMixin, View):
             try:
                 varall.update(Variable.objects.get(assets__hostname=i).vars)
             except Exception as e:
-                logger.error(e)
+                pass
 
             assets.append({
                 "hostname": i.hostname,
@@ -259,6 +262,11 @@ def taskstailperform(request):
         name = Names.objects.get(username=request.user)
         ids = request.POST.get('id')
         tail = request.POST.get('tail', None)
+
+        if not ids or not tail:
+            ret['status'] = False
+            ret['error'] = "请选择服务器,输入参数及日志地址."
+            return HttpResponse(json.dumps(ret))
 
         obj = AssetInfo.objects.get(id=ids)
         pro = obj.project
@@ -374,7 +382,6 @@ class ToolsExec(LoginRequiredMixin, ListView):
     queryset = AssetInfo.objects.all()
     ordering = ('-id',)
 
-
     def get_context_data(self, *, object_list=None, **kwargs):
         tools_list = Tools.objects.all()
         context = {
@@ -407,8 +414,6 @@ class ToolsExec(LoginRequiredMixin, ListView):
         else:
             queryset = assets
         return queryset
-
-
 
     @staticmethod
     def post(request):
@@ -452,7 +457,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 try:
                     varall.update(Variable.objects.get(assets__hostname=i).vars)
                 except Exception as e:
-                    logger.error(e)
+                    pass
 
                 assets.append({
                     "hostname": i.hostname,

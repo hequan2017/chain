@@ -199,7 +199,7 @@ $(function () {
                                 if (obj.status) {
                                     toastr.success("执行成功！")
                             } else {
-                                 toastr.success("执行失败！")
+                                 toastr.error(obj.error)
                             }
 
                         }
@@ -227,16 +227,6 @@ $(function () {
                 });
             });
 
-            function clearBody() {
-                location.reload()
-            }
-
-
- </script>
-
-
-
- <script>
 
  $(document).ready(function () {
     CreateWebSocket();

@@ -1,18 +1,11 @@
 ## Chain
 
-linux 云主机 管理系统，包含 CMDB,webssh登录、命令执行、异步执行shell/python/yml等。持续更新中。。。
+linux 云主机 管理系统,包含 CMDB,webssh登录、命令执行、异步执行shell/python/yml、查看日志等功能。
 
-非常适合django刚入门的人拿来参考！
-
-大家可以看一下，欢迎提出修改意见 , 然后大家以此为基础,各自开发自己的板块，最后合成一个项目。
-
-
-* 交流群号： 620176501    欢迎交流！
+* 交流群号： 620176501  <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=bbe5716e8bd2075cb27029bd5dd97e22fc4d83c0f61291f47ed3ed6a4195b024"><img border="0" src="https://github.com/hequan2017/cmdb/blob/master/static/img/group.png"  alt="django开发讨论群" title="django开发讨论群"></a>
 
 ---
 ### DEMO
-
-
 
 ```bash
 http://39.104.174.116:8001
@@ -21,6 +14,7 @@ http://39.104.174.116:8001
 密码  1qaz.2wsx
 
 ```
+
 ### 目录结构
   *  asset     资产
         * api   asset/api/asset.html
@@ -31,7 +25,7 @@ http://39.104.174.116:8001
   *  name       系统用户 |　组　｜ 组对象
   *  static     css | js  
   *  templates  静态模板
-  *  webssh     终端登录     参考的  https://github.com/huashengdun/webssh   此项目
+  *  webssh     终端ssh登录     参考的  https://github.com/huashengdun/webssh   此项目
 
 ###  权限
 
@@ -126,6 +120,7 @@ yum -y install sqlite-devel
 
 from   task.ansible_2420.runner import AdHocRunner
 from   task.ansible_2420.inventory import BaseInventory
+
 ```
 
 ### docker部署

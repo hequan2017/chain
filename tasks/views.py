@@ -489,7 +489,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 rets = ansbile_tools.delay(
                     assets, tools='{}.yml'.format(file2), modules="yml")
 
-            task_obj = ToolsResults.objects.create(task_id=rets.task_id)
+            task_obj = ToolsResults.objects.create(task_id=rets.task_id,add_user=name)
             ret['id'] = task_obj.id
             return HttpResponse(json.dumps(ret))
         except Exception as e:
@@ -502,7 +502,6 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
     """
     执行工具 返回信息列表
     """
-
     ordering = ('-ctime',)
     template_name = 'tasks/tools-results.html'
     model = ToolsResults
@@ -510,7 +509,6 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
     paginate_by = settings.DISPLAY_PER_PAGE
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
         search_data = self.request.GET.copy()
         try:
@@ -527,6 +525,21 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 
+    def get_queryset(self):
+        """
+         资产查询功能
+        """
+        name = Names.objects.get(username=self.request.user)
+        self.queryset = super().get_queryset()
+        if name.is_superuser != 1:
+            assets = []
+            for i in ToolsResults.objects.filter(add_user=name):
+                    assets.append(i)
+            queryset = assets
+        else:
+            queryset = super().get_queryset()
+
+        return queryset
 
 class ToolsResultsDetail(LoginRequiredMixin, DetailView):
     """

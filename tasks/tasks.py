@@ -1,19 +1,18 @@
 from celery import Celery, platforms
 from chain import settings
-import logging
 from multiprocessing import current_process
 from asset.models import AssetInfo
 
 from tasks.ansible_2420.runner import AdHocRunner, PlayBookRunner
 from tasks.ansible_2420.inventory import BaseInventory
 
+import logging
 platforms.C_FORCE_ROOT = True
 app = Celery('chain')
 app.config_from_object('django.conf:settings', )
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
-
-logger = logging.getLogger('tasks')
+logger = logging.getLogger('tasks_celery')
 
 
 @app.task(bind=True)
@@ -100,7 +99,6 @@ def ansbile_tools(assets, tools, modules):
 def ansbile_asset_hardware(ids, assets):
     current_process()._config = {'semprefix': '/mp'}
 
-
     inventory = BaseInventory(host_list=assets)
     runner = AdHocRunner(inventory)
     tasks = [
@@ -109,7 +107,6 @@ def ansbile_asset_hardware(ids, assets):
     retsult = runner.run(tasks, "all")
     hostname = assets[0]['hostname']
 
-
     try:
         data = retsult.results_raw['ok'][hostname]['script']['ansible_facts']
         nodename = data['ansible_nodename']
@@ -117,18 +114,18 @@ def ansbile_asset_hardware(ids, assets):
                                     int(data["ansible_devices"][i]["sectorsize"]) / 1024 / 1024 / 1024
                                     for i in data["ansible_devices"] if
                                     i[0:2] in ("vd", "ss", "sd")])) + str(" GB"))
-        mem = round(data['ansible_memtotal_mb'] / 1024 )
+        mem = round(data['ansible_memtotal_mb'] / 1024)
         cpu = int("{}".format(
             data['ansible_processor_count'] * data["ansible_processor_cores"]))
 
         system = data['ansible_product_name'] + \
-            " " + data['ansible_lsb']["description"]
+                 " " + data['ansible_lsb']["description"]
 
         AssetInfo.objects.filter(id=ids).update(hostname=nodename,
-                                                 disk=disk,
-                                                 memory=mem,
-                                                 cpu=cpu,
-                                                 system=system)
+                                                disk=disk,
+                                                memory=mem,
+                                                cpu=cpu,
+                                                system=system)
 
     except Exception as e:
         logger.error(e)

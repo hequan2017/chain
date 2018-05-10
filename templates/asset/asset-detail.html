@@ -106,18 +106,18 @@
                                             <td width="20%">实例ID:</td>
                                             <td><b>{{ assets.Instance_id }}</b></td>
                                         </tr>
-
-                                        <tr>
-                                            <td width="20%">负责人:</td>
-                                            <td><b>{{ assets.manager }}</b></td>
-                                        </tr>
                                         <tr>
                                             <td width="20%">项目:</td>
                                             <td><b>{{ assets.project }}</b></td>
                                         </tr>
-                                   <tr>
+                                       <tr>
                                             <td width="20%">用户:</td>
                                             <td><b>{{ assets.users }} </b></td>
+                                        </tr>
+                                     <tr>
+                                            <td width="20%">激活:</td>
+                                            <td><b>{% ifequal   assets.is_active  True %}   <i class="fa fa-check text-navy"></i>{% endifequal %}
+                                             {% ifequal   assets.is_active  False  %}   <i class="fa fa-times text-danger"></i> {% endifequal %} </b></td>
                                         </tr>
                                       <tr>
                                             <td width="20%">变量:</td>

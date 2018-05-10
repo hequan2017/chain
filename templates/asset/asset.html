@@ -134,6 +134,7 @@
                                         <th>内网IP</th>
                                         <th>平台</th>
                                         <th>项目</th>
+                                        <th>激活</th>
                                         <th>动作</th>
                                     </tr>
                                     </thead>
@@ -149,6 +150,8 @@
                                             <td class="center">{{ row.inner_ip }}</td>
                                             <td class="center">{{ row.platform }} | {{ row.region }}</td>
                                             <td class="center">{{ row.project }}</td>
+                                            <td class="center"><b>{% ifequal  row.is_active  True %}   <i class="fa fa-check text-navy"></i>{% endifequal %}
+                                             {% ifequal   row.is_active  False  %}   <i class="fa fa-times text-danger"></i> {% endifequal %} </b></td>
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  asset_del"

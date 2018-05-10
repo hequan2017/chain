@@ -90,7 +90,7 @@
                                     <th>外网IP</th>
                                     <th>内网IP</th>
                                     <th>平台</th>
-                                    <th>负责人</th>
+
                                     <th>项目</th>
                                     <th>动作</th>
 
@@ -107,7 +107,7 @@
                                         <td class="center">{{ row.network_ip }}</td>
                                         <td class="center">{{ row.inner_ip }}</td>
                                         <td class="center">{{ row.platform }} -- {{ row.region }}</td>
-                                        <td class="center">{{ row.manager }}</td>
+
                                         <td class="center">{{ row.project }}</td>
                                         <td><a class="btn btn-primary  btn-xs "
                                                href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
@@ -125,7 +125,7 @@
                                     <th>外网IP</th>
                                     <th>内网IP</th>
                                     <th>平台</th>
-                                    <th>负责人</th>
+
                                     <th>项目</th>
                                     <th>动作</th>
 
@@ -151,7 +151,7 @@
 
             $(function () {
 
-                 $(document).on('click', '.asset_del', function () {
+                $(document).on('click', '.asset_del', function () {
                     var id = $(this).parent().parent().attr('id');
                     swal({
                         title: "你确定删除",
@@ -183,7 +183,6 @@
                     });
 
                 });
-
 
 
                 $('.asset_user_del').click(function () {

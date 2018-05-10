@@ -10,17 +10,7 @@ __all__ = [
 ]
 cmd_list = [
     'shell',
-    'raw',
-    'cron',
-    'file',
-    'service',
-    'user',
-    'ping',
-    'yum',
-    'setup',
-    'script',
-    'synchronize',
-    'get_url']
+]
 
 
 class Tools(models.Model):
@@ -49,6 +39,7 @@ class Tools(models.Model):
 
 class ToolsResults(models.Model):
     task_id = models.UUIDField( max_length=255,verbose_name='任务ID',unique=True)
+    add_user = models.CharField(max_length=255, verbose_name='创建者',null=True,blank=True)
     ctime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     @property

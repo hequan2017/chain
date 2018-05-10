@@ -17,9 +17,9 @@ admin.site.register(TaskSetMeta)
 
 
 class ToolResultsAdmin(admin.ModelAdmin):
-    search_fields = ('id', 'task_id', 'status', 'ctime',)
-    list_display = ('id', 'task_id', 'status', 'ctime',)
-    list_display_links = ('id', 'task_id', 'status', 'ctime',)
+    search_fields = ('id', 'task_id','add_user', 'status', 'ctime',)
+    list_display = ('id', 'task_id', 'add_user','status', 'ctime',)
+    list_display_links = ('id', 'task_id','add_user', 'status', 'ctime',)
     list_filter = ('id', 'ctime',)
 
 

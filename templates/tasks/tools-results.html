@@ -59,10 +59,9 @@
                                     <tr>
                                         <th width="20">ID</th>
                                         <th>task_id</th>
+                                        <th>创建者</th>
                                         <th>状态</th>
                                         <th>创建时间</th>
-
-
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -73,7 +72,9 @@
                                             <td class="center"><a
                                                     href="{% url  "tasks:tools_results_detail"   pk=row.id %}">{{ row.id }}</a></td>
                                             <td class="center">{{ row.task_id }}  </td>
+                                             <td class="center">{{ row.add_user }}</td>
                                                <td class="center">{{ row.status }}  </td>
+
                                             <td class="center">{{ row.ctime }}</td>
 
                                         </tr>

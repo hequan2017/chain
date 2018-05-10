@@ -115,6 +115,7 @@ class AssetUserForm(forms.ModelForm):
         fields = ['hostname','username','password','private_key','ps','user_name','project']
 
         help_texts = {
+            'hostname': '*  必填项目,名字唯一',
             'password': '* 如不修改密码，请保持为空',
             'private_key': '*  如私钥有密码，请先取消掉再上传',
             'project': '* 必填项目'

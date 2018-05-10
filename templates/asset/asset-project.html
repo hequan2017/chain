@@ -87,7 +87,8 @@
                                             <td class="center">{{ row.projects }}
                                             </td>
                                             <td class="center">总和:{{ row.asset.count }} <br>
-                                                具体:{% for  i in row.asset.get_queryset %}{{ i }}|{% endfor %}</td>
+{#                                                具体:{% for  i in row.asset.get_queryset %}{{ i }}|{% endfor %}#}
+                                            </td>
                                            <td class="center">总和:{{ row.project.count }} <br>
                                                 具体:{% for  i in row.project.get_queryset %}{{ i }}|{% endfor %}</td>
 

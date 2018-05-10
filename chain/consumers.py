@@ -1,6 +1,3 @@
-# -*- coding:utf-8 -*-
-# edit by fuzongfei
-
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 

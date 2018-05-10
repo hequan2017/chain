@@ -63,18 +63,14 @@ class AssetListAll(LoginRequiredMixin, ListView):
         assets = []
         self.queryset = super().get_queryset()
         for i in self.queryset:
-            project = AssetInfo.objects.get(hostname=i)
-            project_obj = AssetProject.objects.filter(projects=project)
+            project = AssetInfo.objects.get(hostname=i).project
+            project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('read_assetproject', project_obj)
             if hasperm == True:
                 assets.append(i)
-
         if self.request.GET.get('name'):
-            self.queryset = super().get_queryset()
             query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(
-                Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project__projects=query)).order_by(
-                '-id')
+            queryset = self.queryset.filter(Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project__projects=query)).order_by('-id')
         else:
             queryset = assets
         return queryset

@@ -41,10 +41,10 @@
                 <a href="#"><i class="fa  fa-coffee"></i> <span class="nav-label">作业中心</span>
                     <span class="fa arrow"> </span></a>
                 <ul class="nav nav-second-level">
-                    <li class="{{ tasks_cmd_active }}"><a href="{% url    'tasks:cmd' %}">命令行</a></li>
+                    <li class="{{ tasks_cmd_active }}"><a href="{% url    'tasks:cmd' %}">命令操作</a></li>
                      <li class="{{ tasks_tail_active }}"><a href="{% url    'tasks:tail' %}">日志接口</a></li>
-                    <li class="{{ tools_active }}"><a href="{% url    'tasks:tools' %}">工具</a></li>
-                    <li class="{{ vars_active }}"><a href="{% url    'tasks:vars' %}">变量</a></li>
+                    <li class="{{ tools_active }}"><a href="{% url    'tasks:tools' %}">脚本工具</a></li>
+                    <li class="{{ vars_active }}"><a href="{% url    'tasks:vars' %}">主机变量</a></li>
                     <li class="{{ tools_exec_active }}"><a href="{% url    'tasks:tools_exec' %}">创建任务</a></li>
                     <li class="{{ tools_results_active }}"><a href="{% url    'tasks:tools_results' %}">任务结果</a></li>
                 </ul>
@@ -57,7 +57,7 @@
                 <ul class="nav nav-second-level">
                     <li class="{{ name_list_active }}"><a href="{% url  'name:name_list' %}">用户管理</a></li>
                       <li class="{{ groups_list_active }}"><a href="{% url  'name:groups_list' %}">组管理</a></li>
-                     <li class="{{  groups_object_list_active }}"><a href="{% url  'name:groups_object_list' %}">组对象管理</a></li>
+                     <li class="{{  groups_object_list_active }}"><a href="{% url  'name:groups_object_list' %}">权限管理</a></li>
 
 
                 </ul>

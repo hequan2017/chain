@@ -1,19 +1,16 @@
-from django.shortcuts import render, redirect, HttpResponse
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.shortcuts import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, View, CreateView, UpdateView
 from django.urls import reverse_lazy
 from name.form import NameForm, GroupsForm, GroupsObjectForm
 from name.models import Names, Groups
 from guardian.models import GroupObjectPermission
+from django.utils.decorators import method_decorator
+from guardian.decorators import permission_required_or_403
 import json
 import logging
-
 logger = logging.getLogger('name')
-from django.utils.decorators import method_decorator
-from guardian.shortcuts import assign_perm, get_perms
-from guardian.core import ObjectPermissionChecker
-from guardian.decorators import permission_required_or_403
-from guardian.shortcuts import get_objects_for_user, get_objects_for_group
+
 
 
 class NameListAll(LoginRequiredMixin, ListView):
@@ -90,11 +87,12 @@ class NameUpdate(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         obj = Names.objects.get(id=pk)
+
         old_password = obj.password
         new_password = form.cleaned_data['password']
 
         forms = form.save()
-        if new_password == "1":
+        if new_password == "1" :
             forms.password = old_password
         else:
             forms.set_password(new_password)
@@ -274,8 +272,8 @@ class GroupsObjectAdd(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         forms = form.save(commit=False)
-        obj = form.cleaned_data['object_pk1']
-        forms.object_pk = obj
+        object_pk1 = form.cleaned_data['object_pk1']
+        forms.object_pk = object_pk1
         forms.save()
         return super().form_valid(form)
 

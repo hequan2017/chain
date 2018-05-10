@@ -51,10 +51,10 @@ class TasksCmd(LoginRequiredMixin, ListView):
         assets = []
         self.queryset = super().get_queryset()
         for i in self.queryset:
-            pro = AssetInfo.objects.get(hostname=i)
-            proj = AssetProject.objects.filter(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
+            project = AssetInfo.objects.get(hostname=i)
+            project_obj = AssetProject.objects.filter(projects=project)
+            hasperm = name.has_perm('cmd_assetproject', project_obj)
+            if  hasperm == True:
                 assets.append(i)
 
         if self.request.GET.get('name'):
@@ -94,10 +94,10 @@ class TasksTail(LoginRequiredMixin, ListView):
         assets = []
         self.queryset = super().get_queryset()
         for i in self.queryset:
-            pro = AssetInfo.objects.get(hostname=i)
-            proj = AssetProject.objects.filter(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
+            project = AssetInfo.objects.get(hostname=i)
+            project_obj = AssetProject.objects.filter(projects=project)
+            hasperm = name.has_perm('cmd_assetproject', project_obj)
+            if hasperm == True:
                 assets.append(i)
 
         if self.request.GET.get('name'):
@@ -207,10 +207,10 @@ class TasksPerform(LoginRequiredMixin, View):
         asset_obj = AssetInfo.objects.extra(where=['id IN (' + idstring + ')'])
 
         for i in asset_obj:
-            pro = AssetInfo.objects.get(hostname=i).project
-            proj = AssetProject.objects.get(projects=pro)
-            rets = name.has_perm('cmd_assetproject', proj)
-            if rets == False:
+            project = AssetInfo.objects.get(hostname=i).project
+            project_obj = AssetProject.objects.get(projects=project)
+            hasperm = name.has_perm('cmd_assetproject', project_obj)
+            if hasperm == False:
                 return HttpResponse(status=403)
 
         tasks, assets = [], []
@@ -229,13 +229,13 @@ class TasksPerform(LoginRequiredMixin, View):
                 ret_data['data'].append(ret)
                 return HttpResponse(json.dumps(ret_data))
 
-            varall = {
+            var_all = {
                 'hostname': i.hostname,
                 'inner_ip': i.inner_ip,
                 "network_ip": i.network_ip,
                 "project": i.project.projects}
             try:
-                varall.update(Variable.objects.get(assets__hostname=i).vars)
+                var_all.update(Variable.objects.get(assets__hostname=i).vars)
             except Exception as e:
                 pass
 
@@ -246,7 +246,7 @@ class TasksPerform(LoginRequiredMixin, View):
                 "username": i.user.username,
                 "password": decrypt_p(i.user.password),
                 "private_key": i.user.private_key.name,
-                "vars": varall,
+                "vars": var_all,
             }, )
         t = cmdjob(assets, tasks)
         ret_data['data'] = t
@@ -268,14 +268,13 @@ def taskstailperform(request):
             ret['error'] = "请选择服务器,输入参数及日志地址."
             return HttpResponse(json.dumps(ret))
 
-        obj = AssetInfo.objects.get(id=ids)
-        pro = obj.project
-        proj = AssetProject.objects.get(projects=pro)
-        rets = name.has_perm('cmd_assetproject', proj)
-        if rets == False:
+        asset_obj = AssetInfo.objects.get(id=ids)
+        project_obj = AssetProject.objects.get(projects=asset_obj.project)
+        hasperm = name.has_perm('cmd_assetproject', project_obj)
+        if hasperm == False:
             return HttpResponse(status=403)
         try:
-            taillog(request, obj.network_ip, obj.port, obj.user.username, obj.user.password, obj.user.private_key, tail)
+            taillog(request, asset_obj.network_ip,asset_obj.port, asset_obj.user.username, asset_obj.user.password, asset_obj.user.private_key, tail)
         except Exception as e:
             ret['status'] = False
             ret['error'] = "错误{0}".format(e)
@@ -285,7 +284,7 @@ def taskstailperform(request):
 
 def taskstailstopperform(request):
     """
-    执行 tail_log  命令
+    执行 tail_log  stop  命令
     """
     if request.method == "POST":
         ret = {'status': True, 'error': None, }
@@ -400,10 +399,10 @@ class ToolsExec(LoginRequiredMixin, ListView):
         assets = []
         self.queryset = super().get_queryset()
         for i in self.queryset:
-            pro = AssetInfo.objects.get(hostname=i)
-            proj = AssetProject.objects.filter(projects=pro)
-            ret = name.has_perm('cmd_assetproject', proj)
-            if ret == True:
+            project = AssetInfo.objects.get(hostname=i)
+            project_obj = AssetProject.objects.filter(projects=project)
+            hasperm = name.has_perm('cmd_assetproject', project_obj)
+            if hasperm == True:
                 assets.append(i)
 
         if self.request.GET.get('name'):
@@ -439,23 +438,23 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 where=['id IN (' + asset_id_tring + ')'])
 
             for i in asset_obj:
-                pro = AssetInfo.objects.get(hostname=i).project
-                proj = AssetProject.objects.get(projects=pro)
-                rets = name.has_perm('cmd_assetproject', proj)
-                if rets == False:
+                project = AssetInfo.objects.get(hostname=i).project
+                project_obj = AssetProject.objects.get(projects=project)
+                hasperm = name.has_perm('cmd_assetproject', project_obj)
+                if hasperm == False:
                     return HttpResponse(status=403)
 
             tool_obj = Tools.objects.filter(id=int(tool_id[0])).first()
             assets = []
             for i in asset_obj:
-                varall = {
+                var_all = {
                     'hostname': i.hostname,
                     'inner_ip': i.inner_ip,
                     "network_ip": i.network_ip,
                     "project": i.project.projects
                 }
                 try:
-                    varall.update(Variable.objects.get(assets__hostname=i).vars)
+                    var_all.update(Variable.objects.get(assets__hostname=i).vars)
                 except Exception as e:
                     pass
 
@@ -466,7 +465,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     "username": i.user.username,
                     "password": decrypt_p(i.user.password),
                     "private_key": i.user.private_key.name,
-                    "vars": varall,
+                    "vars": var_all,
                 }, )
 
             file = "data/script/{0}".format(random.randint(0, 999999))

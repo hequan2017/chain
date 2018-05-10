@@ -45,7 +45,7 @@
                         </ul>
                     </div>
                     <div class="tab-content">
-                        <div class="col-sm-7" style="padding-left: 0">
+                        <div class="col-sm-12" style="padding-left: 0">
                             <div class="ibox float-e-margins">
                                 <div class="ibox-title">
                                     <span class="label"><b>{{ task.id }}</b></span>
@@ -77,12 +77,10 @@
                                             <td><b>{{ task.task_id }}</b>
                                             </td>
                                         </tr>
-
-
-
-
-
-
+                                        <tr>
+                                            <td width="20%">创建者:</td>
+                                            <td><b>{{ task.add_user }}</b></td>
+                                        </tr>
                                         <tr>
                                             <td width="20%">状态:</td>
                                             <td><b>{{ results.status }}</b></td>
@@ -121,23 +119,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-5" style="padding-left: 0;padding-right: 0">
-                            <div class="panel panel-primary">
-                                <div class="panel-heading">
-                                    <i class="fa fa-info-circle"></i> 快速修改
-                                </div>
-                                <div class="panel-body">
-                                    <table class="table">
-                                        <tbody>
 
-
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-
-
-                        </div>
 
                     </div>
                 </div>

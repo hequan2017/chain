@@ -48,13 +48,13 @@ def login_view(request):
                           {'error_msg': error_msg1, })
 
 
-def logout(requset):
+def logout(request):
     """
     退出
     :param requset:
     :return:
     """
-    requset.session.clear()
+    request.session.clear()
 
     return redirect('/login.html')
 
@@ -79,18 +79,15 @@ def password_update(request):
                     password = form.cleaned_data['new_password']
                     old.set_password(password)
                     old.save()
-                    msg = "修改成功"
-                    return render(request, 'index/password.html',
-                                  {'form': form, "msg": msg})
+                    request.session.clear()
+                    return redirect("/logout.html")
                 else:
                     msg = "两次输入的密码不一致"
                 form = UserPasswordForm()
-                return render(request, 'index/password.html',
-                              {'form': form, "msg": msg})
+                return render(request, 'index/password.html',{'form': form, "msg": msg})
             else:
                 form = UserPasswordForm()
-                return render(request, 'index/password.html',
-                              {'form': form, "msg": "旧密码不对,请重新输入"})
+                return render(request, 'index/password.html',{'form': form, "msg": "旧密码不对,请重新输入"})
 
     else:
         form = UserPasswordForm()
@@ -119,5 +116,3 @@ def page_error(request):
     return render(request, 'index/500.html')
 
 
-def permission_denied(request):
-    return render(request, 'index/403.html')

@@ -513,7 +513,7 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
         try:
             search_data.pop("page")
         except BaseException as e:
-            logger.error(e)
+           pass
 
         context.update(search_data.dict())
         context = {

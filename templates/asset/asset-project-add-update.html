@@ -65,9 +65,6 @@
                             <div class="col-sm-10 col-sm-offset-0">
                                 <h3>基本</h3>
 
-
-
-
                                 {% bootstrap_field form.projects layout="horizontal" %}
                                 {% bootstrap_field form.assets layout="horizontal" %}
                                 {% bootstrap_field form.project layout="horizontal" %}
@@ -87,7 +84,8 @@
 
                                 {% bootstrap_button "保存" button_type="submit" button_class="btn-primary" %}
 
-                                <button class="btn btn-white" href="{{ i__next__ }}">取消</button>
+                                 <a class="btn btn-white" href="{% url "asset:asset_project_list" %}">取消</a>
+
                             </div>
                         </div>
 

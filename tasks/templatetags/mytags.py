@@ -14,9 +14,12 @@ def result(text):
             out = a.replace('\n','<br>')
             j['data'] = out
         except Exception as e:
-            logger.error(e)
-            j="{0}".format(text['exc_message'].replace('\n','<br>'))
-            return j
+            pass
+            try:
+                j="{0}".format(text['exc_message'].replace('\n','<br>'))
+                return j
+            except Exception as e:
+                pass
     return text
 
 

@@ -14,18 +14,12 @@ from index.password_crypt import encrypt_p, decrypt_p
 from os import system
 from tasks.models import Variable
 from tasks.tasks import ansbile_asset_hardware
-import csv
-import json
-import logging
-import codecs
-import chardet
-from django.db import transaction
-
-logger = logging.getLogger('asset')
-
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required_or_403
 from  name.models import Names
+from django.db import transaction
+import csv,json,logging,codecs,chardet
+logger = logging.getLogger('asset')
 
 
 class AssetListAll(LoginRequiredMixin, ListView):
@@ -49,7 +43,7 @@ class AssetListAll(LoginRequiredMixin, ListView):
         try:
             search_data.pop("page")
         except BaseException as e:
-            logger.error(e)
+            pass
         context.update(search_data.dict())
         context = {
             "asset_active": "active",
@@ -105,6 +99,13 @@ class AssetAdd(LoginRequiredMixin, CreateView):
             "asset_active": "active",
             "asset_list_active": "active",
         }
+        if '__next__' in self.request.POST:
+            context['i__next__'] = self.request.POST['__next__']
+        else:
+            try:
+                context['i__next__'] = self.request.META['HTTP_REFERER']
+            except Exception as e:
+                logger.error(e)
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 

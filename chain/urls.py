@@ -16,9 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
-from index.views import index, login_view, logout, password_update, login_historys,permission_denied,page_error,page_not_found
-from django.conf.urls import handler404, handler500,handler403
+from index.views import index, login_view, logout, password_update, login_historys,page_error,page_not_found
 
+
+handler404 = page_not_found
+handler500 = page_error
 
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
@@ -34,4 +36,3 @@ urlpatterns = [
     path('tasks/', include('tasks.urls', namespace="tasks", ), ),
     path('name/', include('name.urls', namespace="name", ), ),
 ]
-

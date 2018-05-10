@@ -82,7 +82,7 @@
                             <div class="col-sm-4 col-sm-offset-3">
 
                                 <button class="btn btn-primary" type="submit">保存</button>
-                                <button class="btn btn-white" type="reset">重置</button>
+                               <a class="btn btn-white" href="{% url "tasks:tools" %}">取消</a>
                             </div>
                         </div>
 
@@ -114,19 +114,20 @@
 
 
 
+
+
         <script>
             $(document).ready(function () {
                 $('.select2').select2();
 
                 var editor_two = CodeMirror.fromTextArea(document.getElementById("id_tool_script"), {
+                    mode: "text/shell",
                     lineNumbers: true,
                     matchBrackets: true,
                     styleActiveLine: true,
                     lineWrapping: true,
                     foldGutter: true,
                     gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"]
-
-
                 });
 
 

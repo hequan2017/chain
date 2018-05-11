@@ -238,7 +238,7 @@ class GroupObjectListAll(LoginRequiredMixin, ListView):
     model = GroupObjectPermission
     context_object_name = "groups_object_list"
     queryset = GroupObjectPermission.objects.all()
-    ordering = ('-id',)
+    ordering = ('id',)
 
     @method_decorator(permission_required_or_404('guardian.add_groupobjectpermission'))
     def dispatch(self, *args, **kwargs):

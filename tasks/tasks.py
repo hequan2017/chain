@@ -129,3 +129,8 @@ def ansbile_asset_hardware(ids, assets):
 
     except Exception as e:
         logger.error(e)
+
+
+@app.task()
+def test(x,y):
+    return  x + y

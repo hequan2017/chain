@@ -58,6 +58,9 @@ http://39.104.174.116:8001
 后端：
   * django==2.0.5
   * Python 3.6.5
+  
+运行环境：
+  * Centos 7.5
 
 数据库：
   * 目前开发阶段 用的 sqlite3,可无缝切换为 mysql
@@ -106,6 +109,7 @@ python3   manage.py runserver 0.0.0.0:80
 python3    webssh/main.py    ##启动终端登录功能
 
 python3   manage.py   celery worker     --loglevel=info
+python3   manage.py   celery beat --loglevel=INFO
 
 ```
 

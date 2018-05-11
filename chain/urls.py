@@ -35,4 +35,5 @@ urlpatterns = [
     path('asset/', include('asset.urls', namespace="asset", ), ),
     path('tasks/', include('tasks.urls', namespace="tasks", ), ),
     path('name/', include('name.urls', namespace="name", ), ),
+    path('crontab/', include('crontab.urls', namespace="crontabs", ), ),
 ]

@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+
+{% block  title %}任务结果{% endblock %}
+
+{% block page-content %}
+
+
+
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-10">
+            <h2>任务结果</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/index.html">主页</a>
+                </li>
+                <li>
+                    <a>作业中心</a>
+                </li>
+                <li class="active">
+                    <strong>任务结果</strong>
+                </li>
+            </ol>
+        </div>
+        <div class="col-lg-2">
+
+        </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>任务结果</h5>
+                        <div class="ibox-tools">
+                            <a class="collapse-link">
+                                <i class="fa fa-chevron-up"></i>
+                            </a>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-wrench"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-user">
+                                <li><a href="#">选项 1</a>
+                                </li>
+                                <li><a href="#">选项 2</a>
+                                </li>
+                            </ul>
+                            <a class="close-link">
+                                <i class="fa fa-times"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="ibox-content">
+
+                          <div class="table-responsive">
+
+                                <table class="table table-striped table-bordered table-hover dataTables-example-tools">
+                                    <thead>
+                                    <tr>
+                                        <th width="20">ID</th>
+                                        <th>task_id</th>
+                                        <th>返回结果</th>
+                                        <th>结果</th>
+                                       <th>异常</th>
+                                         <th>hidden</th>
+                                        <th>创建时间</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for   row   in  periodictassks_results_list %}
+
+                                        <tr class="gradeA" >
+                                            <td class="center"><a
+                                                    href="{% url  "tasks:tools_results_detail"   pk=row.id %}"><div class="label label-primary">{{ row.id }}</div></a></td>
+                                            <td class="center">{{ row.task_id }}  </td>
+                                            <td class="center"><div class="label label-warning">{{ row.result }}</div></td>
+                                               <td class="center " ><div class="label label-primary">{{ row.status }}</div> </td>
+                                                 <td class="center">{{ row.traceback }}</td>
+                                            <td class="center">{{ row.hidden }}</td>
+                                            <td class="center">{{ row.date_done }}</td>
+
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+
+
+                                </table>
+
+ <div>
+
+                                    <center>
+
+                                        <ul class="pagination">
+                                            <li><a href="{% url "crontabs:periodictasks_result" %}?page=1">首页 </a></li>
+                                            {% if  page_obj.has_previous %}
+                                                <li>
+                                                    <a href="{% url "crontabs:periodictasks_result" %}?page={{ page_obj.previous_page_number }}&{{ search_data }}">
+                                                        上一页 </a></li>
+                                            {% else %}
+                                                <li class="disabled"><a> 上一页 </a></li>
+                                            {% endif %}
+
+                                            {% for p in paginator.page_range %}
+                                                {% if  search_data %}  <!-- 判断是否是搜索分页-->
+                                                    {% if p == page_obj.number %}
+                                                        <li class="active"><a
+                                                                href="{% url "crontabs:periodictasks_result" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li>
+                                                            <a href="{% url "crontabs:periodictasks_result" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if p == page_obj.number %}
+                                                        <li class="active"><a
+                                                                href="{% url "crontabs:periodictasks_result" %}?page={{ p }}"> {{ p }} </a>
+                                                        </li>
+                                                    {% else %}
+                                                        <li>
+                                                            <a href="{% url "crontabs:periodictasks_result" %}?page={{ p }}"> {{ p }} </a>
+                                                        </li>
+                                                    {% endif %}
+                                                {% endif %}
+                                            {% endfor %}
+
+
+                                            {% if  page_obj.has_next %}
+                                                <li>
+                                                    <a href="{% url "crontabs:periodictasks_result" %}?page={{ page_obj.next_page_number }}&{{ search_data }}">
+                                                        下一页 </a></li>
+                                            {% endif %}
+                                            <li>
+                                                <a href="{% url "crontabs:periodictasks_result" %}?page={{ page_obj.paginator.num_pages }}">尾页 </a>
+                                            </li>
+                                            <li><span style="color: #0a0a0a">总: &nbsp;{{ page_obj.paginator.num_pages }} 页 </span>
+                                            </li>
+
+                                        </ul>
+                                    </center>
+                                </div> <!--页码 -->
+
+
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% block footer-js %}
+<script>
+   $(document).ready(function () {
+
+
+
+         $('.dataTables-example-tools').DataTable({
+
+
+                    "oLanguage": {
+                        "sLengthMenu": "每页显示 _MENU_ 条记录",
+                        "sZeroRecords": "对不起，查询不到任何相关数据",
+                        "sInfo": "当前显示 _START_ 到 _END_ 条，共 _TOTAL_条记录",
+                        "sInfoEmtpy": "找不到相关数据",
+                        "sInfoFiltered": " 数据表中共为 _MAX_ 条记录",
+                        "sProcessing": "正在加载中...",
+                        "sSearch": "搜索",
+                        "oPaginate": {
+                            "sFirst": "第一页",
+                            "sPrevious": " 上一页 ",
+                            "sNext": " 下一页 ",
+                            "sLast": " 最后一页 "
+                        }
+                    },
+                    "order": [[1, 'desc']],
+                    destroy: true,
+
+
+                    bPaginate: false,
+                    dom: '<"html5buttons"B>lTfgitp,'
+
+                });
+            });
+
+
+
+
+    </script>
+{% endblock %}
+
+{% endblock %}

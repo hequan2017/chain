@@ -50,6 +50,19 @@
                 </ul>
             </li>
 
+                    <li class="{{ crontab_active }}">
+                <a href="#"><i class="fa  fa-coffee"></i> <span class="nav-label">定时任务</span>
+                    <span class="fa arrow"> </span></a>
+                <ul class="nav nav-second-level">
+                    <li class="{{ crontab_crontabs_active }}"><a href="{% url    'crontabs:crontabs_list' %}">定时时间</a></li>
+                     <li class="{{ crontab_intervals_active }}"><a href="{% url    'crontabs:intervals_list' %}">时间间隔</a></li>
+                      <li class="{{ crontab_periodictasks_active }}"><a href="{% url    'crontabs:periodictasks_list' %}">周期任务</a></li>
+                     <li class="{{ crontab_periodictasks_result_active }}"><a href="{% url    'crontabs:periodictasks_result' %}">周期结果</a></li>
+                </ul>
+
+            </li>
+
+
          {% ifequal  user.is_superuser  1 %}
             <li class="{{ name_active }}">
                 <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">系统用户</span>

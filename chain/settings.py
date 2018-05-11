@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'djcelery',
     'guardian',
     'channels',
+    'crontab'
 ]
 
 MIDDLEWARE = [

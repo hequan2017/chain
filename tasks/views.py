@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
+from django.shortcuts import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
@@ -211,7 +211,7 @@ class TasksPerform(LoginRequiredMixin, View):
             project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
             if hasperm == False:
-                return HttpResponse(status=403)
+                return HttpResponse(status=500)
 
         tasks, assets = [], []
         for x in range(len(modules)):
@@ -272,7 +272,7 @@ def taskstailperform(request):
         project_obj = AssetProject.objects.get(projects=asset_obj.project)
         hasperm = name.has_perm('cmd_assetproject', project_obj)
         if hasperm == False:
-            return HttpResponse(status=403)
+            return HttpResponse(status=500)
         try:
             taillog(request, asset_obj.network_ip,asset_obj.port, asset_obj.user.username, asset_obj.user.password, asset_obj.user.private_key, tail)
         except Exception as e:
@@ -442,7 +442,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 project_obj = AssetProject.objects.get(projects=project)
                 hasperm = name.has_perm('cmd_assetproject', project_obj)
                 if hasperm == False:
-                    return HttpResponse(status=403)
+                    return HttpResponse(status=500)
 
             tool_obj = Tools.objects.filter(id=int(tool_id[0])).first()
             assets = []
@@ -548,10 +548,14 @@ class ToolsResultsDetail(LoginRequiredMixin, DetailView):
     model = ToolsResults
     template_name = 'tasks/tools-results-detail.html'
 
+
     def get_context_data(self, **kwargs):
         pk = self.kwargs.get(self.pk_url_kwarg, None)
+        name = Names.objects.get(username=self.request.user)
         task = ToolsResults.objects.get(id=pk)
-
+        if name.is_superuser != 1:
+            if  task.add_user !=  name:
+                return HttpResponse(status=500)
         try:
             results = TaskMeta.objects.get(task_id=task.task_id)
         except Exception as e:

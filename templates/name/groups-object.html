@@ -72,8 +72,8 @@
                                     <tr>
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
                                         <th>组名</th>
-                                         <th>类型</th>
-                                         <th>资产</th>
+                                         <th>权限类型</th>
+                                         <th>资产项目</th>
                                         <th>权限</th>
 
                                         <th>动作</th>
@@ -85,10 +85,10 @@
 
                                         <tr class="gradeA" id="{{ row.id }}">
                                             <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
-                                            <td class="center"> {{ row.group }}</td>
-                                            <td class="center"> {{ row.content_type }}</td>
-                                            <td class="center"> {{ row.object_pk |  objectasset }}</td>
-                                             <td class="center"> {{ row.permission }}</td>
+                                            <td class="center"> <div class="label label-primary">{{ row.group }}</div></td>
+                                            <td class="center"> <div class="label label-warning">{{ row.content_type }}</div></td>
+                                            <td class="center"> <div class="label label-danger">{{ row.object_pk |  objectasset }}</div></td>
+                                            <td class="center"><div class="label label-default"> {{ row.permission }}</div></td>
 
                                             <td><a class="btn btn-primary  btn-xs " href="{% url  "name:groups_object_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  groups_del">删除</a>
@@ -160,7 +160,7 @@
 
                     swal({
 
-                        title: "你确定删除 系统组",
+                        title: "你确定删除 权限",
                         text: "你将无法恢复",
                         type: "warning",
                         showCancelButton: true,

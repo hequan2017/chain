@@ -15,7 +15,7 @@ from os import system
 from tasks.models import Variable
 from tasks.tasks import ansbile_asset_hardware
 from django.utils.decorators import method_decorator
-from guardian.decorators import permission_required_or_403
+from guardian.decorators import permission_required_or_404
 from  name.models import Names
 from django.db import transaction
 import csv,json,logging,codecs,chardet
@@ -86,7 +86,7 @@ class AssetAdd(LoginRequiredMixin, CreateView):
     template_name = 'asset/asset-add-update.html'
     success_url = reverse_lazy('asset:asset_list')
 
-    @method_decorator(permission_required_or_403('asset.add_assetinfo'))
+    @method_decorator(permission_required_or_404('asset.add_assetinfo'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -123,7 +123,7 @@ class AssetUpdate(LoginRequiredMixin, UpdateView):
         project_obj = AssetProject.objects.get(projects=project)
         hasperm = name.has_perm('change_assetproject', project_obj)
         if hasperm == False:
-            return HttpResponse(status=403)
+            return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -161,7 +161,7 @@ class AssetDetail(LoginRequiredMixin, DetailView):
         project_obj = AssetProject.objects.get(projects=project)
         hasperm = name.has_perm('read_assetproject', project_obj)
         if hasperm == False:
-            return HttpResponse(status=403)
+            return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -506,7 +506,7 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
     template_name = 'asset/asset-user-add-update.html'
     success_url = reverse_lazy('asset:asset_user_list')
 
-    @method_decorator(permission_required_or_403('asset.add_assetloginuser'))
+    @method_decorator(permission_required_or_404('asset.add_assetloginuser'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -554,7 +554,7 @@ class AssetUserUpdate(LoginRequiredMixin, UpdateView):
         project_obj = AssetProject.objects.get(projects=project)
         hasperm = name.has_perm('change_assetproject', project_obj)
         if hasperm == False:
-            return HttpResponse(status=403)
+            return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -602,7 +602,7 @@ class AssetUserDetail(LoginRequiredMixin, DetailView):
         proj = AssetProject.objects.get(projects=pro)
         ret = name.has_perm('read_assetproject', proj)
         if ret == False:
-            return HttpResponse(status=403)
+            return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -749,7 +749,7 @@ class AssetProjectAdd(LoginRequiredMixin, CreateView):
     template_name = 'asset/asset-project-add-update.html'
     success_url = reverse_lazy('asset:asset_project_list')
 
-    @method_decorator(permission_required_or_403('asset.add_assetproject'))
+    @method_decorator(permission_required_or_404('asset.add_assetproject'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -819,7 +819,7 @@ class AssetProjectUpdate(LoginRequiredMixin, UpdateView):
         project_obj = AssetProject.objects.get(id=pk)
         hasperm = name.has_perm('change_assetproject', project_obj)
         if hasperm == False:
-            return HttpResponse(status=403)
+            return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):

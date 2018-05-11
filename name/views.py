@@ -6,22 +6,23 @@ from name.form import NameForm, GroupsForm, GroupsObjectForm
 from name.models import Names, Groups
 from guardian.models import GroupObjectPermission
 from django.utils.decorators import method_decorator
-from guardian.decorators import permission_required_or_403
-import json
-import logging
+from guardian.decorators import permission_required_or_404
+import json,logging
 logger = logging.getLogger('name')
 
 
-
 class NameListAll(LoginRequiredMixin, ListView):
-    """资产列表"""
+    """
+    系统用户列表
+    """
+
     template_name = 'name/name.html'
     model = Names
     context_object_name = "name_list"
     queryset = Names.objects.all()
-    ordering = ('id',)
+    ordering = ('-id',)
 
-    @method_decorator(permission_required_or_403('name.add_names'))
+    @method_decorator(permission_required_or_404('name.add_names'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -36,14 +37,14 @@ class NameListAll(LoginRequiredMixin, ListView):
 
 class NameAdd(LoginRequiredMixin, CreateView):
     """
-    登录用户增加
+    系统用户 增加
     """
     model = Names
     form_class = NameForm
     template_name = 'name/name-add-update.html'
     success_url = reverse_lazy('name:name_list')
 
-    @method_decorator(permission_required_or_403('name.add_names'))
+    @method_decorator(permission_required_or_404('name.add_names'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -65,14 +66,15 @@ class NameAdd(LoginRequiredMixin, CreateView):
 
 
 class NameUpdate(LoginRequiredMixin, UpdateView):
-    """登录用户更新"""
+    """
+    系统用户更新"""
 
     model = Names
     form_class = NameForm
     template_name = 'name/name-add-update.html'
     success_url = reverse_lazy('name:name_list')
 
-    @method_decorator(permission_required_or_403('name.change_names'))
+    @method_decorator(permission_required_or_404('name.change_names'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -102,11 +104,11 @@ class NameUpdate(LoginRequiredMixin, UpdateView):
 
 class NameAllDel(LoginRequiredMixin, View):
     """
-    系统用户删除
+    系统用户 删除
     """
     model = Names
 
-    @method_decorator(permission_required_or_403('name.delete_names'))
+    @method_decorator(permission_required_or_404('name.delete_names'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -130,15 +132,17 @@ class NameAllDel(LoginRequiredMixin, View):
 
 
 class GroupListAll(LoginRequiredMixin, ListView):
-    """系统组列表"""
+    """
+    系统组 列表
+    """
 
     template_name = 'name/groups.html'
     model = Groups
     context_object_name = "groups_list"
     queryset = Groups.objects.all()
-    ordering = ('id',)
+    ordering = ('-id',)
 
-    @method_decorator(permission_required_or_403('name.add_groups'))
+    @method_decorator(permission_required_or_404('name.add_groups'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -153,14 +157,14 @@ class GroupListAll(LoginRequiredMixin, ListView):
 
 class GroupsAdd(LoginRequiredMixin, CreateView):
     """
-    系统组增加
+    系统组 增加
     """
     model = Groups
     form_class = GroupsForm
     template_name = 'name/groups-add-update.html'
     success_url = reverse_lazy('name:groups_list')
 
-    @method_decorator(permission_required_or_403('name.add_groups'))
+    @method_decorator(permission_required_or_404('name.add_groups'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -174,14 +178,16 @@ class GroupsAdd(LoginRequiredMixin, CreateView):
 
 
 class GroupsUpdate(LoginRequiredMixin, UpdateView):
-    """系统组更新"""
+    """
+    系统组 更新
+    """
 
     model = Groups
     form_class = GroupsForm
     template_name = 'name/groups-add-update.html'
     success_url = reverse_lazy('name:groups_list')
 
-    @method_decorator(permission_required_or_403('name.change_groups'))
+    @method_decorator(permission_required_or_404('name.change_groups'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -200,7 +206,7 @@ class GroupsAllDel(LoginRequiredMixin, View):
     """
     model = Groups
 
-    @method_decorator(permission_required_or_403('name.delete_groups'))
+    @method_decorator(permission_required_or_404('name.delete_groups'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -224,15 +230,17 @@ class GroupsAllDel(LoginRequiredMixin, View):
 
 
 class GroupObjectListAll(LoginRequiredMixin, ListView):
-    """系统组 对象 列表"""
+    """
+    系统组 对象权限 列表
+    """
 
     template_name = 'name/groups-object.html'
     model = GroupObjectPermission
     context_object_name = "groups_object_list"
     queryset = GroupObjectPermission.objects.all()
-    ordering = ('id',)
+    ordering = ('-id',)
 
-    @method_decorator(permission_required_or_403('guardian.add_groupobjectpermission'))
+    @method_decorator(permission_required_or_404('guardian.add_groupobjectpermission'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -254,7 +262,7 @@ class GroupsObjectAdd(LoginRequiredMixin, CreateView):
     template_name = 'name/groups-object-add-update.html'
     success_url = reverse_lazy('name:groups_object_list')
 
-    @method_decorator(permission_required_or_403('guardian.add_groupobjectpermission'))
+    @method_decorator(permission_required_or_404('guardian.add_groupobjectpermission'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -270,12 +278,6 @@ class GroupsObjectAdd(LoginRequiredMixin, CreateView):
         print(form.errors)
         return super().form_invalid(form)
 
-    def form_valid(self, form):
-        forms = form.save(commit=False)
-        object_pk1 = form.cleaned_data['object_pk1']
-        forms.object_pk = object_pk1
-        forms.save()
-        return super().form_valid(form)
 
 
 class GroupsObjectAllDel(LoginRequiredMixin, View):
@@ -284,7 +286,7 @@ class GroupsObjectAllDel(LoginRequiredMixin, View):
     """
     model = GroupObjectPermission
 
-    @method_decorator(permission_required_or_403('guardian.delete_groupobjectpermission'))
+    @method_decorator(permission_required_or_404('guardian.delete_groupobjectpermission'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
@@ -315,7 +317,7 @@ class GroupsObjectUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'name/groups-object-add-update.html'
     success_url = reverse_lazy('name:groups_object_list')
 
-    @method_decorator(permission_required_or_403('guardian.change_groupobjectpermission'))
+    @method_decorator(permission_required_or_404('guardian.change_groupobjectpermission'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 

@@ -1,10 +1,10 @@
-from django.shortcuts import redirect
+from django.shortcuts import redirect,render
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
 from .form import UserPasswordForm
 from django.contrib.auth.hashers import check_password
-from  name.models import Names
-from .models import LoginLogs
+from name.models import Names
+from index.models import LoginLogs
 
 
 @login_required(login_url="/login.html")
@@ -105,13 +105,12 @@ def login_historys(request):
                                                         "index_login_active": "active", })
 
 
-from django.shortcuts import render
-
-
+@login_required(login_url="/login.html")
 def page_not_found(request):
     return render(request, 'index/404.html')
 
 
+@login_required(login_url="/login.html")
 def page_error(request):
     return render(request, 'index/500.html')
 

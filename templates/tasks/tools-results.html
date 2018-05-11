@@ -70,9 +70,9 @@
 
                                         <tr class="gradeA" >
                                             <td class="center"><a
-                                                    href="{% url  "tasks:tools_results_detail"   pk=row.id %}">{{ row.id }}</a></td>
+                                                    href="{% url  "tasks:tools_results_detail"   pk=row.id %}"><div class="label label-primary">{{ row.id }}</div></a></td>
                                             <td class="center">{{ row.task_id }}  </td>
-                                             <td class="center">{{ row.add_user }}</td>
+                                            <td class="center"><div class="label label-warning">{{ row.add_user }}</div></td>
                                                <td class="center " ><div class="label label-primary">{{ row.status }}</div> </td>
 
                                             <td class="center">{{ row.ctime }}</td>

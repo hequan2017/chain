@@ -5,7 +5,7 @@
 
 {% endblock %}
 
-{% block  title %}登录用户{% endblock %}
+{% block  title %}资产用户{% endblock %}
 
 
 
@@ -77,8 +77,8 @@
                                         <th width="20"><input type="checkbox" id="CheckedAll"></th>
                                         <th>名称</th>
                                         <th>用户</th>
-                                        <th>资产</th>
                                         <th>项目</th>
+                                        <th>资产</th>
                                         <th>备注</th>
                                         <th>动作</th>
                                     </tr>
@@ -92,11 +92,12 @@
                                             <td class="center"><a
                                                     href="{% url  "asset:asset_user_detail"   pk=row.id %}">{{ row.hostname }}</a>
                                             </td>
-                                            <td class="center">{{ row.username }}</td>
+                                            <td class="center"><div class="label label-primary">{{ row.username }}</div></td>
+                                             <td class="center"><div class="label label-warning-light">{{ row.project }}</div></td>
                                             <td class="center">总和:{{ row.user_name.count }} <br>
 {#                                                具体:{% for  i in row.user_name.get_queryset %}{{ i }}|{% endfor %}#}
                                             </td>
-                                          <td class="center">{{ row.project }}</td>
+
                                             <td class="center">{{ row.ps }}</td>
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_user_update"  pk=row.id %}">编辑</a>

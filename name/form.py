@@ -2,8 +2,8 @@ from django import forms
 from name.models import Names, Groups
 from guardian.models import GroupObjectPermission
 from asset.models import AssetProject
-
-
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Permission
 
 class NameForm(forms.ModelForm):
 
@@ -39,7 +39,7 @@ class GroupsForm(forms.ModelForm):
 
 class GroupsObjectForm(forms.ModelForm):
 
-    object_pk1 = forms.ModelChoiceField(
+    object_pk = forms.ModelChoiceField(
         queryset= AssetProject.objects.all(),
         label="资产项目",
         widget=forms.Select(
@@ -48,30 +48,38 @@ class GroupsObjectForm(forms.ModelForm):
             }
         ),
     )
+    content_type = forms.ModelChoiceField(
+        queryset=ContentType.objects.filter(model="assetproject"),
+        label="权限类型",
+        widget=forms.Select(
+            attrs={
+                'data-placeholder': '--------请选择权限类型--------',
+            }
+        ),
+    )
+
+    permission = forms.ModelChoiceField(
+        queryset=Permission.objects.filter(content_type__model="assetproject"),
+        label="权限",
+        widget=forms.Select(
+            attrs={
+                'data-placeholder': '--------请选择权限--------',
+            }
+        ),
+    )
+
 
     class Meta:
         model = GroupObjectPermission
         fields = '__all__'
 
         labels = {
-            'content_type': '对象类型',
-            'group': '组',
-            'permission': '权限',
-        }
-        widgets = {
-            'content_type': forms.Select(
-            attrs={
-                'class': 'select2',
-                'data-placeholder': '--------请选择对象类型--------',})
-        }
-
-        help_texts = {
-            'content_type': '*  对象类型,请与下面选择的权限 对应',
-
+            'group': '系统组',
         }
 
 
-    def clean_object_pk1(self):
-        obj = self.cleaned_data.get('object_pk1')
+
+    def clean_object_pk(self):
+        obj = self.cleaned_data.get('object_pk')
         ret = AssetProject.objects.get(projects=obj).id
         return ret

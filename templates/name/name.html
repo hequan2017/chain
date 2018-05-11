@@ -73,9 +73,7 @@
                                         <th>用户名</th>
                                         <th>管理员</th>
                                         <th>组</th>
-                                        <th>是否激活</th>
-
-
+                                        <th>激活</th>
                                         <th>动作</th>
                                     </tr>
                                     </thead>
@@ -86,9 +84,12 @@
                                         <tr class="gradeA" id="{{ row.id }}">
                                             <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
                                             <td class="center">{{ row.username }}</td>
-                                            <td class="center">{{ row.is_superuser }}</td>
-                                             <td class="center">{% for i  in row.groups.get_queryset %}  {{ i }} | {% endfor %}</td>
-                                            <td class="center">{{ row.is_active }}</td>
+                                            <td class="center"><div class="label label-danger">{{ row.is_superuser }}</div></td>
+                                            <td class="center"><div class="label label-warning">{% for i  in row.groups.get_queryset %}  {{ i }} / {% endfor %}</div></td>
+                                            <td class="center">
+                                            <b>{% ifequal  row.is_active  True %}   <i class="fa fa-check text-navy"></i>{% endifequal %}
+                                             {% ifequal   row.is_active  False  %}   <i class="fa fa-times text-danger"></i> {% endifequal %} </b>
+                                            </td>
 
                                             <td><a class="btn btn-primary  btn-xs " href="{% url  "name:name_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  name_del">删除</a>

@@ -2,16 +2,18 @@ from django.shortcuts import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, View, CreateView, UpdateView
 from django.urls import reverse_lazy
-from name.form import NameForm, GroupsForm, GroupsObjectForm
-from name.models import Names, Groups
-from guardian.models import GroupObjectPermission
-from django.utils.decorators import method_decorator
-from guardian.decorators import permission_required_or_404
 from  crontab.form import CrontabScheduleForm, IntervalScheduleForm, PeriodicTasksForm
 import json, logging
 from djcelery.models import CrontabSchedule, PeriodicTask, IntervalSchedule
 from  djcelery.models import TaskMeta
 from chain import settings
+from tasks.models import Tools, Variable
+import random
+import os, json
+from index.password_crypt import decrypt_p
+from tasks.tasks import ansbile_tools
+from asset.models import AssetInfo, AssetProject
+from name.models import Names
 
 logger = logging.getLogger('crontab')
 
@@ -215,6 +217,22 @@ class PeriodicTasksAdd(LoginRequiredMixin, CreateView):
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 
+    def form_valid(self, form):
+        name = Names.objects.get(username=self.request.user)
+        forms = form.save(commit=False)
+        if form.cleaned_data['task'] == 'tasks.tasks.ansbile_tools_crontab':
+            asset = form.cleaned_data['args']
+            asset_list = asset.strip('[]').replace('"', '').split(',')
+            print(asset_list)
+            for i in asset_list[1:]:
+                project = AssetInfo.objects.get(hostname=i).project
+                project_obj = AssetProject.objects.get(projects=project)
+                hasperm = name.has_perm('cmd_assetproject', project_obj)
+                if hasperm == False:
+                    forms.args = ["此主机没有权限,禁止执行"]
+                    forms.enabled = False
+        forms.save()
+        return super().form_valid(form)
 
 
 class PeriodicTasksUpdate(LoginRequiredMixin, UpdateView):
@@ -234,6 +252,22 @@ class PeriodicTasksUpdate(LoginRequiredMixin, UpdateView):
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        name = Names.objects.get(username=self.request.user)
+        forms = form.save(commit=False)
+        if form.cleaned_data['task'] == 'tasks.tasks.ansbile_tools_crontab':
+            asset = form.cleaned_data['args']
+            asset_list = asset.strip('[]').replace('"', '').split(',')
+            for i in asset_list[1:]:
+                project = AssetInfo.objects.get(hostname=i).project
+                project_obj = AssetProject.objects.get(projects=project)
+                hasperm = name.has_perm('cmd_assetproject', project_obj)
+                if hasperm == False:
+                    forms.args = ["此主机没有权限,禁止执行"]
+                    forms.enabled = False
+        forms.save()
+        return super().form_valid(form)
 
 
 class PeriodicTaskAllDel(LoginRequiredMixin, View):
@@ -276,7 +310,7 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
         try:
             search_data.pop("page")
         except BaseException as e:
-           pass
+            pass
 
         context.update(search_data.dict())
         context = {
@@ -287,18 +321,18 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 
-    # def get_queryset(self):
-    #     """
-    #      资产查询功能
-    #     """
-    #     name = Names.objects.get(username=self.request.user)
-    #     self.queryset = super().get_queryset()
-    #     if name.is_superuser != 1:
-    #         assets = []
-    #         for i in ToolsResults.objects.filter(add_user=name):
-    #                 assets.append(i)
-    #         queryset = assets
-    #     else:
-    #         queryset = super().get_queryset()
-    #
-    #     return queryset
+        # def get_queryset(self):
+        #     """
+        #      资产查询功能
+        #     """
+        #     name = Names.objects.get(username=self.request.user)
+        #     self.queryset = super().get_queryset()
+        #     if name.is_superuser != 1:
+        #         assets = []
+        #         for i in ToolsResults.objects.filter(add_user=name):
+        #                 assets.append(i)
+        #         queryset = assets
+        #     else:
+        #         queryset = super().get_queryset()
+        #
+        #     return queryset

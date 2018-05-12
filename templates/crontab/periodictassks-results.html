@@ -58,11 +58,9 @@
                                     <thead>
                                     <tr>
                                         <th width="20">ID</th>
-                                        <th>task_id</th>
                                         <th>返回结果</th>
                                         <th>结果</th>
-                                       <th>异常</th>
-                                         <th>hidden</th>
+
                                         <th>创建时间</th>
                                     </tr>
                                     </thead>
@@ -72,12 +70,9 @@
 
                                         <tr class="gradeA" >
                                             <td class="center"><a
-                                                    href="{% url  "tasks:tools_results_detail"   pk=row.id %}"><div class="label label-primary">{{ row.id }}</div></a></td>
-                                            <td class="center">{{ row.task_id }}  </td>
-                                            <td class="center"><div class="label label-warning">{{ row.result }}</div></td>
-                                               <td class="center " ><div class="label label-primary">{{ row.status }}</div> </td>
-                                                 <td class="center">{{ row.traceback }}</td>
-                                            <td class="center">{{ row.hidden }}</td>
+                                                    href="{% url  "tasks:tools_results_detail"   pk=row.id %}"><div class="label label-success">{{ row.id }}</div></a></td>
+                                            <td class="center">{{ row.result }}</td>
+                                            <td class="center " ><div class="label label-primary">{{ row.status }}</div></td>
                                             <td class="center">{{ row.date_done }}</td>
 
                                         </tr>

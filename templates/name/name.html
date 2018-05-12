@@ -61,7 +61,7 @@
 
                         <div class="table-responsive">
 
-                            <a href="{% url    'name:name_add' %}"  class="btn btn-sm btn-primary ">添加</a>
+                            <a href="{% url    'name:name_add' %}" class="btn btn-sm btn-primary ">添加</a>
                             <a class="btn btn-sm btn-danger  name_all_del">批量删除</a>
 
                             <form id="del_form_asset_all" class="form-horizontal">
@@ -84,14 +84,22 @@
                                         <tr class="gradeA" id="{{ row.id }}">
                                             <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
                                             <td class="center">{{ row.username }}</td>
-                                            <td class="center"><div class="label label-danger">{{ row.is_superuser }}</div></td>
-                                            <td class="center"><div class="label label-warning">{% for i  in row.groups.get_queryset %}  {{ i }} / {% endfor %}</div></td>
                                             <td class="center">
-                                            <b>{% ifequal  row.is_active  True %}   <i class="fa fa-check text-navy"></i>{% endifequal %}
-                                             {% ifequal   row.is_active  False  %}   <i class="fa fa-times text-danger"></i> {% endifequal %} </b>
+                                                <div class="label label-danger">{{ row.is_superuser }}</div>
+                                            </td>
+                                            <td class="center">
+                                                <div class="label label-success">{% for i  in row.groups.get_queryset %}
+                                                    {{ i }} / {% endfor %}</div>
+                                            </td>
+                                            <td class="center">
+                                                <b>{% ifequal  row.is_active  True %}
+                                                    <i class="fa fa-check text-navy"></i>{% endifequal %}
+                                                    {% ifequal   row.is_active  False %}
+                                                        <i class="fa fa-times text-danger"></i> {% endifequal %} </b>
                                             </td>
 
-                                            <td><a class="btn btn-primary  btn-xs " href="{% url  "name:name_update"  pk=row.id %}">编辑</a>
+                                            <td><a class="btn btn-primary  btn-xs "
+                                                   href="{% url  "name:name_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  name_del">删除</a>
                                             </td>
                                         </tr>

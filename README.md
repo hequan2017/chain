@@ -19,10 +19,11 @@ http://39.104.174.116:8001
   *  asset     资产
         * api   asset/api/asset.html
   *  chain      主配置目录
+  *  crontab    定时任务
   *  data       测试数据/Dockerfile目录
   *  index      首页及用户处理
   *  tasks      任务
-  *  name       系统用户 |　组　｜ 组对象
+  *  name       系统用户 |　组　｜ 权限
   *  static     css | js  
   *  templates  静态模板
   *  webssh     终端ssh登录     参考的  https://github.com/huashengdun/webssh   此项目

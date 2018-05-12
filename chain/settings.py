@@ -182,7 +182,7 @@ ASGI_APPLICATION = "chain.routing.application"
 
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
-DISPLAY_PER_PAGE = 15
+DISPLAY_PER_PAGE = 25
 
 
 # http://www.django-rest-framework.org/api-guide/permissions/#api-reference

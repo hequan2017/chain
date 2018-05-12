@@ -75,6 +75,8 @@
                                         <th>名字</th>
                                         <th>任务</th>
                                         <th>定时时间</th>
+                                        <th>任务激活</th>
+                                        <th>到期时间</th>
                                         <th>动作</th>
                                     </tr>
                                     </thead>
@@ -85,10 +87,14 @@
                                         <tr class="gradeA" id="{{ row.id }}">
                                             <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
                                             <td class="center">{{ row.name }}</td>
-                                            <td class="center">{{ row.task }}</td>
+                                            <td class="center"><div class="label label-primary">{{ row.task }}</div></td>
                                              <td class="center">{{ row.interval }} | {{ row.crontab }}</td>
-                                            <td><a class="btn btn-primary  btn-xs "
-                                                   href="{% url  "crontabs:periodictasks_update"  pk=row.id %}">编辑</a>
+                                              <td class="center"><b>{% ifequal  row.enabled  True %}   <i class="fa fa-check text-navy"></i>{% endifequal %}
+                                             {% ifequal   row.enabled  False  %}   <i class="fa fa-times text-danger"></i> {% endifequal %} </b>
+                                            </td>
+                                           <td class="center">{{ row.expires }}</td>
+
+                                            <td><a class="btn btn-primary  btn-xs " href="{% url  "crontabs:periodictasks_update"  pk=row.id %}">编辑</a>
                                                 <a class="btn btn-danger  btn-xs  periodictasks_del"
                                                 >删除</a>
                                             </td>

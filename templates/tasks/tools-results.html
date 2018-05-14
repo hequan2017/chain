@@ -1,6 +1,8 @@
 {% extends "base.html" %}
-
-
+{% load static %}
+{% block header-css %}
+<script src="{% static 'css/plugins/datepicker/datepicker3.css' %}"></script>
+{% endblock %}
 {% block  title %}任务结果{% endblock %}
 
 {% block page-content %}
@@ -50,8 +52,37 @@
                             </a>
                         </div>
                     </div>
-                    <div class="ibox-content">
 
+
+
+
+
+
+                    <div class="ibox-content">
+<div class="row">
+
+
+                     <form id="search_form" method="get" action="" class="pull-left form-inline">
+                    <div class="form-group" id="date">
+                        <div class="input-daterange input-group" id="datepicker">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="text" class="input-sm form-control" style="width: 100px;" name="date_from" value="{{ date_from  }}">
+                            <span class="input-group-addon">to</span>
+                            <input type="text" class="input-sm form-control" style="width: 100px;" name="date_to" value="{{ date_to  }}">
+                        </div>
+                    </div>
+        <div class="input-group">
+            <input type="text" class="form-control input-sm" name="keyword" placeholder="创建者" value="">
+        </div>
+        <div class="input-group">
+            <div class="input-group-btn">
+                <button id='search_btn' type="submit" class="btn btn-sm btn-primary">
+                   搜索
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
                           <div class="table-responsive">
 
                                 <table class="table table-striped table-bordered table-hover dataTables-example-tools">
@@ -150,10 +181,17 @@
 
 
 {% block footer-js %}
+<script src="{% static 'js/plugins/datepicker/bootstrap-datepicker.js' %}"></script>
 <script>
    $(document).ready(function () {
 
-
+        $('#date .input-daterange').datepicker({
+            format: "yyyy-mm-dd",
+            todayBtn: "linked",
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose: true
+    });
 
          $('.dataTables-example-tools').DataTable({
 

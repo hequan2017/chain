@@ -1,12 +1,6 @@
 from django import forms
 from djcelery.models import CrontabSchedule, PeriodicTask, IntervalSchedule
-from asset.models import AssetInfo,AssetProject
-from name.models import Names
-from tasks.models import Tools,Variable
-import random
-import os,json
-from index.password_crypt import decrypt_p
-from tasks.tasks import ansbile_tools
+
 
 
 

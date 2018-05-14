@@ -1,5 +1,4 @@
 from django import forms
-from name.models import Names
 
 
 class UserPasswordForm(forms.Form):

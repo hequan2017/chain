@@ -1,6 +1,6 @@
 db.sqlite3
 .idea
-#migrations
+migrations
 
 # Windows:
 Thumbs.db

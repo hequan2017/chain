@@ -1,6 +1,8 @@
 {% extends "base.html" %}
-
-
+{% load static %}
+{% block header-css %}
+<script src="{% static 'css/plugins/datepicker/datepicker3.css' %}"></script>
+{% endblock %}
 {% block  title %}任务结果{% endblock %}
 
 {% block page-content %}
@@ -52,6 +54,31 @@
                     </div>
                     <div class="ibox-content">
 
+<div class="row">
+
+
+                     <form id="search_form" method="get" action="" class="pull-left form-inline">
+                    <div class="form-group" id="date">
+                        <div class="input-daterange input-group" id="datepicker">
+                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                            <input type="text" class="input-sm form-control" style="width: 100px;" name="date_from" value="{{ date_from  }}">
+                            <span class="input-group-addon">to</span>
+                            <input type="text" class="input-sm form-control" style="width: 100px;" name="date_to" value="{{ date_to  }}">
+                        </div>
+                    </div>
+{#        <div class="input-group">#}
+{#            <input type="text" class="form-control input-sm" name="keyword" placeholder="搜索" value="">#}
+{#        </div>#}
+        <div class="input-group">
+            <div class="input-group-btn">
+                <button id='search_btn' type="submit" class="btn btn-sm btn-primary">
+                   搜索
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
                           <div class="table-responsive">
 
                                 <table class="table table-striped table-bordered table-hover dataTables-example-tools">
@@ -59,8 +86,9 @@
                                     <tr>
                                         <th width="20">ID</th>
                                         <th>返回结果</th>
+                                        <th>traceback</th>
                                         <th>结果</th>
-
+                                        <th>hidden</th>
                                         <th>创建时间</th>
                                     </tr>
                                     </thead>
@@ -69,10 +97,12 @@
                                     {% for   row   in  periodictassks_results_list %}
 
                                         <tr class="gradeA" >
-                                            <td class="center"><a
-                                                    href="{% url  "tasks:tools_results_detail"   pk=row.id %}"><div class="label label-success">{{ row.id }}</div></a></td>
+                                            <td class="center"><div class="label label-success">{{ row.id }}</div></td>
                                             <td class="center">{{ row.result }}</td>
+
                                             <td class="center " ><div class="label label-primary">{{ row.status }}</div></td>
+                                           <td class="center">{{ row.traceback }}</td>
+                                            <td class="center">{{ row.hidden }}</td>
                                             <td class="center">{{ row.date_done }}</td>
 
                                         </tr>
@@ -150,10 +180,17 @@
 
 
 {% block footer-js %}
+   <script src="{% static 'js/plugins/datepicker/bootstrap-datepicker.js' %}"></script>
 <script>
    $(document).ready(function () {
 
-
+        $('#date .input-daterange').datepicker({
+            format: "yyyy-mm-dd",
+            todayBtn: "linked",
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose: true
+    });
 
          $('.dataTables-example-tools').DataTable({
 

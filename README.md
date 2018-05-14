@@ -1,6 +1,7 @@
 ## Chain
+![DEMO](static/demo/LOGO.png)
 
-linux 云主机 管理系统,包含 CMDB,webssh登录、命令执行、异步执行shell/python/yml、查看日志等功能。
+linux 云主机 管理系统,包含 CMDB系统,webssh登录、命令执行、异步执行shell/python/yml、查看日志、定时任务等功能。
 
 * 交流群号： 620176501  <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=bbe5716e8bd2075cb27029bd5dd97e22fc4d83c0f61291f47ed3ed6a4195b024"><img border="0" src="https://github.com/hequan2017/cmdb/blob/master/static/img/group.png"  alt="django开发讨论群" title="django开发讨论群"></a>
 

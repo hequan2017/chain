@@ -7,11 +7,7 @@ import json, logging
 from djcelery.models import CrontabSchedule, PeriodicTask, IntervalSchedule
 from  djcelery.models import TaskMeta
 from chain import settings
-from tasks.models import Tools, Variable
-import random
-import os, json
-from index.password_crypt import decrypt_p
-from tasks.tasks import ansbile_tools
+import time, json,datetime
 from asset.models import AssetInfo, AssetProject
 from name.models import Names
 
@@ -317,22 +313,26 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
             "crontab_active": "active",
             "crontab_periodictasks_result_active": "active",
             "search_data": search_data.urlencode(),
+            'date_from':(datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d'),
+            'date_to':datetime.datetime.now().strftime('%Y-%m-%d')
         }
+
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 
-        # def get_queryset(self):
-        #     """
-        #      资产查询功能
-        #     """
-        #     name = Names.objects.get(username=self.request.user)
-        #     self.queryset = super().get_queryset()
-        #     if name.is_superuser != 1:
-        #         assets = []
-        #         for i in ToolsResults.objects.filter(add_user=name):
-        #                 assets.append(i)
-        #         queryset = assets
-        #     else:
-        #         queryset = super().get_queryset()
-        #
-        #     return queryset
+
+
+    def get_queryset(self):
+        self.queryset = super().get_queryset()
+        # self.keyword = self.request.GET.get('keyword', '')
+        if self.request.GET.get('date_from'):
+            self.queryset = self.queryset.filter(
+                date_done__gt=self.request.GET.get('date_from'),
+                date_done__lt=self.request.GET.get('date_to')
+            )
+
+        # if self.keyword:
+        #     self.queryset = self.queryset.filter(
+        #         name__icontains=self.keyword,
+        #     )
+        return self.queryset

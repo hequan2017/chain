@@ -12,14 +12,11 @@ from index.password_crypt import decrypt_p
 from chain import settings
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-import json
-import paramiko
-import os
-import logging
-import random
-
+import json,datetime,paramiko,os,logging,random
 logger = logging.getLogger('tasks')
 from  name.models import Names
+
+
 from tasks.ansible_2420.runner import AdHocRunner
 from tasks.ansible_2420.inventory import BaseInventory
 
@@ -521,6 +518,8 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
             "tasks_active": "active",
             "tools_results_active": "active",
             "search_data": search_data.urlencode(),
+            'date_from': (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d'),
+            'date_to': datetime.datetime.now().strftime('%Y-%m-%d')
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
@@ -531,15 +530,24 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
         """
         name = Names.objects.get(username=self.request.user)
         self.queryset = super().get_queryset()
+        self.keyword = self.request.GET.get('keyword', '')
         if name.is_superuser != 1:
             assets = []
             for i in ToolsResults.objects.filter(add_user=name):
                 assets.append(i)
-            queryset = assets
-        else:
-            queryset = super().get_queryset()
+            self.queryset = assets
 
-        return queryset
+        if self.request.GET.get('date_from'):
+            self.queryset = self.queryset.filter(
+                ctime__gt=self.request.GET.get('date_from'),
+                ctime__lt=self.request.GET.get('date_to')
+                )
+
+        if self.keyword:
+            self.queryset = self.queryset.filter(
+                add_user__icontains=self.keyword,
+            )
+        return self.queryset
 
 
 class ToolsResultsDetail(LoginRequiredMixin, DetailView):

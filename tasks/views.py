@@ -10,6 +10,7 @@ from tasks.tasks import ansbile_tools
 from djcelery.models import TaskMeta
 from index.password_crypt import decrypt_p
 from chain import settings
+import time
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import json,datetime,paramiko,os,logging,random
@@ -465,9 +466,10 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     "private_key": i.user.private_key.name,
                     "vars": var_all,
                 }, )
-
-            file = "data/script/{0}".format(random.randint(0, 999999))
-            file2 = "data/script/{0}".format(random.randint(1000000, 9999999))
+            t = time.time()
+            file = "data/script/{0}".format(int(round(t * 1000))+random.randint(0, 999999))
+            t1 = time.time()
+            file2 = "data/script/{0}".format(int(round(t1 * 1000))+random.randint(10000000, 99999999))
             rets = None
             if tool_obj.tool_run_type == 'shell' or tool_obj.tool_run_type == 'python':
 

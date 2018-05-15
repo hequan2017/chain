@@ -10,7 +10,6 @@ import logging
 import os
 import random
 
-
 platforms.C_FORCE_ROOT = True
 app = Celery('chain')
 app.config_from_object('django.conf:settings', )
@@ -25,76 +24,81 @@ def debug_task(self):
 
 
 @app.task()
-def ansbile_tools(assets, tools, modules):
+def ansbile_tools(assets, tasks):
     current_process()._config = {'semprefix': '/mp'}
 
     inventory = BaseInventory(host_list=assets)
     hostname, retsult_data = [], []
     ret = None
-    for i in inventory.hosts:
-        hostname.append(i)
+    for i in assets:
+        hostname.append(i['hostname'])
 
-    if modules == "script":
-        runner = AdHocRunner(inventory)
-        tasks = [{"action": {"module": "{}".format(modules), "args": "{}".format(tools)}, "name": "script"}, ]
-        retsult = runner.run(tasks, "all")
-
-        try:
-            ok = retsult.results_raw['ok']
-            failed = retsult.results_raw['failed']
-            unreachable = retsult.results_raw['unreachable']
-            if not ok and not failed:
-                ret = unreachable
-            elif not ok:
-                ret = failed
-            else:
-                ret = ok
-        except Exception as e:
-            logger.error("{}".format(e))
-
-        for i, element in enumerate(hostname):
-            std, ret_host = [], {}
+    for t in tasks:
+        if t['action']['module'] == "script":
+            runner = AdHocRunner(inventory)
+            t1 = []
+            t1.append(t)
+            retsult = runner.run(t1, "all")
             try:
-                out = ret[element]['script']['stdout']
-                if not out:
-                    out = ret[element]['script']['stderr']
-                std.append("{0}".format(out))
+                ok = retsult.results_raw['ok']
+                failed = retsult.results_raw['failed']
+                unreachable = retsult.results_raw['unreachable']
+                if not ok and not failed:
+                    ret = unreachable
+                elif not ok:
+                    ret = failed
+                else:
+                    ret = ok
             except Exception as e:
-                logger.error(e)
-                try:
-                    std.append("{0}".format(ret[element]['script']['msg']))
-                except Exception as e:
-                    logger.error("执行失败{0}".format(e))
-            ret_host['hostname'] = element
-            ret_host['data'] = ''.join(std)
-            retsult_data.append(ret_host)
+                logger.error("{}".format(e))
 
-    elif modules == 'yml':
-        runers = PlayBookRunner(playbook_path=tools, inventory=inventory)
-        retsult = runers.run()
-        try:
-            ret = retsult['results_callback']
-        except Exception as e:
-            logger.error("{}".format(e))
-        for i, element in enumerate(hostname):
-            std, ret_host = [], {}
-            try:
-                out = ret[element]['stdout']
-                if not out:
-                    out = ret[element]['stderr']
-                std.append("{0}".format(out))
-            except Exception as e:
-                logger.error(e)
+            for i in range(len(hostname)):
+                std, ret_host = [], {}
                 try:
-                    std.append("{0}".format(ret[element]['msg']))
+                    out = ret[hostname[i]][t['name']]['stdout']
+                    if not out:
+                        out = ret[hostname[i]][t['name']]['stderr']
+                    std.append("{0}".format(out))
+                    print(std)
                 except Exception as e:
-                    logger.error("执行失败{0}".format(e))
-            ret_host['hostname'] = element
-            ret_host['data'] = ''.join(std)
-            retsult_data.append(ret_host)
+                    logger.error(e)
+                    try:
+                        std.append("{0}".format(ret[hostname[i]][t['name']]['msg']))
+                    except Exception as e:
+                        logger.error("{0}执行失败{1}".format(t['name'],e))
+                ret_host['hostname'] = hostname[i]
+                ret_host['data'] = ''.join(std)
+                retsult_data.append(ret_host)
+
+        elif t['action']['module'] == 'yml':
+            runers = PlayBookRunner(playbook_path=t['action']['args'], inventory=inventory)
+            retsult = runers.run()
+            try:
+                ret = retsult['results_callback']
+            except Exception as e:
+                logger.error("{}".format(e))
+
+            for i in range(len(hostname)):
+                std, ret_host = [], {}
+                try:
+                    out = ret[hostname[i]]['stdout']
+                    print(out)
+                    if not out:
+                        out = ret[hostname[i]]['stderr']
+                    print(out)
+                    std.append("{0}".format(out))
+                    print(std)
+                except Exception as e:
+                    logger.error(e)
+                    try:
+                        std.append("{0}".format(ret[hostname[i]]['msg']))
+                    except Exception as e:
+                        logger.error("{0}执行失败".format( e))
+                ret_host['hostname'] = hostname[i]
+                ret_host['data'] = ''.join(std)
+                retsult_data.append(ret_host)
+
     return retsult_data
-
-
 
 
 @app.task()
@@ -131,6 +135,8 @@ def ansbile_asset_hardware(ids, assets):
 
     except Exception as e:
         logger.error(e)
+        return e
+
 
 @app.task()
 def ansbile_tools_crontab(tools_name, *args):
@@ -168,7 +174,7 @@ def ansbile_tools_crontab(tools_name, *args):
     file = "data/script/{0}".format(random.randint(0, 999999))
     file2 = "data/script/{0}".format(random.randint(1000000, 9999999))
 
-    tools,modules = None,None
+    tools, modules = None, None
     if t_obj.tool_run_type == 'shell' or t_obj.tool_run_type == 'python':
         with open("{}.sh".format(file), 'w+') as f:
             f.write(t_obj.tool_script)
@@ -251,4 +257,3 @@ def ansbile_tools_crontab(tools_name, *args):
             ret_host['data'] = ''.join(std)
             retsult_data.append(ret_host)
     return retsult_data
-

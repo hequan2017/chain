@@ -13,10 +13,10 @@ from chain import settings
 import time
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-import json,datetime,paramiko,os,logging,random
+import json, datetime, paramiko, os, logging, random
+
 logger = logging.getLogger('tasks')
 from  name.models import Names
-
 
 from tasks.ansible_2420.runner import AdHocRunner
 from tasks.ansible_2420.inventory import BaseInventory
@@ -417,24 +417,32 @@ class ToolsExec(LoginRequiredMixin, ListView):
     def post(request):
         """
         执行工具
-        :param request:  asset_id,tool_id
+        :param request:  asset_id,tool_id,priority
         :return:  ret
         """
         ret = {'status': True, 'error': None, }
         name = Names.objects.get(username=request.user)
         try:
-            asset_id = request.POST.getlist('asset[]', None)
-            tool_id = request.POST.getlist('tool[]', None)
+            asset_id = request.POST.getlist('asset_id', None)
+            tool_id = request.POST.getlist('tool_id', None)
+            priority = request.POST.getlist('priority', None)
 
-            if asset_id == [] or tool_id == []:
+            if asset_id == [] or tool_id == [] or priority == []:
                 ret['status'] = False
-                ret['error'] = '未选择主机 或 未选择工具'
+                ret['error'] = '未选择主机 或 未选择脚本 或 未设置优先级'
                 return HttpResponse(json.dumps(ret))
 
-            asset_id_tring = ','.join(asset_id)
+            while '' in priority:
+                priority.remove('')
 
-            asset_obj = AssetInfo.objects.extra(
-                where=['id IN (' + asset_id_tring + ')'])
+            for i in priority:
+                if priority.count(i) >= 2:
+                    ret['status'] = False
+                    ret['error'] = '优先级设置有重复 ,请重新修改！！！'
+                    return HttpResponse(json.dumps(ret))
+
+            asset_id_tring = ','.join(asset_id)
+            asset_obj = AssetInfo.objects.extra(where=['id IN (' + asset_id_tring + ')'])
 
             for i in asset_obj:
                 project = AssetInfo.objects.get(hostname=i).project
@@ -443,7 +451,6 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 if hasperm == False:
                     return HttpResponse(status=500)
 
-            tool_obj = Tools.objects.filter(id=int(tool_id[0])).first()
             assets = []
             for i in asset_obj:
                 var_all = {
@@ -466,28 +473,36 @@ class ToolsExec(LoginRequiredMixin, ListView):
                     "private_key": i.user.private_key.name,
                     "vars": var_all,
                 }, )
-            t = time.time()
-            file = "data/script/{0}".format(int(round(t * 1000))+random.randint(0, 999999))
-            t1 = time.time()
-            file2 = "data/script/{0}".format(int(round(t1 * 1000))+random.randint(10000000, 99999999))
-            rets = None
-            if tool_obj.tool_run_type == 'shell' or tool_obj.tool_run_type == 'python':
 
-                with open("{}.sh".format(file), 'w+') as f:
-                    f.write(tool_obj.tool_script)
-                os.system(
-                    "sed  's/\r//'  {0}.sh >  {1}.sh".format(file, file2))
-                rets = ansbile_tools.delay(
-                    assets, '{}.sh'.format(file2), "script")
-            elif tool_obj.tool_run_type == 'yml':
+            tool_priority_1 = dict(zip(tool_id, priority))
+            tool_priority = sorted(tool_priority_1.items(), key=lambda item: item[1])
 
-                with open("{}.yml".format(file), 'w+') as f:
-                    f.write(tool_obj.tool_script)
-                os.system(
-                    "sed  's/\r//'  {0}.yml >  {1}.yml".format(file, file2))
-                rets = ansbile_tools.delay(
-                    assets, tools='{}.yml'.format(file2), modules="yml")
+            tasks = []
+            for i in tool_priority:
+                tool_obj = Tools.objects.get(id=i[0])
+                if tool_obj.tool_run_type == 'shell' or tool_obj.tool_run_type == 'python':
+                    t = time.time()
+                    file = "data/script/{0}".format(int(round(t * 1000)) + random.randint(0, 999999))
+                    t1 = time.time()
+                    file2 = "data/script/{0}".format(int(round(t1 * 1000)) + random.randint(10000000, 99999999))
+                    with open("{}.sh".format(file), 'w+') as f:
+                        f.write(tool_obj.tool_script)
+                    os.system("sed  's/\r//'  {0}.sh >  {1}.sh".format(file, file2))
+                    tasks.append({"action": {"module": "script", "args": '{}.sh'.format(file2), },
+                                  "name": 'task{}'.format(i[1])}, )
 
+                elif tool_obj.tool_run_type == 'yml':
+                    t = time.time()
+                    file = "data/script/{0}".format(int(round(t * 1000)) + random.randint(0, 999999))
+                    t1 = time.time()
+                    file2 = "data/script/{0}".format(int(round(t1 * 1000)) + random.randint(10000000, 99999999))
+                    with open("{}.yml".format(file), 'w+') as f:
+                        f.write(tool_obj.tool_script)
+                    os.system("sed  's/\r//'  {0}.yml >  {1}.yml".format(file, file2))
+                    tasks.append({"action": {"module": "yml", "args": '{}.yml'.format(file2), },
+                                  "name": 'task{}'.format(i[1])}, )
+
+            rets = ansbile_tools.delay(assets, tasks)
             task_obj = ToolsResults.objects.create(task_id=rets.task_id, add_user=name)
             ret['id'] = task_obj.id
             return HttpResponse(json.dumps(ret))
@@ -543,7 +558,7 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
             self.queryset = self.queryset.filter(
                 ctime__gt=self.request.GET.get('date_from'),
                 ctime__lt=self.request.GET.get('date_to')
-                )
+            )
 
         if self.keyword:
             self.queryset = self.queryset.filter(

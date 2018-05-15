@@ -18,7 +18,7 @@
                     <a href="/index.html">主页</a>
                 </li>
                 <li>
-                   <a>作业中心</a>
+                    <a>作业中心</a>
                 </li>
                 <li class="active">
                     <strong>创建任务</strong>
@@ -29,6 +29,8 @@
 
         </div>
     </div>
+
+
     <div class="wrapper wrapper-content animated fadeInRight">
         <div class="row">
             <div class="col-lg-2" id="split-left">
@@ -47,112 +49,116 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>创建任务</h5>
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                <i class="fa fa-wrench"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-user">
-                                <li><a href="#">选项 1</a>
-                                </li>
-                                <li><a href="#">选项 2</a>
-                                </li>
-                            </ul>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
+
+            <form class="form-horizontal  tool_from">
+                <div class="col-lg-5">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>创建任务</h5>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">选项 1</a>
+                                    </li>
+                                    <li><a href="#">选项 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="table-responsive">
-                            <form class="form-horizontal  asset_from">
-                                <table class="table table-striped table-bordered table-hover dataTables-example">
-                                    <thead>
-                                    <tr>
-                                        <th width="20"><input type="checkbox" id="CheckedAssetAll"></th>
-                                        <th>主机名</th>
-                                        <th>外网IP</th>
-                                        <th>资产用户</th>
-                                        <th>资产项目</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
+                        <div class="ibox-content">
+                            <div class="table-responsive">
 
-                                    {% for   row   in   asset_list %}
-
-                                        <tr class="gradeA" id="{{ row.id }}">
-                                            <td><input type="checkbox" value="{{ row.id }}" n="{{ row.hostname }}"
-                                                       name="asset_id"></td>
-                                            <td class="center"><a
-                                                    href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.hostname }}</a>
-                                            </td>
-                                            <td class="center">{{ row.network_ip }}</td>
-                                            <td class="center">{{ row.user }}</td>
-                                            <td class="center">{{ row.project }} </td>
+                                    <table class="table table-striped table-bordered table-hover dataTables-example">
+                                        <thead>
+                                        <tr>
+                                            <th width="20"><input type="checkbox" id="CheckedAssetAll"></th>
+                                            <th>主机名</th>
+                                            <th>外网IP</th>
+                                            <th>资产用户</th>
+                                            <th>资产项目</th>
                                         </tr>
-                                    {% endfor %}
+                                        </thead>
+                                        <tbody>
 
-                                    </tbody>
+                                        {% for   row   in   asset_list %}
 
-                                </table>
+                                            <tr class="gradeA" id="{{ row.id }}">
+                                                <td><input type="checkbox" value="{{ row.id }}" n="{{ row.hostname }}"
+                                                           name="asset_id"></td>
+                                                <td class="center"><a
+                                                        href="{% url  "asset:asset_detail"   pk=row.id %}">{{ row.hostname }}</a>
+                                                </td>
+                                                <td class="center">{{ row.network_ip }}</td>
+                                                <td class="center">{{ row.user }}</td>
+                                                <td class="center">{{ row.project }} </td>
+                                            </tr>
+                                        {% endfor %}
 
-                                <div class="ibox-content">
-                                    <a id="exec" class="btn btn-primary" type="submit">创建任务</a>
-                                    <button class="btn btn-white" type="button" onclick='clearBody()'>取消
-                                    </button>
+                                        </tbody>
+
+                                    </table>
+
+                                    <div class="ibox-content">
+                                        <a id="exec" class="btn btn-primary" type="submit">创建任务</a>
+                                        <button class="btn btn-white" type="button" onclick='clearBody()'>取消
+                                        </button>
 
 
-                                </div>
+                                    </div>
 
-                            </form>
+
+                            </div>
+
+
                         </div>
-
-
                     </div>
                 </div>
-            </div>
 
 
-            <div class="col-lg-5">
-                <div class="ibox float-e-margins">
-                    <div class="ibox-title">
-                        <h5>工具列表</h5>
-                        <div class="ibox-tools">
-                            <a class="collapse-link">
-                                <i class="fa fa-chevron-up"></i>
-                            </a>
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                                <i class="fa fa-wrench"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-user">
-                                <li><a href="#">选项 1</a>
-                                </li>
-                                <li><a href="#">选项 2</a>
-                                </li>
-                            </ul>
-                            <a class="close-link">
-                                <i class="fa fa-times"></i>
-                            </a>
+                <div class="col-lg-5">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-title">
+                            <h5>工具列表</h5>
+                            <div style="color:red;"> 优先级1 最先执行, 不可重复</div>
+                            <div class="ibox-tools">
+                                <a class="collapse-link">
+                                    <i class="fa fa-chevron-up"></i>
+                                </a>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                    <i class="fa fa-wrench"></i>
+                                </a>
+                                <ul class="dropdown-menu dropdown-user">
+                                    <li><a href="#">选项 1</a>
+                                    </li>
+                                    <li><a href="#">选项 2</a>
+                                    </li>
+                                </ul>
+                                <a class="close-link">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="table-responsive">
-                            <form class="form-horizontal  tool_from">
+                        <div class="ibox-content">
+                            <div class="table-responsive">
+
                                 <table class="table table-striped table-bordered table-hover dataTables-example">
                                     <thead>
                                     <tr>
-                                        <th width="20"></th>
+                                        <th width="20"><input type="checkbox" id="CheckedToolsAll"></th>
 
                                         <th>工具名称</th>
+                                        <th>优先级</th>
                                         <th>工具类型</th>
-                                        <th>工具说明</th>
-                                        <th>更新时间</th>
+
+
 
                                     </tr>
                                     </thead>
@@ -161,14 +167,14 @@
                                     {% for   row   in   tools_list %}
 
                                         <tr class="gradeA" id="{{ row.id }}">
-                                            <td><input type="radio" value="{{ row.id }}" n="{{ row.name }}"
+                                            <td><input type="checkbox" value="{{ row.id }}" n="{{ row.name }}"
                                                        name="tool_id"></td>
                                             <td class="center"><a
                                                     href="{% url  "tasks:tools_update"   pk=row.id %}">{{ row.name }}</a>
                                             </td>
+                                            <td><input style="width:50px;" name="priority"  ></td>
                                             <td class="center">{{ row.tool_run_type }}</td>
-                                            <td class="center">{{ row.comment }}</td>
-                                            <td class="center">{{ row.utime }} </td>
+
                                         </tr>
                                     {% endfor %}
 
@@ -177,13 +183,13 @@
                                 </table>
 
 
-                            </form>
+                            </div>
+
+
                         </div>
-
-
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 
@@ -199,6 +205,13 @@
                     $("[name=asset_id]:checkbox").prop("checked", true);
                 } else {
                     $("[name=asset_id]:checkbox").prop("checked", false);
+                }
+            });
+            $("#CheckedToolsAll").click(function () {
+                if ($(this).is(":checked")) {
+                    $("[name=tool_id]:checkbox").prop("checked", true);
+                } else {
+                    $("[name=tool_id]:checkbox").prop("checked", false);
                 }
             });
 
@@ -276,7 +289,7 @@
                         $.ajax({
                             url: '{% url  'tasks:tools_exec' %}',
                             type: 'POST',
-                            data: {"asset": asset_id_list, "tool": tool_id_list},
+                            data: $('.tool_from').serialize(),
                             success: function (data) {
                                 var obj = JSON.parse(data);
                                 if (obj.status) {

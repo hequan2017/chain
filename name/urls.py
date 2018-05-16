@@ -1,7 +1,6 @@
 from django.urls import path
 from name import views
 
-
 urlpatterns = [
     path('name.html', views.NameListAll.as_view(), name='name_list'),
     path('name-add.html', views.NameAdd.as_view(), name='name_add'),
@@ -19,8 +18,4 @@ urlpatterns = [
     path('groups-object-update-<int:pk>.html', views.GroupsObjectUpdate.as_view(), name='groups_object_update'),
 ]
 
-
-
 app_name = "name"
-
-

@@ -3,14 +3,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, View, CreateView, UpdateView
 from django.urls import reverse_lazy
 from  crontab.form import CrontabScheduleForm, IntervalScheduleForm, PeriodicTasksForm
-import json, logging
 from djcelery.models import CrontabSchedule, PeriodicTask, IntervalSchedule
 from  djcelery.models import TaskMeta
 from chain import settings
-import time, json,datetime
+import json, datetime, logging
 from asset.models import AssetInfo, AssetProject
 from name.models import Names
-
 logger = logging.getLogger('crontab')
 
 
@@ -224,7 +222,7 @@ class PeriodicTasksAdd(LoginRequiredMixin, CreateView):
                 project = AssetInfo.objects.get(hostname=i).project
                 project_obj = AssetProject.objects.get(projects=project)
                 hasperm = name.has_perm('cmd_assetproject', project_obj)
-                if hasperm == False:
+                if not hasperm:
                     forms.args = ["此主机没有权限,禁止执行"]
                     forms.enabled = False
         forms.save()
@@ -259,7 +257,7 @@ class PeriodicTasksUpdate(LoginRequiredMixin, UpdateView):
                 project = AssetInfo.objects.get(hostname=i).project
                 project_obj = AssetProject.objects.get(projects=project)
                 hasperm = name.has_perm('cmd_assetproject', project_obj)
-                if hasperm == False:
+                if not hasperm:
                     forms.args = ["此主机没有权限,禁止执行"]
                     forms.enabled = False
         forms.save()
@@ -313,26 +311,18 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
             "crontab_active": "active",
             "crontab_periodictasks_result_active": "active",
             "search_data": search_data.urlencode(),
-            'date_from':(datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d'),
-            'date_to':datetime.datetime.now().strftime('%Y-%m-%d')
+            'date_from': (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d'),
+            'date_to': datetime.datetime.now().strftime('%Y-%m-%d')
         }
 
         kwargs.update(context)
         return super().get_context_data(**kwargs)
 
-
-
     def get_queryset(self):
         self.queryset = super().get_queryset()
-        # self.keyword = self.request.GET.get('keyword', '')
         if self.request.GET.get('date_from'):
             self.queryset = self.queryset.filter(
                 date_done__gt=self.request.GET.get('date_from'),
                 date_done__lt=self.request.GET.get('date_to')
             )
-
-        # if self.keyword:
-        #     self.queryset = self.queryset.filter(
-        #         name__icontains=self.keyword,
-        #     )
         return self.queryset

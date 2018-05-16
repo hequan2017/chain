@@ -1,22 +1,24 @@
 from django import template
+
 # 自定义过滤器
 register = template.Library()
-import json
 import logging
+
 logger = logging.getLogger('tasks')
 from asset.models import AssetProject
+
 
 @register.filter
 def result(text):
     for i, j in enumerate(text):
         try:
             a = j['data']
-            out = a.replace('\n','<br>')
+            out = a.replace('\n', '<br>')
             j['data'] = out
         except Exception as e:
             pass
             try:
-                j="{0}".format(text['exc_message'].replace('\n','<br>'))
+                j = "{0}".format(text['exc_message'].replace('\n', '<br>'))
                 return j
             except Exception as e:
                 pass

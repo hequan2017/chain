@@ -36,8 +36,7 @@ def ansbile_tools(assets, tasks):
     for t in tasks:
         if t['action']['module'] == "script":
             runner = AdHocRunner(inventory)
-            t1 = []
-            t1.append(t)
+            t1 = [t]
             retsult = runner.run(t1, "all")
             try:
                 ok = retsult.results_raw['ok']
@@ -65,7 +64,7 @@ def ansbile_tools(assets, tasks):
                     try:
                         std.append("{0}".format(ret[hostname[i]][t['name']]['msg']))
                     except Exception as e:
-                        logger.error("{0}执行失败{1}".format(t['name'],e))
+                        logger.error("{0}执行失败{1}".format(t['name'], e))
                 ret_host['hostname'] = hostname[i]
                 ret_host['data'] = ''.join(std)
                 retsult_data.append(ret_host)
@@ -93,7 +92,7 @@ def ansbile_tools(assets, tasks):
                     try:
                         std.append("{0}".format(ret[hostname[i]]['msg']))
                     except Exception as e:
-                        logger.error("{0}执行失败".format( e))
+                        logger.error("{0}执行失败".format(e))
                 ret_host['hostname'] = hostname[i]
                 ret_host['data'] = ''.join(std)
                 retsult_data.append(ret_host)
@@ -121,18 +120,14 @@ def ansbile_asset_hardware(ids, assets):
                                     for i in data["ansible_devices"] if
                                     i[0:2] in ("vd", "ss", "sd")])) + str(" GB"))
         mem = round(data['ansible_memtotal_mb'] / 1024)
-        cpu = int("{}".format(
-            data['ansible_processor_count'] * data["ansible_processor_cores"]))
+        cpu = int("{}".format(data['ansible_processor_count'] * data["ansible_processor_cores"]))
 
-        system = data['ansible_product_name'] + \
-                 " " + data['ansible_lsb']["description"]
-
+        system = data['ansible_product_name'] + "" + data['ansible_lsb']["description"]
         AssetInfo.objects.filter(id=ids).update(hostname=nodename,
                                                 disk=disk,
                                                 memory=mem,
                                                 cpu=cpu,
                                                 system=system)
-
     except Exception as e:
         logger.error(e)
         return e

@@ -16,8 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
-from index.views import index, login_view, logout, password_update, login_historys,page_error,page_not_found
-
+from index.views import index, login_view, logout, login_historys, page_error, page_not_found, UserPasswordUpdateView
 
 handler404 = page_not_found
 handler500 = page_error
@@ -29,8 +28,8 @@ urlpatterns = [
     path('', index),
     path('index.html', index, name="index"),
     path('login.html', login_view),
-    path('logout.html', logout),
-    path('password_update.html', password_update, name="password_update"),
+    path('logout.html', logout,name="logout"),
+    path('password_update.html',UserPasswordUpdateView.as_view() , name="password_update"),
     path('index/login-history.html', login_historys, name="login-history"),
     path('asset/', include('asset.urls', namespace="asset", ), ),
     path('tasks/', include('tasks.urls', namespace="tasks", ), ),

@@ -1,5 +1,5 @@
 from django import forms
-from asset.models import AssetInfo, AssetLoginUser,AssetProject
+from asset.models import AssetInfo, AssetLoginUser, AssetProject
 from tasks.models import Variable
 
 
@@ -39,9 +39,10 @@ class AssetForm(forms.ModelForm):
     class Meta:
         model = AssetInfo
         # fields = '__all__'
-        fields = [ 'hostname', 'network_ip','inner_ip', 'system','vars','cpu', 'memory','disk', 'bandwidth','project','platform',
-            'region','user', 'Instance_id','port','ps', 'is_active']
-        labels = {"network_ip": "外网IP",}
+        fields = ['hostname', 'network_ip', 'inner_ip', 'system', 'vars', 'cpu', 'memory', 'disk', 'bandwidth',
+                  'project', 'platform',
+                  'region', 'user', 'Instance_id', 'port', 'ps', 'is_active']
+        labels = {"network_ip": "外网IP", }
         widgets = {
             'buy_time': forms.DateInput(
                 attrs={'type': 'date', }
@@ -112,7 +113,7 @@ class AssetUserForm(forms.ModelForm):
 
     class Meta:
         model = AssetLoginUser
-        fields = ['hostname','username','password','private_key','ps','user_name','project']
+        fields = ['hostname', 'username', 'password', 'private_key', 'ps', 'user_name', 'project']
 
         help_texts = {
             'hostname': '*  必填项目,名字唯一',
@@ -130,7 +131,6 @@ class AssetUserForm(forms.ModelForm):
 
 
 class AssetProjectForm(forms.ModelForm):
-
     assets = forms.ModelMultipleChoiceField(
         queryset=AssetInfo.objects.all(),
         label="资产列表",
@@ -175,8 +175,7 @@ class AssetProjectForm(forms.ModelForm):
 
     class Meta:
         model = AssetProject
-        fields = ['projects','assets','ps','project']
-
+        fields = ['projects', 'assets', 'ps', 'project']
 
         widgets = {
 

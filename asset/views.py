@@ -1,30 +1,37 @@
-from django.shortcuts import render, redirect, HttpResponse, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .form import AssetForm, FileForm, AssetUserForm, AssetProjectForm
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.views.generic import TemplateView, ListView, View, CreateView, UpdateView, DetailView
-from django.urls import reverse_lazy
+import chardet
+import codecs
+import csv
+import json
+import logging
+from io import StringIO
+from os import system
+
 from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
 from django.db.models import Q
+from django.shortcuts import render, HttpResponse
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
+from guardian.decorators import permission_required_or_404
+
 from asset.models import AssetInfo, AssetLoginUser, AssetProject
 from asset.models import AssetInfo as Asset
-from io import StringIO
 from chain import settings
 from index.password_crypt import encrypt_p, decrypt_p
-from os import system
+from name.models import Names
 from tasks.models import Variable
 from tasks.tasks import ansbile_asset_hardware
-from django.utils.decorators import method_decorator
-from guardian.decorators import permission_required_or_404
-from  name.models import Names
-from django.db import transaction
-import csv,json,logging,codecs,chardet
+from .form import AssetForm, FileForm, AssetUserForm, AssetProjectForm
+
 logger = logging.getLogger('asset')
 
 
 class AssetListAll(LoginRequiredMixin, ListView):
     """
-    资产信息列表
+    资产信息 列表
     """
     template_name = 'asset/asset.html'
     paginate_by = settings.DISPLAY_PER_PAGE
@@ -57,7 +64,7 @@ class AssetListAll(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         """
-         资产查询功能
+        资产信息 查询功能
         """
         name = Names.objects.get(username=self.request.user)
         assets = []
@@ -66,11 +73,13 @@ class AssetListAll(LoginRequiredMixin, ListView):
             project = AssetInfo.objects.get(hostname=i).project
             project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('read_assetproject', project_obj)
-            if hasperm == True:
+            if hasperm:
                 assets.append(i)
         if self.request.GET.get('name'):
             query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project__projects=query)).order_by('-id')
+            queryset = self.queryset.filter(
+                Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project__projects=query)).order_by(
+                '-id')
         else:
             queryset = assets
         return queryset
@@ -78,7 +87,7 @@ class AssetListAll(LoginRequiredMixin, ListView):
 
 class AssetAdd(LoginRequiredMixin, CreateView):
     """
-    资产增加
+    资产信息 增加
     """
 
     model = AssetInfo
@@ -108,7 +117,7 @@ class AssetAdd(LoginRequiredMixin, CreateView):
 
 class AssetUpdate(LoginRequiredMixin, UpdateView):
     """
-    资产信息更新
+    资产信息  更新
     """
 
     model = AssetInfo
@@ -122,7 +131,7 @@ class AssetUpdate(LoginRequiredMixin, UpdateView):
         project = AssetInfo.objects.get(id=pk).project
         project_obj = AssetProject.objects.get(projects=project)
         hasperm = name.has_perm('change_assetproject', project_obj)
-        if hasperm == False:
+        if not hasperm:
             return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
@@ -148,7 +157,7 @@ class AssetUpdate(LoginRequiredMixin, UpdateView):
 
 class AssetDetail(LoginRequiredMixin, DetailView):
     """
-     资产信息详细
+     资产信息 详细
     """
     model = AssetInfo
     form_class = AssetForm
@@ -160,7 +169,7 @@ class AssetDetail(LoginRequiredMixin, DetailView):
         project = AssetInfo.objects.get(id=pk).project
         project_obj = AssetProject.objects.get(projects=project)
         hasperm = name.has_perm('read_assetproject', project_obj)
-        if hasperm == False:
+        if not hasperm:
             return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
@@ -195,7 +204,7 @@ class AssetAllDel(LoginRequiredMixin, View):
                 project = AssetInfo.objects.get(id=ids).project
                 project_obj = AssetProject.objects.get(projects=project)
                 hasperm = name.has_perm('delete_assetproject', project_obj)
-                if hasperm == False:
+                if not hasperm:
                     ret['status'] = False
                     ret['error'] = "没有删除权限"
                     return HttpResponse(json.dumps(ret))
@@ -209,7 +218,7 @@ class AssetAllDel(LoginRequiredMixin, View):
                     project = AssetInfo.objects.get(hostname=i).project
                     project_obj = AssetProject.objects.get(projects=project)
                     hasperm = name.has_perm('delete_assetproject', project_obj)
-                    if hasperm == False:
+                    if not hasperm:
                         ret['status'] = False
                         ret['error'] = "没有删除权限{0}".format(i)
                     else:
@@ -241,7 +250,6 @@ class AssetHardwareUpdate(LoginRequiredMixin, View):
                     ret['status'] = False
                     ret['error'] = '未关联用户，请关联后再更新'.format(e)
                     return HttpResponse(json.dumps(ret))
-
                 assets = [{"hostname": asset_obj.hostname,
                            "ip": asset_obj.network_ip,
                            "port": asset_obj.port,
@@ -250,7 +258,6 @@ class AssetHardwareUpdate(LoginRequiredMixin, View):
                            "private_key": asset_obj.user.private_key.name
                            }]
                 ansbile_asset_hardware.delay(ids, assets)
-
         except Exception as e:
             logger.error(e)
             ret['status'] = False
@@ -292,7 +299,7 @@ class AssetExport(View):
             project = AssetInfo.objects.get(hostname=i).project
             project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('read_assetproject', project_obj)
-            if hasperm == True:
+            if hasperm:
                 assets.append(i)
 
         for asset_ in assets:
@@ -310,7 +317,7 @@ class AssetExport(View):
             project = AssetInfo.objects.get(id=i).project
             project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('read_assetproject', project_obj)
-            if hasperm == True:
+            if hasperm:
                 idstring.append(i)
         idstring2 = ','.join(idstring)
         qs = AssetInfo.objects.extra(where=['id IN (' + idstring2 + ')']).all()
@@ -409,7 +416,7 @@ def AssetImport(request):
                 if not asset:
                     try:
                         if len(Asset.objects.filter(hostname=asset_dict.get('hostname'))):
-                            raise Exception(('already exists'))
+                            raise Exception('already exists')
                         with transaction.atomic():
                             asset = Asset.objects.create(**asset_dict)
                             created.append(asset_dict['hostname'])
@@ -461,7 +468,7 @@ def AssetZtree(request):
     for i in managers:
         project_obj = AssetProject.objects.get(projects=i['projects'])
         hasperm = name.has_perm('read_assetproject', project_obj)
-        if hasperm == True:
+        if hasperm:
             manager.append(i)
 
     data = [{"id": "1111", "pId": "0", "name": "项目"}, ]
@@ -485,7 +492,7 @@ class AssetUserListAll(LoginRequiredMixin, ListView):
             project = AssetLoginUser.objects.get(hostname=i).project
             project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('read_assetproject', project_obj)
-            if hasperm == True:
+            if hasperm:
                 assets_user.append(i)
         context = {
             "asset_active": "active",
@@ -516,7 +523,6 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
             "asset_user_list_active": "active",
         }
         kwargs.update(context)
-
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
@@ -527,7 +533,7 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
             password = encrypt_p(password_form)
             forms.password = password
             forms.save()
-        if  private_key is not None:
+        if private_key is not None:
             try:
                 name = form.cleaned_data['hostname']
                 private_key_path = AssetLoginUser.objects.get(hostname=name).private_key.name
@@ -539,9 +545,8 @@ class AssetUserAdd(LoginRequiredMixin, CreateView):
 
 class AssetUserUpdate(LoginRequiredMixin, UpdateView):
     """
-    资产用户更新
+    资产用户 更新
     """
-
     model = AssetLoginUser
     form_class = AssetUserForm
     template_name = 'asset/asset-user-add-update.html'
@@ -553,7 +558,7 @@ class AssetUserUpdate(LoginRequiredMixin, UpdateView):
         project = AssetLoginUser.objects.get(id=pk).project
         project_obj = AssetProject.objects.get(projects=project)
         hasperm = name.has_perm('change_assetproject', project_obj)
-        if hasperm == False:
+        if not hasperm:
             return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
@@ -581,9 +586,9 @@ class AssetUserUpdate(LoginRequiredMixin, UpdateView):
 
         forms.save()
         if private_key is not None:
-                name = form.cleaned_data['hostname']
-                private_key_path = AssetLoginUser.objects.get(hostname=name).private_key.name
-                system("chmod  600  {0}".format(private_key_path))
+            name = form.cleaned_data['hostname']
+            private_key_path = AssetLoginUser.objects.get(hostname=name).private_key.name
+            system("chmod  600  {0}".format(private_key_path))
 
         return super().form_valid(form)
 
@@ -600,8 +605,8 @@ class AssetUserDetail(LoginRequiredMixin, DetailView):
         name = Names.objects.get(username=self.request.user)
         pro = AssetLoginUser.objects.get(id=pk).project
         proj = AssetProject.objects.get(projects=pro)
-        ret = name.has_perm('read_assetproject', proj)
-        if ret == False:
+        hasperm = name.has_perm('read_assetproject', proj)
+        if not hasperm:
             return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 
@@ -645,7 +650,7 @@ class AssetUserAllDel(LoginRequiredMixin, View):
                 project = AssetLoginUser.objects.get(id=ids).project
                 project_obj = AssetProject.objects.get(projects=project)
                 hasperm = name.has_perm('delete_assetproject', project_obj)
-                if hasperm == False:
+                if not hasperm:
                     ret['status'] = False
                     ret['error'] = "没有删除权限"
                     return HttpResponse(json.dumps(ret))
@@ -659,7 +664,7 @@ class AssetUserAllDel(LoginRequiredMixin, View):
                     pro = AssetLoginUser.objects.get(hostname=i).project
                     proj = AssetProject.objects.get(projects=pro)
                     rets = name.has_perm('delete_assetproject', proj)
-                    if rets == False:
+                    if not rets:
                         ret['status'] = False
                         ret['error'] = "没有删除权限{0}".format(i)
                     else:
@@ -687,7 +692,7 @@ class AssetWeb(LoginRequiredMixin, View):
             project = AssetInfo.objects.get(id=ids).project
             project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
-            if hasperm == False:
+            if not hasperm:
                 ret['status'] = False
                 ret['error'] = '请求错误,没有权限登录'
             else:
@@ -728,7 +733,7 @@ class AssetProjectListAll(LoginRequiredMixin, ListView):
         for i in AssetProject.objects.all():
             project_obj = AssetProject.objects.get(projects=i)
             hasperm = name.has_perm('read_assetproject', project_obj)
-            if hasperm == True:
+            if hasperm:
                 assets_project.append(i)
 
         context = {
@@ -777,7 +782,7 @@ class AssetProjectAllDel(LoginRequiredMixin, View):
                 ids = request.POST.get('nid', None)
                 project_obj = AssetProject.objects.get(id=ids).projects
                 hasperm = name.has_perm('delete_assetproject', project_obj)
-                if hasperm == False:
+                if not hasperm:
                     ret['status'] = False
                     ret['error'] = "没有删除权限"
                     return HttpResponse(json.dumps(ret))
@@ -790,7 +795,7 @@ class AssetProjectAllDel(LoginRequiredMixin, View):
                 for i in assets:
                     pro = AssetProject.objects.get(id=ids).projects
                     rets = name.has_perm('delete_assetproject', pro)
-                    if rets == False:
+                    if not rets:
                         ret['status'] = False
                         ret['error'] = "没有删除权限{0}".format(i)
                     else:
@@ -818,7 +823,7 @@ class AssetProjectUpdate(LoginRequiredMixin, UpdateView):
         name = Names.objects.get(username=self.request.user)
         project_obj = AssetProject.objects.get(id=pk)
         hasperm = name.has_perm('change_assetproject', project_obj)
-        if hasperm == False:
+        if not hasperm:
             return HttpResponse(status=500)
         return super().dispatch(*args, **kwargs)
 

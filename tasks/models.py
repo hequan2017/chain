@@ -22,7 +22,7 @@ class Tools(models.Model):
 
     name = models.CharField(max_length=255, verbose_name='工具名称', unique=True)
     tool_script = models.TextField(verbose_name='脚本', null=True, blank=True)
-    tool_run_type = models.CharField(choices=TOOL_RUN_TYPE,verbose_name='脚本类型',max_length=24)
+    tool_run_type = models.CharField(choices=TOOL_RUN_TYPE, verbose_name='脚本类型', max_length=24)
     comment = models.TextField(verbose_name='工具说明', null=True, blank=True)
 
     ctime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
@@ -38,8 +38,8 @@ class Tools(models.Model):
 
 
 class ToolsResults(models.Model):
-    task_id = models.UUIDField( max_length=255,verbose_name='任务ID',unique=True)
-    add_user = models.CharField(max_length=255, verbose_name='创建者',null=True,blank=True)
+    task_id = models.UUIDField(max_length=255, verbose_name='任务ID', unique=True)
+    add_user = models.CharField(max_length=255, verbose_name='创建者', null=True, blank=True)
     ctime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
 
     @property
@@ -57,7 +57,7 @@ class Variable(models.Model):
     name = models.CharField(max_length=200, verbose_name='变量组名字')
     desc = models.TextField(null=True, blank=True, verbose_name='描述')
     vars = JSONField(null=True, blank=True, default={}, verbose_name='变量')
-    assets = models.ManyToManyField(AssetInfo,verbose_name='关联资产',related_name='asset',blank=True)
+    assets = models.ManyToManyField(AssetInfo, verbose_name='关联资产', related_name='asset', blank=True)
 
     ctime = models.DateTimeField(auto_now_add=True, verbose_name='创建时间')
     utime = models.DateTimeField(auto_now=True, verbose_name='更新时间')

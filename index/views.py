@@ -1,10 +1,13 @@
-from django.shortcuts import redirect,render
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login
-from .form import UserPasswordForm
-from django.contrib.auth.hashers import check_password
-from name.models import Names
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
+from django.views.generic import UpdateView
+
 from index.models import LoginLogs
+from name.models import Names
+from index.form import UserPasswordForm
 
 
 @login_required(login_url="/login.html")
@@ -51,47 +54,27 @@ def login_view(request):
 def logout(request):
     """
     退出
-    :param requset:
-    :return:
-    """
-    request.session.clear()
-
-    return redirect('/login.html')
-
-
-@login_required(login_url="/login.html")
-def password_update(request):
-    """
-    用户密码更新
     :param request:
     :return:
     """
+    request.session.clear()
+    return redirect('/login.html')
 
-    if request.method == 'POST':
-        form = UserPasswordForm(request.POST)
-        if form.is_valid():
-            old = Names.objects.get(username=request.user)
-            old_pass = old.password
-            input_pass = form.cleaned_data['old_password']
-            check = check_password(input_pass, old_pass)
-            if check is True:
-                if form.cleaned_data['new_password'] == form.cleaned_data['confirm_password']:
-                    password = form.cleaned_data['new_password']
-                    old.set_password(password)
-                    old.save()
-                    request.session.clear()
-                    return redirect("/logout.html")
-                else:
-                    msg = "两次输入的密码不一致"
-                form = UserPasswordForm()
-                return render(request, 'index/password.html',{'form': form, "msg": msg})
-            else:
-                form = UserPasswordForm()
-                return render(request, 'index/password.html',{'form': form, "msg": "旧密码不对,请重新输入"})
 
-    else:
-        form = UserPasswordForm()
-    return render(request, 'index/password.html', {'form': form, })
+class UserPasswordUpdateView(LoginRequiredMixin, UpdateView):
+    template_name = 'index/password.html'
+    model = Names
+    form_class = UserPasswordForm
+    success_url = reverse_lazy('logout')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
+
+    def get_success_url(self):
+        return super().get_success_url()
 
 
 @login_required(login_url="/login.html")
@@ -113,5 +96,3 @@ def page_not_found(request):
 @login_required(login_url="/login.html")
 def page_error(request):
     return render(request, 'index/500.html')
-
-

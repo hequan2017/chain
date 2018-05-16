@@ -7,7 +7,8 @@ from name.models import Names, Groups
 from guardian.models import GroupObjectPermission
 from django.utils.decorators import method_decorator
 from guardian.decorators import permission_required_or_404
-import json,logging
+import json, logging
+
 logger = logging.getLogger('name')
 
 
@@ -67,7 +68,8 @@ class NameAdd(LoginRequiredMixin, CreateView):
 
 class NameUpdate(LoginRequiredMixin, UpdateView):
     """
-    系统用户更新"""
+    系统用户 更新
+    """
 
     model = Names
     form_class = NameForm
@@ -94,7 +96,7 @@ class NameUpdate(LoginRequiredMixin, UpdateView):
         new_password = form.cleaned_data['password']
 
         forms = form.save()
-        if new_password == "1" :
+        if new_password == "1":
             forms.password = old_password
         else:
             forms.set_password(new_password)
@@ -279,7 +281,6 @@ class GroupsObjectAdd(LoginRequiredMixin, CreateView):
         return super().form_invalid(form)
 
 
-
 class GroupsObjectAllDel(LoginRequiredMixin, View):
     """
     系统组删除
@@ -310,7 +311,9 @@ class GroupsObjectAllDel(LoginRequiredMixin, View):
 
 
 class GroupsObjectUpdate(LoginRequiredMixin, UpdateView):
-    """系统组更新"""
+    """
+    系统组 更新
+    """
 
     model = GroupObjectPermission
     form_class = GroupsObjectForm

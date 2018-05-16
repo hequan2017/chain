@@ -5,9 +5,8 @@ from asset.models import AssetProject
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 
+
 class NameForm(forms.ModelForm):
-
-
     class Meta:
         model = Names
         fields = '__all__'
@@ -38,9 +37,8 @@ class GroupsForm(forms.ModelForm):
 
 
 class GroupsObjectForm(forms.ModelForm):
-
     object_pk = forms.ModelChoiceField(
-        queryset= AssetProject.objects.all(),
+        queryset=AssetProject.objects.all(),
         label="资产项目",
         widget=forms.Select(
             attrs={
@@ -68,7 +66,6 @@ class GroupsObjectForm(forms.ModelForm):
         ),
     )
 
-
     class Meta:
         model = GroupObjectPermission
         fields = '__all__'
@@ -76,8 +73,6 @@ class GroupsObjectForm(forms.ModelForm):
         labels = {
             'group': '系统组',
         }
-
-
 
     def clean_object_pk(self):
         obj = self.cleaned_data.get('object_pk')

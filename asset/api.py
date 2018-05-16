@@ -5,7 +5,7 @@ from rest_framework import permissions
 
 
 class AssetList(generics.ListCreateAPIView):
-    queryset =AssetInfo.objects.all()
+    queryset = AssetInfo.objects.all()
     serializer_class = AssetSerializer
     permission_classes = (permissions.AllowAny,)
 

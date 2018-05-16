@@ -1,10 +1,10 @@
 from django import forms
-from .models import Tools,Variable
+from .models import Tools, Variable
 
 
 class ToolsForm(forms.ModelForm):
     class Meta:
-        model =  Tools
+        model = Tools
         fields = '__all__'
         widgets = {
             'comment': forms.Textarea(
@@ -33,4 +33,4 @@ class VarsForm(forms.ModelForm):
         }
         help_texts = {
             'name': '* 必填项目,名字不可以重复,使用方法:在下面定义一个 path,  关联相关主机  在命令行 输入 echo {{ path }} 即可调用',
-            'vars': '例如： {"path": "/tmp","name":"123"} , 默认变量  "hostname","inner_ip","network_ip","project"',}
+            'vars': '例如： {"path": "/tmp","name":"123"} , 默认变量  "hostname","inner_ip","network_ip","project"', }

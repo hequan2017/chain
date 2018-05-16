@@ -17,7 +17,6 @@ import djcelery
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -28,7 +27,6 @@ SECRET_KEY = 'npn1nb&p-eb%rseya)anzsi4uuvk5+enyt1m$_a8&&uy882ak3'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*', ]
-
 
 # Application definition
 
@@ -66,8 +64,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'chain.urls'
 
-AUTH_USER_MODEL='name.Names'
-
+AUTH_USER_MODEL = 'name.Names'
 
 TEMPLATES = [
     {
@@ -85,7 +82,6 @@ TEMPLATES = [
     },
 ]
 
-
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',  # default
     'guardian.backends.ObjectPermissionBackend',
@@ -93,9 +89,7 @@ AUTHENTICATION_BACKENDS = (
 
 ANONYMOUS_USER_ID = -1
 
-
 WSGI_APPLICATION = 'chain.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
@@ -137,14 +131,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 LOGIN_URL = '/login.html'
-
 
 LANGUAGE_CODE = 'zh-Hans'
 
@@ -156,7 +148,6 @@ USE_TZ = False  # 如果只是内部使用的系统，这行建议为false，不
 DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATE_FORMAT = 'Y-m-d'
 
-
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
@@ -164,7 +155,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'collect_static')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-
 
 # django-channels配置
 CHANNEL_LAYERS = {
@@ -179,11 +169,8 @@ CHANNEL_LAYERS = {
 # 配置ASGI
 ASGI_APPLICATION = "chain.routing.application"
 
-
-
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
 DISPLAY_PER_PAGE = 25
-
 
 # http://www.django-rest-framework.org/api-guide/permissions/#api-reference
 # rest-framework    权限分类，现在是默认管理员可以访问
@@ -201,7 +188,6 @@ REST_FRAMEWORK = {
 
 web_ssh = "47.104.140.38"
 web_port = 8002
-
 
 # logging
 LOGGING = {
@@ -244,18 +230,15 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Shanghai'
 
-
 CELERY_CREATE_MISSING_QUEUES = True
 CELERYD_CONCURRENCY = 10
 CELERYD_FORCE_EXECV = True
 CELERYD_MAX_TASKS_PER_CHILD = 100
 CELERY_DISABLE_RATE_LIMITS = True
 
-
 CELERY_IMPORTS = ('tasks.tasks',)
 # 这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-
 
 # jet
 JET_DEFAULT_THEME = 'default'

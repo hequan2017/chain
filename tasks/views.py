@@ -10,16 +10,14 @@ from tasks.tasks import ansbile_tools
 from djcelery.models import TaskMeta
 from index.password_crypt import decrypt_p
 from chain import settings
-import time
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
-import json, datetime, paramiko, os, logging, random
-
-logger = logging.getLogger('tasks')
-from  name.models import Names
-
+from name.models import Names
 from tasks.ansible_2420.runner import AdHocRunner
 from tasks.ansible_2420.inventory import BaseInventory
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+import json, datetime, paramiko, os, logging, random, time
+
+logger = logging.getLogger('tasks')
 
 
 class TasksCmd(LoginRequiredMixin, ListView):
@@ -52,7 +50,7 @@ class TasksCmd(LoginRequiredMixin, ListView):
             project = AssetInfo.objects.get(hostname=i)
             project_obj = AssetProject.objects.filter(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
-            if hasperm == True:
+            if hasperm:
                 assets.append(i)
 
         if self.request.GET.get('name'):
@@ -95,7 +93,7 @@ class TasksTail(LoginRequiredMixin, ListView):
             project = AssetInfo.objects.get(hostname=i)
             project_obj = AssetProject.objects.filter(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
-            if hasperm == True:
+            if hasperm:
                 assets.append(i)
 
         if self.request.GET.get('name'):
@@ -208,7 +206,7 @@ class TasksPerform(LoginRequiredMixin, View):
             project = AssetInfo.objects.get(hostname=i).project
             project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
-            if hasperm == False:
+            if not hasperm:
                 return HttpResponse(status=500)
 
         tasks, assets = [], []
@@ -269,7 +267,7 @@ def taskstailperform(request):
         asset_obj = AssetInfo.objects.get(id=ids)
         project_obj = AssetProject.objects.get(projects=asset_obj.project)
         hasperm = name.has_perm('cmd_assetproject', project_obj)
-        if hasperm == False:
+        if not hasperm:
             return HttpResponse(status=500)
         try:
             taillog(request, asset_obj.network_ip, asset_obj.port, asset_obj.user.username, asset_obj.user.password,
@@ -401,7 +399,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
             project = AssetInfo.objects.get(hostname=i)
             project_obj = AssetProject.objects.filter(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
-            if hasperm == True:
+            if hasperm:
                 assets.append(i)
 
         if self.request.GET.get('name'):
@@ -448,7 +446,7 @@ class ToolsExec(LoginRequiredMixin, ListView):
                 project = AssetInfo.objects.get(hostname=i).project
                 project_obj = AssetProject.objects.get(projects=project)
                 hasperm = name.has_perm('cmd_assetproject', project_obj)
-                if hasperm == False:
+                if not hasperm:
                     return HttpResponse(status=500)
 
             assets = []
@@ -547,7 +545,7 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
         """
         name = Names.objects.get(username=self.request.user)
         self.queryset = super().get_queryset()
-        self.keyword = self.request.GET.get('keyword', '')
+        keyword = self.request.GET.get('keyword', '')
         if name.is_superuser != 1:
             assets = []
             for i in ToolsResults.objects.filter(add_user=name):
@@ -560,9 +558,9 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
                 ctime__lt=self.request.GET.get('date_to')
             )
 
-        if self.keyword:
+        if keyword:
             self.queryset = self.queryset.filter(
-                add_user__icontains=self.keyword,
+                add_user__icontains=keyword,
             )
         return self.queryset
 

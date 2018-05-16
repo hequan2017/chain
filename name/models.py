@@ -20,7 +20,6 @@ class Names(AbstractUser):
 class Groups(Group):
     ps = models.CharField(max_length=1024, verbose_name="备注", null=True, blank=True)
 
-
     @property
     def users(self):
         users = Names.objects.get(groups=self.name)

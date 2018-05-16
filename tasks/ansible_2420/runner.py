@@ -182,6 +182,7 @@ class AdHocRunner:
             play_name='Ansible Ad-hoc',
             gather_facts='no',):
         """
+        :param gather_facts:
         :param tasks: [{'action': {'module': 'shell', 'args': 'ls'}, ...}, ]
         :param pattern: all, *, or others
         :param play_name: The play name

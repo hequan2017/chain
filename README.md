@@ -17,6 +17,8 @@ http://39.104.174.116:8001
 ```
 
 ### 目录结构
+
+![DEMO](static/demo/项目.png)
   *  asset     资产
         * api   asset/api/asset.html
   *  chain      主配置目录

@@ -87,7 +87,9 @@ AUTHENTICATION_BACKENDS = (
     'guardian.backends.ObjectPermissionBackend',
 )
 
-ANONYMOUS_USER_ID = -1
+
+#是否启用匿名用户
+# ANONYMOUS_USER_ID = -1
 
 WSGI_APPLICATION = 'chain.wsgi.application'
 

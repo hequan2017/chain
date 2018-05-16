@@ -52,6 +52,7 @@ class AssetListAll(LoginRequiredMixin, ListView):
         except BaseException as e:
             pass
         context.update(search_data.dict())
+        #左侧导航站展开  "asset_active": "active",
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
@@ -97,6 +98,7 @@ class AssetAdd(LoginRequiredMixin, CreateView):
 
     @method_decorator(permission_required_or_404('asset.add_assetinfo'))
     def dispatch(self, *args, **kwargs):
+        # 权限验证  是否有资产 添加权限
         return super().dispatch(*args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -473,8 +475,7 @@ def AssetZtree(request):
 
     data = [{"id": "1111", "pId": "0", "name": "项目"}, ]
     for i in manager:
-        data.append({"id": i['projects'], "pId": "1111",
-                     "name": i['projects'], "page": "xx.action"}, )
+        data.append({"id": i['projects'], "pId": "1111","name": i['projects'], "page": "xx.action"}, )
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

@@ -4,9 +4,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView
-
+from asset.models import AssetInfo,AssetProject
 from index.models import LoginLogs
-from name.models import Names
+from name.models import Names,Groups
 from index.form import UserPasswordForm
 
 
@@ -17,7 +17,13 @@ def index(request):
     :param request:
     :return:
     """
-    return render(request, 'index/index.html', )
+    assets = AssetInfo.objects.all().count()
+    projects = AssetProject.objects.all().count()
+    names = Names.objects.all().count()
+    groups = Groups.objects.all().count()
+    return render(request, 'index/index.html', {'assets_count': assets,"projects_count": projects,
+                                                'names_count': names,'groups_count': groups,
+                                                })
 
 
 def login_view(request):

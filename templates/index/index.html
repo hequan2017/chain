@@ -9,7 +9,66 @@
 
 
 {% block page-content %}
+<div class="wrapper wrapper-content">
 
+
+
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">Assets</span>
+                    <h5>资产数量</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins"><a href="">{{ assets_count }}</a></h1>
+
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">Projects</span>
+                    <h5>项目数量</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins"><a href="">{{ projects_count }}</a></h1>
+
+                </div>
+            </div>
+        </div>
+                <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-success pull-right">Names</span>
+                    <h5>用户数量</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins"><a href="">{{ names_count }}</a></h1>
+
+                </div>
+            </div>
+        </div>
+                <div class="col-sm-3">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <span class="label label-info pull-right">Groups</span>
+                    <h5>组数量</h5>
+                </div>
+                <div class="ibox-content">
+                    <h1 class="no-margins"><a href="">{{ groups_count }}</a></h1>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <br/>
+
+
+</div>
 
 
 {% endblock %}

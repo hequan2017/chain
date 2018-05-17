@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load bootstrap3 %}
-{% block  title %}资产项目{% endblock %}
+{% block  title %}登录用户{% endblock %}
 {% block header-css %}
 {% endblock %}
 
@@ -9,7 +9,7 @@
 
     <div class="row wrapper border-bottom white-bg page-heading">
         <div class="col-lg-10">
-            <h2>资产项目</h2>
+            <h2>资产业务</h2>
             <ol class="breadcrumb">
                 <li>
                     <a href="/index.html">主页</a>
@@ -18,7 +18,7 @@
                     <a>资产管理</a>
                 </li>
                 <li class="active">
-                    <strong>资产项目</strong>
+                    <strong>资产业务</strong>
                 </li>
             </ol>
         </div>
@@ -32,7 +32,7 @@
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <h5>资产项目</h5>
+                    <h5>资产业务</h5>
                     <div class="ibox-tools">
                         <a class="collapse-link">
                             <i class="fa fa-chevron-up"></i>
@@ -65,14 +65,8 @@
                             <div class="col-sm-10 col-sm-offset-0">
                                 <h3>基本</h3>
 
-                                {% bootstrap_field form.projects layout="horizontal" %}
-                                {% bootstrap_field form.assets layout="horizontal" %}
-                                {% bootstrap_field form.project layout="horizontal" %}
+                                {% bootstrap_field form.business layout="horizontal" %}
                                 {% bootstrap_field form.ps layout="horizontal" %}
-
-
-
-
 
                             </div>
                         </div>
@@ -84,7 +78,7 @@
 
                                 {% bootstrap_button "保存" button_type="submit" button_class="btn-primary" %}
 
-                                 <a class="btn btn-white" href="{% url "asset:asset_project_list" %}">取消</a>
+                                 <a class="btn btn-white" href="{% url "asset:asset_business_list" %}">取消</a>
 
                             </div>
                         </div>

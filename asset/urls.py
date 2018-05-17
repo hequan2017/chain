@@ -31,6 +31,11 @@ urlpatterns = [
     path('asset-project-add.html', views.AssetProjectAdd.as_view(), name='asset_project_add'),
     path('asset-project-all-del.html', views.AssetProjectAllDel.as_view(), name='asset_project_all_del'),
     path('asset-project-update-<int:pk>.html', views.AssetProjectUpdate.as_view(), name='asset_project_update'),
+
+    path('asset-business.html', views.AssetBusinessListAll.as_view(), name='asset_business_list'),
+    path('asset-business-add.html', views.AssetBusinessAdd.as_view(), name='asset_business_add'),
+    path('asset-business-all-del.html', views.AssetBusinessAllDel.as_view(), name='asset_business_all_del'),
+    path('asset-business-update-<int:pk>.html', views.AssetBusinessUpdate.as_view(), name='asset_business_update'),
 ]
 
 app_name = "asset"

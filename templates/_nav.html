@@ -24,7 +24,7 @@
                 </div>
             </li>
             <li>
-                <a href="{% url "index" %}"><i class="fa fa-th-list"></i> <span class="nav-label">首页</span>
+                <a href="{% url "index" %}"><i class="fa fa-dashboard"></i> <span class="nav-label">首页</span>
                 </a>
 
             </li>
@@ -33,8 +33,11 @@
                     <span class="fa arrow"> </span></a>
                 <ul class="nav nav-second-level">
                     <li class="{{ asset_list_active }}"><a href="{% url    'asset:asset_list' %}">资产信息</a></li>
-                      <li class="{{ asset_project_list_active }}"><a href="{% url    'asset:asset_project_list' %}">资产项目</a></li>
                     <li class="{{ asset_user_list_active }}"><a href="{% url    'asset:asset_user_list' %}">资产用户</a></li>
+                      <li class="{{ asset_project_list_active }}"><a href="{% url    'asset:asset_project_list' %}">资产项目</a></li>
+                     <li class="{{ asset_business_list_active }}"><a href="{% url    'asset:asset_business_list' %}">资产业务</a></li>
+
+
                 </ul>
             </li>
             <li class="{{ tasks_active }}">
@@ -65,7 +68,7 @@
 
          {% ifequal  user.is_superuser  1 %}
             <li class="{{ name_active }}">
-                <a href="#"><i class="fa fa-edit"></i> <span class="nav-label">系统用户</span>
+                <a href="#"><i class="fa fa-group"></i> <span class="nav-label">系统用户</span>
                     <span class="fa arrow"> </span></a>
                 <ul class="nav nav-second-level">
                     <li class="{{ name_list_active }}"><a href="{% url  'name:name_list' %}">用户管理</a></li>

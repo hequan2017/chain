@@ -128,6 +128,7 @@
                                         <th>内网IP</th>
                                         <th>平台</th>
                                         <th>项目</th>
+                                        <th>业务</th>
                                         <th>激活</th>
                                         <th>动作</th>
                                     </tr>
@@ -144,13 +145,13 @@
                                             <td class="center">{{ row.inner_ip }}</td>
                                             <td class="center">{{ row.platform }} | {{ row.region }}</td>
                                             <td class="center"><div class="label label-primary">{{ row.project }}</div></td>
+                                         <td class="center"><div class="label label-success">{{ row.business }}</div></td>
                                             <td class="center"><b>{% ifequal  row.is_active  True %}   <i class="fa fa-check text-navy"></i>{% endifequal %}
                                              {% ifequal   row.is_active  False  %}   <i class="fa fa-times text-danger"></i> {% endifequal %} </b>
                                             </td>
                                             <td><a class="btn btn-primary  btn-xs "
                                                    href="{% url  "asset:asset_update"  pk=row.id %}">编辑</a>
-                                                <a class="btn btn-danger  btn-xs  asset_del"
-                                                >删除</a>
+                                                <a class="btn btn-danger  btn-xs  asset_del">删除</a>
                                             <a type="button" class="btn btn-success btn-xs webssh">终端
                                             </a>
                                             </td>
@@ -287,12 +288,17 @@
 
             function zTreeOnClick(treeNode) {
 
-                if (treeNode.id == 1111) {
-                    window.location.href = '/asset/asset.html'
+
+                if (treeNode.id > 0  &&  treeNode.id < 10000 ) {
+                    window.location.href = '/asset/asset.html?project=' + treeNode.n
                 }
                 else {
-                    window.location.href = '/asset/asset.html?name=' + treeNode.name
+                    window.location.href = '/asset/asset.html?business=' + treeNode.id+'&project=' + treeNode.pId
                 }
+                if (treeNode.id == 0) {
+                    window.location.href = '/asset/asset.html'
+                }
+
             }
 
             $(document).ready(function () {

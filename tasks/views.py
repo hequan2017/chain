@@ -44,23 +44,24 @@ class TasksCmd(LoginRequiredMixin, ListView):
          资产查询功能
         """
         name = Names.objects.get(username=self.request.user)
-        assets = []
         self.queryset = super().get_queryset()
         for i in self.queryset:
             project = AssetInfo.objects.get(hostname=i)
             project_obj = AssetProject.objects.filter(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
-            if hasperm:
-                assets.append(i)
+            if not hasperm:
+                self.queryset.delete(i)
 
-        if self.request.GET.get('name'):
-            self.queryset = super().get_queryset()
-            query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(
-                Q(project__projects=query)).order_by('-id')
-        else:
-            queryset = assets
-        return queryset
+        if self.request.GET.get('project'):
+            project = self.request.GET.get('project', None)
+            business = self.request.GET.get('business', None)
+            if business is not None:
+                pro = AssetProject.objects.get(id=int(project)).projects
+                self.queryset = self.queryset.filter(Q(project__projects=pro), Q(business__business=business)).order_by(
+                    '-id')
+            else:
+                self.queryset = self.queryset.filter(Q(project__projects=project)).order_by('-id')
+        return self.queryset
 
 
 class TasksTail(LoginRequiredMixin, ListView):
@@ -87,23 +88,24 @@ class TasksTail(LoginRequiredMixin, ListView):
          资产查询功能
         """
         name = Names.objects.get(username=self.request.user)
-        assets = []
         self.queryset = super().get_queryset()
         for i in self.queryset:
             project = AssetInfo.objects.get(hostname=i)
             project_obj = AssetProject.objects.filter(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
-            if hasperm:
-                assets.append(i)
+            if not hasperm:
+                self.queryset.delete(i)
 
-        if self.request.GET.get('name'):
-            self.queryset = super().get_queryset()
-            query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(
-                Q(project__projects=query)).order_by('-id')
-        else:
-            queryset = assets
-        return queryset
+        if self.request.GET.get('project'):
+            project = self.request.GET.get('project', None)
+            business = self.request.GET.get('business', None)
+            if business is not None:
+                pro = AssetProject.objects.get(id=int(project)).projects
+                self.queryset = self.queryset.filter(Q(project__projects=pro), Q(business__business=business)).order_by(
+                    '-id')
+            else:
+                self.queryset = self.queryset.filter(Q(project__projects=project)).order_by('-id')
+        return self.queryset
 
 
 def cmdjob(assets, tasks):
@@ -393,23 +395,24 @@ class ToolsExec(LoginRequiredMixin, ListView):
          资产查询功能
         """
         name = Names.objects.get(username=self.request.user)
-        assets = []
         self.queryset = super().get_queryset()
         for i in self.queryset:
             project = AssetInfo.objects.get(hostname=i)
             project_obj = AssetProject.objects.filter(projects=project)
             hasperm = name.has_perm('cmd_assetproject', project_obj)
-            if hasperm:
-                assets.append(i)
+            if not hasperm:
+                self.queryset.delete(i)
 
-        if self.request.GET.get('name'):
-            self.queryset = super().get_queryset()
-            query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(
-                Q(project__projects=query)).order_by('-id')
-        else:
-            queryset = assets
-        return queryset
+        if self.request.GET.get('project'):
+            project = self.request.GET.get('project', None)
+            business = self.request.GET.get('business', None)
+            if business is not None:
+                pro = AssetProject.objects.get(id=int(project)).projects
+                self.queryset = self.queryset.filter(Q(project__projects=pro), Q(business__business=business)).order_by(
+                    '-id')
+            else:
+                self.queryset = self.queryset.filter(Q(project__projects=project)).order_by('-id')
+        return self.queryset
 
     @staticmethod
     def post(request):
@@ -598,7 +601,7 @@ class ToolsResultsDetail(LoginRequiredMixin, DetailView):
 
 class VarsList(LoginRequiredMixin, ListView):
     """
-    Vars列表
+    Vars变量 列表
     """
     template_name = 'tasks/vars.html'
     model = Variable
@@ -615,7 +618,7 @@ class VarsList(LoginRequiredMixin, ListView):
 
 class VarsAdd(LoginRequiredMixin, CreateView):
     """
-     Vars增加
+     Vars变量 增加
     """
     model = Variable
     form_class = VarsForm
@@ -633,7 +636,7 @@ class VarsAdd(LoginRequiredMixin, CreateView):
 
 class VarsUpdate(LoginRequiredMixin, UpdateView):
     """
-     Vars更新
+    Vars变量 更新
     """
     model = Variable
     form_class = VarsForm
@@ -665,8 +668,7 @@ class VarsAllDel(LoginRequiredMixin, View):
             else:
                 ids = request.POST.getlist('id', None)
                 idstring = ','.join(ids)
-                Variable.objects.extra(
-                    where=['id IN (' + idstring + ')']).delete()
+                Variable.objects.extra(where=['id IN (' + idstring + ')']).delete()
         except Exception as e:
             ret['status'] = False
             ret['error'] = '删除请求错误,没有权限{}'.format(e)

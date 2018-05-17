@@ -323,13 +323,15 @@ $(function () {
 
             function zTreeOnClick(treeNode) {
 
-                if (treeNode.id == 1111) {
-                    window.location.href = '{% url  "tasks:cmd"  %}'
+
+              if (treeNode.id > 0  &&  treeNode.id < 10000 ) {
+                    window.location.href = '/tasks/cmd.html?project=' + treeNode.n
                 }
                 else {
-
-                    window.location.href = '/tasks/cmd.html?name=' + treeNode.name
-
+                    window.location.href = '/tasks/cmd.html?business=' + treeNode.id+'&project=' + treeNode.pId
+                }
+                if (treeNode.id == 0) {
+                    window.location.href = '{% url  "tasks:cmd"  %}'
                 }
             }
 

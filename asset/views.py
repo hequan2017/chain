@@ -17,14 +17,14 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
 from guardian.decorators import permission_required_or_404
 
-from asset.models import AssetInfo, AssetLoginUser, AssetProject
+from asset.models import AssetInfo, AssetLoginUser, AssetProject, AssetBusiness
 from asset.models import AssetInfo as Asset
 from chain import settings
 from index.password_crypt import encrypt_p, decrypt_p
 from name.models import Names
 from tasks.models import Variable
 from tasks.tasks import ansbile_asset_hardware
-from .form import AssetForm, FileForm, AssetUserForm, AssetProjectForm
+from .form import AssetForm, FileForm, AssetUserForm, AssetProjectForm, AssetBusinessForm
 
 logger = logging.getLogger('asset')
 
@@ -52,7 +52,7 @@ class AssetListAll(LoginRequiredMixin, ListView):
         except BaseException as e:
             pass
         context.update(search_data.dict())
-        #左侧导航站展开  "asset_active": "active",
+        # 左侧导航站展开  "asset_active": "active",
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
@@ -68,22 +68,28 @@ class AssetListAll(LoginRequiredMixin, ListView):
         资产信息 查询功能
         """
         name = Names.objects.get(username=self.request.user)
-        assets = []
         self.queryset = super().get_queryset()
         for i in self.queryset:
             project = AssetInfo.objects.get(hostname=i).project
             project_obj = AssetProject.objects.get(projects=project)
             hasperm = name.has_perm('read_assetproject', project_obj)
-            if hasperm:
-                assets.append(i)
+            if not hasperm:
+                self.queryset.delete(i)
         if self.request.GET.get('name'):
             query = self.request.GET.get('name', None)
-            queryset = self.queryset.filter(
+            self.queryset = self.queryset.filter(
                 Q(network_ip=query) | Q(hostname=query) | Q(inner_ip=query) | Q(project__projects=query)).order_by(
                 '-id')
-        else:
-            queryset = assets
-        return queryset
+        elif self.request.GET.get('project'):
+            project = self.request.GET.get('project', None)
+            business = self.request.GET.get('business', None)
+            if business is not None:
+                pro = AssetProject.objects.get(id=int(project)).projects
+                self.queryset = self.queryset.filter(Q(project__projects=pro), Q(business__business=business)).order_by(
+                    '-id')
+            else:
+                self.queryset = self.queryset.filter(Q(project__projects=project)).order_by('-id')
+        return self.queryset
 
 
 class AssetAdd(LoginRequiredMixin, CreateView):
@@ -463,7 +469,7 @@ def AssetZtree(request):
     :param request:
     :return:
     """
-
+    business = AssetBusiness.objects.all()
     managers = AssetProject.objects.values("projects").distinct()
     name = Names.objects.get(username=request.user)
     manager = []
@@ -473,9 +479,21 @@ def AssetZtree(request):
         if hasperm:
             manager.append(i)
 
-    data = [{"id": "1111", "pId": "0", "name": "项目"}, ]
+    data = [{"id": "0", "pId": "0", "name": "项目"}, ]
     for i in manager:
-        data.append({"id": i['projects'], "pId": "1111","name": i['projects'], "page": "xx.action"}, )
+        project_id = AssetProject.objects.get(projects=i['projects']).id
+        data.append({"id": "000{0}".format(project_id), "n": i['projects'], "pId": "0",
+                     "name": "{0}({1})".format(i['projects'],
+                                               AssetInfo.objects.filter(project__projects=i['projects']).count()),
+                     "page": "xx.action"}, )
+        for b in business:
+            data.append({"id": b.business, "pId": "000{0}".format(project_id), "name": "{0}({1})".format(b.business,
+                                                                                                         AssetInfo.objects.filter(
+                                                                                                             project__projects=
+                                                                                                             i[
+                                                                                                                 'projects']).filter(
+                                                                                                             business__business=b.business).count()),
+                         "page": "xx.action"}, )
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 
@@ -770,7 +788,7 @@ class AssetProjectAdd(LoginRequiredMixin, CreateView):
 
 class AssetProjectAllDel(LoginRequiredMixin, View):
     """
-    资产项目删除
+    资产项目 删除
     """
     model = AssetProject
 
@@ -832,6 +850,98 @@ class AssetProjectUpdate(LoginRequiredMixin, UpdateView):
         context = {
             "asset_active": "active",
             "asset_project_list_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class AssetBusinessListAll(LoginRequiredMixin, ListView):
+    """
+    资产业务 列表
+    """
+    template_name = 'asset/asset-business.html'
+    model = AssetBusiness
+    context_object_name = "business_list"
+    queryset = AssetBusiness.objects.all()
+    ordering = ('-id',)
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_business_list_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class AssetBusinessAdd(LoginRequiredMixin, CreateView):
+    """
+    资产业务 增加
+    """
+    model = AssetBusiness
+    form_class = AssetBusinessForm
+    template_name = 'asset/asset-business-add-update.html'
+    success_url = reverse_lazy('asset:asset_business_list')
+
+    @method_decorator(permission_required_or_404('asset.add_assetbusiness'))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_business_list_active": "active",
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class AssetBusinessAllDel(LoginRequiredMixin, View):
+    """
+   资产业务 删除
+    """
+    model = AssetBusiness
+
+    @method_decorator(permission_required_or_404('asset.delete_assetbusiness'))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    @staticmethod
+    def post(request):
+        ret = {'status': True, 'error': None, }
+        try:
+            if request.POST.get('nid'):
+                ids = request.POST.get('nid', None)
+                AssetBusiness.objects.get(id=ids).delete()
+            else:
+                ids = request.POST.getlist('id', None)
+                idstring = ','.join(ids)
+                AssetBusiness.objects.extra(where=['id IN (' + idstring + ')']).delete()
+        except Exception as e:
+            ret['status'] = False
+            ret['error'] = '删除请求错误,没有权限{}'.format(e)
+        finally:
+            return HttpResponse(json.dumps(ret))
+
+
+class AssetBusinessUpdate(LoginRequiredMixin, UpdateView):
+    """
+    资产业务 更新
+    """
+
+    model = AssetBusiness
+    form_class = AssetBusinessForm
+    template_name = 'asset/asset-business-add-update.html'
+    success_url = reverse_lazy('asset:asset_business_list')
+
+    @method_decorator(permission_required_or_404('asset.change_assetbusiness'))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = {
+            "asset_active": "active",
+            "asset_business_list_active": "active",
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)

@@ -329,14 +329,16 @@ function CreateWebSocket() {
 
             function zTreeOnClick(treeNode) {
 
-                if (treeNode.id == 1111) {
-                    window.location.href = '{% url  "tasks:tail"  %}'
+                if (treeNode.id > 0  &&  treeNode.id < 10000 ) {
+                    window.location.href = '/tasks/tail.html?project=' + treeNode.n
                 }
                 else {
-
-                    window.location.href = '/tasks/tail.html?name=' + treeNode.name
-
+                    window.location.href = '/tasks/tail.html?business=' + treeNode.id+'&project=' + treeNode.pId
                 }
+                if (treeNode.id == 0) {
+                    window.location.href = '{% url  "tasks:tail"  %}'
+                }
+
             }
 
 

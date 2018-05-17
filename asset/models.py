@@ -47,6 +47,18 @@ class AssetProject(models.Model):
     def __str__(self):
         return self.projects
 
+class AssetBusiness(models.Model):
+    business = models.CharField(max_length=128, verbose_name='业务')
+    ps = models.CharField(max_length=1024, verbose_name="备注", null=True, blank=True)
+
+    class Meta:
+        db_table = "AssetBusiness"
+        verbose_name = "资产业务"
+        verbose_name_plural = '资产业务'
+
+    def __str__(self):
+        return self.business
+
 
 class AssetInfo(models.Model):
     PLATFORM_CHOICES = (
@@ -75,6 +87,7 @@ class AssetInfo(models.Model):
     region = models.CharField(max_length=128, choices=REGION_CHOICES, verbose_name='区域')
 
     project = models.ForeignKey(verbose_name='资产项目', to='AssetProject', related_name='asset', on_delete=models.CASCADE,)
+    business = models.ForeignKey(verbose_name='资产业务', to='AssetBusiness', related_name='asset_business',on_delete=models.SET_NULL, null=True, blank=True)
     user = models.ForeignKey(verbose_name="登录用户", to='AssetLoginUser', related_name='user_name',
                              on_delete=models.SET_NULL, null=True, blank=True)
 

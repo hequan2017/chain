@@ -1,5 +1,5 @@
 from django import forms
-from asset.models import AssetInfo, AssetLoginUser, AssetProject
+from asset.models import AssetInfo, AssetLoginUser, AssetProject,AssetBusiness
 from tasks.models import Variable
 
 
@@ -40,7 +40,7 @@ class AssetForm(forms.ModelForm):
         model = AssetInfo
         # fields = '__all__'
         fields = ['hostname', 'network_ip', 'inner_ip', 'system', 'vars', 'cpu', 'memory', 'disk', 'bandwidth',
-                  'project', 'platform',
+                  'project', 'platform','business',
                   'region', 'user', 'Instance_id', 'port', 'ps', 'is_active']
         labels = {"network_ip": "外网IP", }
         widgets = {
@@ -179,6 +179,16 @@ class AssetProjectForm(forms.ModelForm):
 
         widgets = {
 
+            'ps': forms.Textarea(
+                attrs={'cols': 80, 'rows': 4}),
+        }
+
+class AssetBusinessForm(forms.ModelForm):
+    class Meta:
+        model = AssetBusiness
+        fields = '__all__'
+
+        widgets = {
             'ps': forms.Textarea(
                 attrs={'cols': 80, 'rows': 4}),
         }

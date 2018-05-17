@@ -365,13 +365,14 @@
 
             function zTreeOnClick(treeNode) {
 
-                if (treeNode.id == 1111) {
-                    window.location.href = '{% url  "tasks:tools_exec"  %}'
+                    if (treeNode.id > 0  &&  treeNode.id < 10000 ) {
+                    window.location.href = '/tasks/tools-exec.html?project=' + treeNode.n
                 }
                 else {
-
-                    window.location.href = '/tasks/tools-exec.html?name=' + treeNode.name
-
+                    window.location.href = '/tasks/tools-exec.html?business=' + treeNode.id+'&project=' + treeNode.pId
+                }
+                if (treeNode.id == 0) {
+                    window.location.href = '{% url  "tasks:tools_exec"  %}'
                 }
             }
 

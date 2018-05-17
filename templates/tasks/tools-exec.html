@@ -255,23 +255,21 @@
                     tool_id_name = [];
                     for (var i = 0; i < obj.length; i++) {
                         if (obj[i].checked) {
-
-                            tool_id_list.push((obj[i].value));
+                            tool_id_list.push(obj[i].value);
                             tool_id_name.push(obj[i].getAttribute('n'));
                         }
                     }
 
 
-                    var asset_id = document.getElementsByName('asset_id');
+                    var asset = document.getElementsByName('asset_id');
                     asset_id_name = [];
-                    var asset_id_list = new Array();
-                    for (var i = 0; i < asset_id.length; i++) {
-                        if (asset_id[i].checked)
-                            asset_id_list.push(asset_id[i].value);
-
-                        asset_id_name.push(asset_id[i].getAttribute('n'));
+                    asset_id_list = [];
+                    for ( var a = 0; a < asset.length; a++) {
+                        if (asset[a].checked) {
+                            asset_id_list.push(asset[a].value);
+                            asset_id_name.push(asset[a].getAttribute('n'));
                     }
-
+                    }
 
                     swal({
 
@@ -374,6 +372,9 @@
                 if (treeNode.id == 0) {
                     window.location.href = '{% url  "tasks:tools_exec"  %}'
                 }
+
+
+
             }
 
 

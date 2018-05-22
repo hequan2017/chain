@@ -1,5 +1,9 @@
-## Chain
+## 链喵 CMDB
 ![DEMO](static/demo/LOGO.png)
+
+项目中文名：链喵
+
+项目英文名：chain 
 
 linux 云主机 管理系统,包含 CMDB系统,webssh登录、命令执行、异步执行shell/python/yml、查看日志、定时任务等功能。
 

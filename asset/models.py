@@ -76,8 +76,8 @@ class AssetInfo(models.Model):
 
     # id = models.AutoField(primary_key=True, verbose_name="id")
     hostname = models.CharField(max_length=64, verbose_name='主机名', unique=True)
-    network_ip = models.GenericIPAddressField(verbose_name='外网IP', unique=True, null=True, blank=True)
-    inner_ip = models.GenericIPAddressField(verbose_name='内网IP', null=True, blank=True)
+    network_ip = models.GenericIPAddressField(verbose_name='内网IP', unique=True, null=True, blank=True)
+    inner_ip = models.GenericIPAddressField(verbose_name='外网IP', null=True, blank=True)
     system = models.CharField(max_length=128, verbose_name='系统版本', null=True, blank=True)
     cpu = models.CharField(max_length=64, verbose_name='CPU', null=True, blank=True)
     memory = models.CharField(max_length=64, verbose_name='内存', null=True, blank=True)

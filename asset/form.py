@@ -42,7 +42,7 @@ class AssetForm(forms.ModelForm):
         fields = ['hostname', 'network_ip', 'inner_ip', 'system', 'vars', 'cpu', 'memory', 'disk', 'bandwidth',
                   'project', 'platform','business',
                   'region', 'user', 'Instance_id', 'port', 'ps', 'is_active']
-        labels = {"network_ip": "外网IP", }
+        # labels = {"network_ip": "外网IP", }
         widgets = {
             'buy_time': forms.DateInput(
                 attrs={'type': 'date', }
@@ -70,7 +70,7 @@ class AssetForm(forms.ModelForm):
         }
         help_texts = {
             'hostname': '*  必填项目,名字唯一,主机名这里请不要写IP',
-            'network_ip': '*  名字唯一,如果没有外网,可将内网IP写到此处！',
+            'network_ip': '*  名字唯一,如果没有内网,可将外网IP写到此处！',
             'platform': '*  必填项目',
             'region': '*  必填项目',
             'project': '*  必填项目',

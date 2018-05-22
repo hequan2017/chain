@@ -487,13 +487,10 @@ def AssetZtree(request):
                                                AssetInfo.objects.filter(project__projects=i['projects']).count()),
                      "page": "xx.action"}, )
         for b in business:
-            data.append({"id": b.business, "pId": "000{0}".format(project_id), "name": "{0}({1})".format(b.business,
-                                                                                                         AssetInfo.objects.filter(
-                                                                                                             project__projects=
-                                                                                                             i[
-                                                                                                                 'projects']).filter(
-                                                                                                             business__business=b.business).count()),
-                         "page": "xx.action"}, )
+            count = AssetInfo.objects.filter(project__projects=i[ 'projects']).filter( business__business=b.business).count()
+            if count == 0:
+                continue
+            data.append({"id": b.business, "pId": "000{0}".format(project_id), "name": "{0}({1})".format(b.business,count), "page": "xx.action"}, )
     return HttpResponse(json.dumps(data), content_type='application/json')
 
 

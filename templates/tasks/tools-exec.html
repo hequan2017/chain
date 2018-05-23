@@ -127,7 +127,7 @@
                     <div class="ibox float-e-margins">
                         <div class="ibox-title">
                             <h5>工具列表</h5>
-                            <div style="color:red;"> 优先级1 最先执行, 不可重复</div>
+                            <div style="color:red;">   优先级1 最先执行, 不可重复</div>
                             <div class="ibox-tools">
                                 <a class="collapse-link">
                                     <i class="fa fa-chevron-up"></i>
@@ -172,7 +172,7 @@
                                             <td class="center"><a
                                                     href="{% url  "tasks:tools_update"   pk=row.id %}">{{ row.name }}</a>
                                             </td>
-                                            <td><input style="width:50px;" name="priority"  ></td>
+                                            <td><input style="width:50px;"  class="form-control input-sm" name="priority"  ></td>
                                             <td class="center">{{ row.tool_run_type }}</td>
 
                                         </tr>

@@ -312,7 +312,7 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
             "crontab_periodictasks_result_active": "active",
             "search_data": search_data.urlencode(),
             'date_from': (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d'),
-            'date_to': datetime.datetime.now().strftime('%Y-%m-%d')
+            'date_to': (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
         }
 
         kwargs.update(context)
@@ -323,6 +323,12 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
         if self.request.GET.get('date_from'):
             self.queryset = self.queryset.filter(
                 date_done__gt=self.request.GET.get('date_from'),
-                date_done__lt=self.request.GET.get('date_to')
+                date_done__lt=self.request.GET.get('date_to'))
+        else:
+            datefrom = (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d')
+            dateto = (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
+            self.queryset =self.queryset.filter(
+                date_done__gt=datefrom,
+                date_done__lt=dateto
             )
         return self.queryset

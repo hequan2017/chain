@@ -113,7 +113,8 @@
                                 {% csrf_token %}
                                 <div class="col-md-2"><input type="text" class="form-control" name="name" placeholder="主机名、IP" required></div>
                                 <button class="btn btn-sm btn-primary" type="submit">查询</button>
-                                {% if perms.asset.add_assetinfo %}
+
+                                                                {% if perms.asset.add_assetinfo %}
                                 <a href="{% url    'asset:asset_add' %}" class="btn btn-sm btn-primary ">添加</a>
                                 {% endif %}
                             </form>

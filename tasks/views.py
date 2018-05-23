@@ -172,7 +172,7 @@ def taillog(request, hostname, port, username, password, private, tail):
     if password:
         ssh.connect(hostname=hostname, port=port, username=username, password=decrypt_p(password))
     else:
-        pkey = paramiko.RSAKey.from_private_key_file(private)
+        pkey = paramiko.RSAKey.from_private_key_file("{0}".format(private))
         ssh.connect(hostname=hostname, port=port, username=username, pkey=pkey)
     cmd = "tail " + tail
     stdin, stdout, stderr = ssh.exec_command(cmd, get_pty=True)
@@ -236,7 +236,7 @@ class TasksPerform(LoginRequiredMixin, View):
                 var_all.update(Variable.objects.get(assets__hostname=i).vars)
             except Exception as e:
                 pass
-
+            print(i.user.password)
             assets.append({
                 "hostname": i.hostname,
                 "ip": i.network_ip,
@@ -427,14 +427,10 @@ class ToolsExec(LoginRequiredMixin, ListView):
             asset_id = request.POST.getlist('asset_id', None)
             tool_id = request.POST.getlist('tool_id', None)
             priority = request.POST.getlist('priority', None)
-
-            if asset_id == [] or tool_id == [] or priority == []:
+            if asset_id == [] or tool_id == [] or priority == ['']:
                 ret['status'] = False
                 ret['error'] = '未选择主机 或 未选择脚本 或 未设置优先级'
                 return HttpResponse(json.dumps(ret))
-
-            while '' in priority:
-                priority.remove('')
 
             for i in priority:
                 if priority.count(i) >= 2:
@@ -537,7 +533,7 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
             "tools_results_active": "active",
             "search_data": search_data.urlencode(),
             'date_from': (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d'),
-            'date_to': datetime.datetime.now().strftime('%Y-%m-%d')
+            'date_to': (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
@@ -559,6 +555,14 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
             self.queryset = self.queryset.filter(
                 ctime__gt=self.request.GET.get('date_from'),
                 ctime__lt=self.request.GET.get('date_to')
+            )
+        else:
+            datefrom = (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d')
+            dateto = (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
+            print(datefrom, dateto)
+            self.queryset = self.queryset.filter(
+                ctime__gt=datefrom,
+                ctime__lt=dateto
             )
 
         if keyword:

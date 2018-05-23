@@ -274,7 +274,7 @@
                         success: function (data) {
                             var obj = JSON.parse(data);
                             if (obj.status) {
-                                toastr.success("后台异步获取信息中,请稍后查看");
+                                toastr.info("如未更新，请查看定时任务--周期结果","后台异步获取信息中,请稍后查看!");
                             } else {
                                 $('#error2').text(obj.error);
                                  toastr.error(obj.error);

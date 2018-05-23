@@ -58,7 +58,6 @@ def ansbile_tools(assets, tasks):
                     if not out:
                         out = ret[hostname[i]][t['name']]['stderr']
                     std.append("{0}".format(out))
-                    print(std)
                 except Exception as e:
                     logger.error(e)
                     try:
@@ -81,12 +80,9 @@ def ansbile_tools(assets, tasks):
                 std, ret_host = [], {}
                 try:
                     out = ret[hostname[i]]['stdout']
-                    print(out)
                     if not out:
                         out = ret[hostname[i]]['stderr']
-                    print(out)
                     std.append("{0}".format(out))
-                    print(std)
                 except Exception as e:
                     logger.error(e)
                     try:
@@ -114,7 +110,6 @@ def ansbile_asset_hardware(ids, assets):
 
     try:
         data = retsult.results_raw['ok'][hostname]['script']['ansible_facts']
-        nodename = data['ansible_nodename']
         disk = "{}".format(str(sum([int(data["ansible_devices"][i]["sectors"]) *
                                     int(data["ansible_devices"][i]["sectorsize"]) / 1024 / 1024 / 1024
                                     for i in data["ansible_devices"] if
@@ -123,14 +118,15 @@ def ansbile_asset_hardware(ids, assets):
         cpu = int("{}".format(data['ansible_processor_count'] * data["ansible_processor_cores"]))
 
         system = data['ansible_product_name'] + "" + data['ansible_lsb']["description"]
-        AssetInfo.objects.filter(id=ids).update(hostname=nodename,
+        AssetInfo.objects.filter(id=ids).update(hostname=hostname,
                                                 disk=disk,
                                                 memory=mem,
                                                 cpu=cpu,
                                                 system=system)
     except Exception as e:
         logger.error(e)
-        return e
+        return "获取资产信息 {0} 失败 {1}".format(hostname,e)
+    return "获取资产信息 {} 成功".format(hostname)
 
 
 @app.task()

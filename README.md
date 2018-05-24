@@ -13,7 +13,7 @@ linux 云主机 管理系统,包含 CMDB系统,webssh登录、命令执行、异
 ### DEMO
 
 ```bash
-http://39.104.174.116:8001
+http://47.104.140.38:8001
 
 账号  admin
 密码  1qaz.2wsx
@@ -83,7 +83,7 @@ git clone https://github.com/hequan2017/chain.git
 
 修改 chain/settings.py
 ```bash
-web_ssh = "39.104.174.116"    ##修改为本机外网IP
+web_ssh = "47.104.140.38"    ##修改为本机外网IP
 web_port = 8002
 ```
 
@@ -158,7 +158,7 @@ mv  /opt/chain/data/password.sh  .
 修改password.sh 里面的密码
 
 docker build  -t python3.6.5  -f dockerfile-python3    .
-docker build  -t chain   -f dockerfile-chain  --build-arg  ip='39.104.174.116'  .
+docker build  -t chain   -f dockerfile-chain  --build-arg  ip='47.104.140.38'  .
 
 docker  run  -itd  --name chain   -p 8001:8001  -p 8002:8002    chain
 

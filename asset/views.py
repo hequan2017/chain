@@ -2,6 +2,7 @@ import chardet
 import codecs
 import csv
 import json
+import time
 import logging
 from io import StringIO
 from os import system
@@ -413,18 +414,25 @@ def AssetImport(request):
                             v = AssetProject.objects.get(projects=v)
                         except Exception as e:
                             v = None
-                    elif k in ['user', ]:
+                    elif k in ['business']:
                         try:
-                            v = AssetLoginUser.objects.get(hostname=v)
+                            v = AssetProject.objects.get(business=v)
                         except Exception as e:
                             v = None
+                    elif k in ['user', ]:
+                        try:
+                            v = AssetLoginUser.objects.get(user=v)
+                        except Exception as e:
+                            v = None
+                    elif k in ['ctime', 'utime' ]:
+                        v = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
                     asset_dict[k] = v
 
                 asset = get_object_or_none(Asset, id=id_) if id_ else None
                 if not asset:
                     try:
                         if len(Asset.objects.filter(hostname=asset_dict.get('hostname'))):
-                            raise Exception('already exists')
+                            raise Exception('已经创建了，无法重复创建 此 hostname')
                         with transaction.atomic():
                             asset = Asset.objects.create(**asset_dict)
                             created.append(asset_dict['hostname'])
@@ -455,7 +463,7 @@ def AssetImport(request):
 
             return render(request, 'asset/asset-import.html', {'form': form,
                                                                "asset_active": "active",
-                                                               "asset_import_active": "active",
+                                                               "asset_list_active": "active",
                                                                "msg": data})
 
     return render(request, 'asset/asset-import.html',

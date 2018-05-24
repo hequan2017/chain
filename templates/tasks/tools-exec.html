@@ -364,10 +364,10 @@
             function zTreeOnClick(treeNode) {
 
                     if (treeNode.id > 0  &&  treeNode.id < 10000 ) {
-                    window.location.href = '/tasks/tools-exec.html?project=' + treeNode.n
+                    window.location.href = encodeURI('/tasks/tools-exec.html?project=' + treeNode.n)
                 }
                 else {
-                    window.location.href = '/tasks/tools-exec.html?business=' + treeNode.id+'&project=' + treeNode.pId
+                    window.location.href = encodeURI('/tasks/tools-exec.html?business=' + treeNode.id+'&project=' + treeNode.pId)
                 }
                 if (treeNode.id == 0) {
                     window.location.href = '{% url  "tasks:tools_exec"  %}'

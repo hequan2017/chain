@@ -330,10 +330,10 @@ function CreateWebSocket() {
             function zTreeOnClick(treeNode) {
 
                 if (treeNode.id > 0  &&  treeNode.id < 10000 ) {
-                    window.location.href = '/tasks/tail.html?project=' + treeNode.n
+                    window.location.href = encodeURI('/tasks/tail.html?project=' + treeNode.n)
                 }
                 else {
-                    window.location.href = '/tasks/tail.html?business=' + treeNode.id+'&project=' + treeNode.pId
+                    window.location.href =encodeURI( '/tasks/tail.html?business=' + treeNode.id+'&project=' + treeNode.pId)
                 }
                 if (treeNode.id == 0) {
                     window.location.href = '{% url  "tasks:tail"  %}'

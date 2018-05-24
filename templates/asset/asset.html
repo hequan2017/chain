@@ -291,10 +291,10 @@
 
 
                 if (treeNode.id > 0  &&  treeNode.id < 10000 ) {
-                    window.location.href = '/asset/asset.html?project=' + treeNode.n
+                    window.location.href = encodeURI( '/asset/asset.html?project=' + treeNode.n);
                 }
                 else {
-                    window.location.href = '/asset/asset.html?business=' + treeNode.id+'&project=' + treeNode.pId
+                    window.location.href = encodeURI('/asset/asset.html?business=' + treeNode.id+'&project=' + treeNode.pId)
                 }
                 if (treeNode.id == 0) {
                     window.location.href = '/asset/asset.html'

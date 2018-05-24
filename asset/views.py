@@ -71,8 +71,8 @@ class AssetListAll(LoginRequiredMixin, ListView):
         name = Names.objects.get(username=self.request.user)
         self.queryset = super().get_queryset()
         for i in self.queryset:
-            project = AssetInfo.objects.get(hostname=i).project
-            project_obj = AssetProject.objects.get(projects=project)
+            projects = AssetInfo.objects.get(hostname=i).project
+            project_obj = AssetProject.objects.get(projects=projects)
             hasperm = name.has_perm('read_assetproject', project_obj)
             if not hasperm:
                 self.queryset.delete(i)
@@ -495,7 +495,7 @@ def AssetZtree(request):
                                                AssetInfo.objects.filter(project__projects=i['projects']).count()),
                      "page": "xx.action"}, )
         for b in business:
-            count = AssetInfo.objects.filter(project__projects=i[ 'projects']).filter( business__business=b.business).count()
+            count = AssetInfo.objects.filter(project__projects=i['projects']).filter( business__business=b.business).count()
             if count == 0:
                 continue
             data.append({"id": b.business, "pId": "000{0}".format(project_id), "name": "{0}({1})".format(b.business,count), "page": "xx.action"}, )

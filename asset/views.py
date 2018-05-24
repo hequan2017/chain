@@ -416,7 +416,7 @@ def AssetImport(request):
                             v = None
                     elif k in ['business']:
                         try:
-                            v = AssetProject.objects.get(business=v)
+                            v = AssetBusiness.objects.get(business=v)
                         except Exception as e:
                             v = None
                     elif k in ['user', ]:

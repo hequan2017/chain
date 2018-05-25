@@ -21,3 +21,4 @@ asgiref==2.3.0
 async-timeout==2.0.0
 attrs==17.4.0
 incremental
+django-pure-pagination

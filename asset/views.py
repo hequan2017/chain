@@ -28,14 +28,13 @@ from tasks.tasks import ansbile_asset_hardware
 from .form import AssetForm, FileForm, AssetUserForm, AssetProjectForm, AssetBusinessForm
 
 logger = logging.getLogger('asset')
-
+from pure_pagination import PageNotAnInteger, Paginator
 
 class AssetListAll(LoginRequiredMixin, ListView):
     """
     资产信息 列表
     """
     template_name = 'asset/asset.html'
-    paginate_by = settings.DISPLAY_PER_PAGE
     model = AssetInfo
     context_object_name = "asset_list"
     queryset = AssetInfo.objects.all()
@@ -46,23 +45,25 @@ class AssetListAll(LoginRequiredMixin, ListView):
         获取系统用户,再获取用户的组  根据组 去判断  资产所属的资产项目 是否 有 读取的权限
         :return:  返回有 读取权限的资产
         """
-        context = super().get_context_data(**kwargs)
-        search_data = self.request.GET.copy()
         try:
-            search_data.pop("page")
-        except BaseException as e:
-            pass
-        context.update(search_data.dict())
+            page = self.request.GET.get('page', 1)
+        except PageNotAnInteger as e:
+            page = 1
+        p = Paginator(self.queryset, getattr(settings,'DISPLAY_PER_PAGE'), request=self.request)
+
+        asset_list = p.page(page)
         # 左侧导航站展开  "asset_active": "active",
         context = {
             "asset_active": "active",
             "asset_list_active": "active",
-            "search_data": search_data.urlencode(),
+            "asset_list":asset_list,
             "web_ssh": getattr(settings, 'web_ssh'),
             "web_port": getattr(settings, 'web_port'),
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
+
+
 
     def get_queryset(self):
         """

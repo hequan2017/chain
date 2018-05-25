@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bootstrap3',
+    'pure_pagination',
     'asset',
     'index',
     'tasks',
@@ -172,7 +173,7 @@ CHANNEL_LAYERS = {
 ASGI_APPLICATION = "chain.routing.application"
 
 TEMPLATE_DIRS = (os.path.join(BASE_DIR, 'templates'),)
-DISPLAY_PER_PAGE = 25
+
 
 # http://www.django-rest-framework.org/api-guide/permissions/#api-reference
 # rest-framework    权限分类，现在是默认管理员可以访问
@@ -190,6 +191,19 @@ REST_FRAMEWORK = {
 
 web_ssh = "47.104.140.38"
 web_port = 8002
+
+
+PAGINATION_SETTINGS = {
+    'PAGE_RANGE_DISPLAYED': 3,    #中间显示的个数
+    'MARGIN_PAGES_DISPLAYED': 2,  #两边显示的个数
+    'SHOW_FIRST_PAGE_WHEN_INVALID': True,
+}
+#每页 显示的 个数
+DISPLAY_PER_PAGE = 15
+
+
+
+
 
 # logging
 LOGGING = {

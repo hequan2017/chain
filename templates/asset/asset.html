@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load i18n %}
 {% load  bootstrap3 %}
 {% load  static %}
 {% block header-css %}
@@ -135,7 +135,7 @@
                                     </tr>
                                     </thead>
 
-                                    {% for   row   in   asset_list %}
+                                    {% for   row   in   asset_list.object_list %}
 
                                         <tr class="gradeA" id="{{ row.id }}">
                                             <td><input type="checkbox" value="{{ row.id }}" name="id"></td>
@@ -166,59 +166,42 @@
                                 <a href="{% url    'asset:asset_export' %}" class="btn btn-sm btn-primary ">导出全部</a>
                                 <a href="{% url    'asset:asset_import' %}"  class="btn btn-sm btn-primary ">导入</a>
 
-                                <div>
 
-                                    <center>
-
-                                        <ul class="pagination">
-                                            <li><a href="{% url "asset:asset_list" %}?page=1">首页 </a></li>
-                                            {% if  page_obj.has_previous %}
-                                                <li>
-                                                    <a href="{% url "asset:asset_list" %}?page={{ page_obj.previous_page_number }}&{{ search_data }}">
-                                                        上一页 </a></li>
-                                            {% else %}
-                                                <li class="disabled"><a> 上一页 </a></li>
-                                            {% endif %}
-
-                                            {% for p in paginator.page_range %}
-                                                {% if  search_data %}  <!-- 判断是否是搜索分页-->
-                                                    {% if p == page_obj.number %}
-                                                        <li class="active"><a
-                                                                href="{% url "asset:asset_list" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% else %}
-                                                        <li>
-                                                            <a href="{% url "asset:asset_list" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% else %}
-                                                    {% if p == page_obj.number %}
-                                                        <li class="active"><a
-                                                                href="{% url "asset:asset_list" %}?page={{ p }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% else %}
-                                                        <li>
-                                                            <a href="{% url "asset:asset_list" %}?page={{ p }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% endif %}
-                                            {% endfor %}
+  <div style="text-align:center;">
+<nav class="pagination">
 
 
-                                            {% if  page_obj.has_next %}
-                                                <li>
-                                                    <a href="{% url "asset:asset_list" %}?page={{ page_obj.next_page_number }}&{{ search_data }}">
-                                                        下一页 </a></li>
-                                            {% endif %}
-                                            <li>
-                                                <a href="{% url "asset:asset_list" %}?page={{ page_obj.paginator.num_pages }}">尾页 </a>
+         <li><a href="{% url "asset:asset_list" %}?page=1">首页 </a></li>
+
+            {% if asset_list.has_previous %}
+                <li class="long"><a href="?{{ asset_list.previous_page_number.querystring }}">上一页</a></li>
+            {% endif %}
+
+            {% for page in asset_list.pages %}
+            {% if page %}
+                {% ifequal page asset_list.number %}
+                    <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                {% else %}
+                     <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                {% endifequal %}
+            {% else %}
+                <li class="none"><a href="">...</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if asset_list.has_next %}
+                <li class="long"><a href="?{{ asset_list.next_page_number.querystring }}">下一页</a></li>
+            {% endif %}
+  <li>
+                                                <a href="{% url "asset:asset_list" %}?page={{ asset_list.paginator.num_pages }}">尾页 </a>
                                             </li>
-                                            <li><span style="color: #0a0a0a">总: &nbsp;{{ page_obj.paginator.num_pages }} 页 </span>
+                                            <li><span style="color: #0a0a0a">总: &nbsp;{{ asset_list.paginator.num_pages }} 页 </span>
                                             </li>
 
-                                        </ul>
-                                    </center>
-                                </div> <!--页码 -->
+</nav>
+  </div>
+
+
+
 
 
                             </form>

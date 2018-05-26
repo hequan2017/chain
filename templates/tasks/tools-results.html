@@ -96,7 +96,7 @@
                                     </thead>
                                     <tbody>
 
-                                    {% for   row   in  tools_results_list %}
+                                    {% for   row   in  tools_results_list.object_list %}
 
                                         <tr class="gradeA" >
                                             <td class="center"><a
@@ -114,60 +114,39 @@
 
                                 </table>
 
- <div>
 
-                                    <center>
-
-                                        <ul class="pagination">
-                                            <li><a href="{% url "tasks:tools_results" %}?page=1">首页 </a></li>
-                                            {% if  page_obj.has_previous %}
-                                                <li>
-                                                    <a href="{% url "tasks:tools_results" %}?page={{ page_obj.previous_page_number }}&{{ search_data }}">
-                                                        上一页 </a></li>
-                                            {% else %}
-                                                <li class="disabled"><a> 上一页 </a></li>
-                                            {% endif %}
-
-                                            {% for p in paginator.page_range %}
-                                                {% if  search_data %}  <!-- 判断是否是搜索分页-->
-                                                    {% if p == page_obj.number %}
-                                                        <li class="active"><a
-                                                                href="{% url "tasks:tools_results" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% else %}
-                                                        <li>
-                                                            <a href="{% url "tasks:tools_results" %}?page={{ p }}&{{ search_data }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% else %}
-                                                    {% if p == page_obj.number %}
-                                                        <li class="active"><a
-                                                                href="{% url "tasks:tools_results" %}?page={{ p }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% else %}
-                                                        <li>
-                                                            <a href="{% url "tasks:tools_results" %}?page={{ p }}"> {{ p }} </a>
-                                                        </li>
-                                                    {% endif %}
-                                                {% endif %}
-                                            {% endfor %}
+   <div style="text-align:center;">
+<nav class="pagination">
 
 
-                                            {% if  page_obj.has_next %}
-                                                <li>
-                                                    <a href="{% url "tasks:tools_results" %}?page={{ page_obj.next_page_number }}&{{ search_data }}">
-                                                        下一页 </a></li>
-                                            {% endif %}
-                                            <li>
-                                                <a href="{% url "tasks:tools_results" %}?page={{ page_obj.paginator.num_pages }}">尾页 </a>
+         <li><a href="{% url "tasks:tools_results" %}?page=1">首页 </a></li>
+
+            {% if tools_results_list.has_previous %}
+                <li class="long"><a href="?{{ tools_results_list.previous_page_number.querystring }}">上一页</a></li>
+            {% endif %}
+
+            {% for page in tools_results_list.pages %}
+            {% if page %}
+                {% ifequal page tools_results_list.number %}
+                    <li class="active"><a href="?{{ page.querystring }}">{{ page }}</a></li>
+                {% else %}
+                     <li><a href="?{{ page.querystring }}" class="page">{{ page }}</a></li>
+                {% endifequal %}
+            {% else %}
+                <li class="none"><a href="">...</a></li>
+            {% endif %}
+            {% endfor %}
+            {% if tools_results_list.has_next %}
+                <li class="long"><a href="?{{ tools_results_list.next_page_number.querystring }}">下一页</a></li>
+            {% endif %}
+  <li>
+                                                <a href="{% url "tasks:tools_results" %}?page={{ tools_results_list.paginator.num_pages }}">尾页 </a>
                                             </li>
-                                            <li><span style="color: #0a0a0a">总: &nbsp;{{ page_obj.paginator.num_pages }} 页 </span>
+                                            <li><span style="color: #0a0a0a">总: &nbsp;{{ tools_results_list.paginator.num_pages }} 页 </span>
                                             </li>
 
-                                        </ul>
-                                    </center>
-                                </div> <!--页码 -->
-
+</nav>
+  </div>
 
 
                         </div>

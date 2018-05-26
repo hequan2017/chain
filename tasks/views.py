@@ -18,7 +18,7 @@ from channels.layers import get_channel_layer
 import json, datetime, paramiko, os, logging, random, time
 
 logger = logging.getLogger('tasks')
-
+from pure_pagination import PageNotAnInteger, Paginator
 
 class TasksCmd(LoginRequiredMixin, ListView):
     """
@@ -516,22 +516,20 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
     ordering = ('-ctime',)
     template_name = 'tasks/tools-results.html'
     model = ToolsResults
-    context_object_name = "tools_results_list"
-    paginate_by = settings.DISPLAY_PER_PAGE
+    queryset = ToolsResults.objects.all()
+
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        search_data = self.request.GET.copy()
         try:
-            search_data.pop("page")
-        except BaseException as e:
-            pass
-
-        context.update(search_data.dict())
+            page = self.request.GET.get('page', 1)
+        except PageNotAnInteger as e:
+            page = 1
+        p = Paginator(self.queryset, getattr(settings, 'DISPLAY_PER_PAGE'), request=self.request)
+        list = p.page(page)
         context = {
             "tasks_active": "active",
             "tools_results_active": "active",
-            "search_data": search_data.urlencode(),
+            "tools_results_list": list,
             'date_from': (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d'),
             'date_to': (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
         }
@@ -556,14 +554,13 @@ class ToolsResultsList(LoginRequiredMixin, ListView):
                 ctime__gt=self.request.GET.get('date_from'),
                 ctime__lt=self.request.GET.get('date_to')
             )
-        else:
-            datefrom = (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d')
-            dateto = (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
-            print(datefrom, dateto)
-            self.queryset = self.queryset.filter(
-                ctime__gt=datefrom,
-                ctime__lt=dateto
-            )
+        # else:
+        #     datefrom = (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d')
+        #     dateto = (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
+        #     self.queryset = self.queryset.filter(
+        #         ctime__gt=datefrom,
+        #         ctime__lt=dateto
+        #     )
 
         if keyword:
             self.queryset = self.queryset.filter(

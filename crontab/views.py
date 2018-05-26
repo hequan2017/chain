@@ -10,6 +10,7 @@ import json, datetime, logging
 from asset.models import AssetInfo, AssetProject
 from name.models import Names
 logger = logging.getLogger('crontab')
+from pure_pagination import PageNotAnInteger, Paginator
 
 
 class CrontabsListAll(LoginRequiredMixin, ListView):
@@ -217,7 +218,6 @@ class PeriodicTasksAdd(LoginRequiredMixin, CreateView):
         if form.cleaned_data['task'] == 'tasks.tasks.ansbile_tools_crontab':
             asset = form.cleaned_data['args']
             asset_list = asset.strip('[]').replace('"', '').split(',')
-            print(asset_list)
             for i in asset_list[1:]:
                 project = AssetInfo.objects.get(hostname=i).project
                 project_obj = AssetProject.objects.get(projects=project)
@@ -295,22 +295,20 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
     ordering = ('-date_done',)
     template_name = 'crontab/periodictassks-results.html'
     model = TaskMeta
-    context_object_name = "periodictassks_results_list"
-    paginate_by = settings.DISPLAY_PER_PAGE
+
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        search_data = self.request.GET.copy()
         try:
-            search_data.pop("page")
-        except BaseException as e:
-            pass
+            page = self.request.GET.get('page', 1)
+        except PageNotAnInteger as e:
+            page = 1
+        p = Paginator(self.queryset, getattr(settings, 'DISPLAY_PER_PAGE'), request=self.request)
+        list = p.page(page)
 
-        context.update(search_data.dict())
         context = {
             "crontab_active": "active",
             "crontab_periodictasks_result_active": "active",
-            "search_data": search_data.urlencode(),
+            "periodictassks_results_list":list,
             'date_from': (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d'),
             'date_to': (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
         }
@@ -324,11 +322,11 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
             self.queryset = self.queryset.filter(
                 date_done__gt=self.request.GET.get('date_from'),
                 date_done__lt=self.request.GET.get('date_to'))
-        else:
-            datefrom = (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d')
-            dateto = (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
-            self.queryset =self.queryset.filter(
-                date_done__gt=datefrom,
-                date_done__lt=dateto
-            )
+        # else:
+        #     datefrom = (datetime.datetime.now() + datetime.timedelta(days=-7)).strftime('%Y-%m-%d')
+        #     dateto = (datetime.datetime.now() + datetime.timedelta(days=+1)).strftime('%Y-%m-%d')
+        #     self.queryset =self.queryset.filter(
+        #         date_done__gt=datefrom,
+        #         date_done__lt=dateto
+        #     )
         return self.queryset

@@ -36,7 +36,6 @@ class AssetListAll(LoginRequiredMixin, ListView):
     """
     template_name = 'asset/asset.html'
     model = AssetInfo
-    context_object_name = "asset_list"
     queryset = AssetInfo.objects.all()
     ordering = ('-id',)
 

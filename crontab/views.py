@@ -3,8 +3,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, View, CreateView, UpdateView
 from django.urls import reverse_lazy
 from  crontab.form import CrontabScheduleForm, IntervalScheduleForm, PeriodicTasksForm
-from djcelery.models import CrontabSchedule, PeriodicTask, IntervalSchedule
-from  djcelery.models import TaskMeta
+from django_celery_beat.models import  CrontabSchedule, PeriodicTask, IntervalSchedule
+from django_celery_results.models import TaskResult
 from chain import settings
 import json, datetime, logging
 from asset.models import AssetInfo, AssetProject
@@ -294,7 +294,7 @@ class PeriodicTaskReturnList(LoginRequiredMixin, ListView):
     """
     ordering = ('-date_done',)
     template_name = 'crontab/periodictassks-results.html'
-    model = TaskMeta
+    model = TaskResult
 
 
     def get_context_data(self, **kwargs):

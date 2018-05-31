@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 import sys
-import djcelery
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,10 +46,11 @@ INSTALLED_APPS = [
     'name',
     'rest_framework',
     'rest_framework.authtoken',
-    'djcelery',
+    'django_celery_results',
+    'django_celery_beat',
     'guardian',
     'channels',
-    'crontab'
+    # 'crontab'
 ]
 
 MIDDLEWARE = [
@@ -236,23 +236,18 @@ LOGGING = {
     },
 }
 
-#   celery
-djcelery.setup_loader()
-BROKER_URL = 'redis://127.0.0.1:6379/0'  # 消息存储数据存储在仓库0
 
-CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'  # 指定 Backend
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Shanghai'
+# celery
+# 由于celery-4.1.0存在时区bug，必须启用USE_TZ
+USE_TZ = True
 
-CELERY_CREATE_MISSING_QUEUES = True
-CELERYD_CONCURRENCY = 10
-CELERYD_FORCE_EXECV = True
-CELERYD_MAX_TASKS_PER_CHILD = 100
-CELERY_DISABLE_RATE_LIMITS = True
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_TIMEZONE = 'UTC'
+CELERY_ENABLE_UTC = True
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 
-CELERY_IMPORTS = ('tasks.tasks',)
+
 # 这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 

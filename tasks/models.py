@@ -1,5 +1,5 @@
 from django.db import models
-from djcelery.models import TaskMeta
+from django_celery_results.models import TaskResult
 from jsonfield import JSONField
 from asset.models import AssetInfo
 
@@ -44,7 +44,7 @@ class ToolsResults(models.Model):
 
     @property
     def status(self):
-        status = TaskMeta.objects.get(task_id=self.task_id).status
+        status = TaskResult.objects.get(task_id=self.task_id).status
         return status
 
     class Meta:

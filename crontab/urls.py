@@ -1,5 +1,5 @@
 from django.urls import path
-from  crontab import views
+from crontab import views
 
 urlpatterns = [
     path('crontabs.html', views.CrontabsListAll.as_view(), name='crontabs_list'),

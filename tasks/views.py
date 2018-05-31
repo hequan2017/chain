@@ -7,7 +7,7 @@ from asset.models import AssetInfo, AssetProject
 from tasks.models import cmd_list, Tools, ToolsResults, Variable
 from tasks.form import ToolsForm, VarsForm
 from tasks.tasks import ansbile_tools
-from djcelery.models import TaskMeta
+from django_celery_results.models import TaskResult
 from index.password_crypt import decrypt_p
 from chain import settings
 from name.models import Names
@@ -236,7 +236,6 @@ class TasksPerform(LoginRequiredMixin, View):
                 var_all.update(Variable.objects.get(assets__hostname=i).vars)
             except Exception as e:
                 pass
-            print(i.user.password)
             assets.append({
                 "hostname": i.hostname,
                 "ip": i.network_ip,
@@ -585,7 +584,7 @@ class ToolsResultsDetail(LoginRequiredMixin, DetailView):
             if task.add_user != name:
                 return HttpResponse(status=500)
         try:
-            results = TaskMeta.objects.get(task_id=task.task_id)
+            results = TaskResult.objects.get(task_id=task.task_id)
         except Exception as e:
             logger.error(e)
             results = {'result': "还未完成,请稍后再查看！！"}

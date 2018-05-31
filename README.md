@@ -116,9 +116,8 @@ python3   manage.py runserver 0.0.0.0:80
 
 python3    webssh/main.py    ##启动终端登录功能
 
-python3   manage.py   celery worker     --loglevel=info
-python3   manage.py   celery beat --loglevel=INFO
-
+celery   -A  chain  work  -l  info
+celery   -A  chain  beat  -l  info
 ```
 
 ```bash

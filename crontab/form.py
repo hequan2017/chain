@@ -1,7 +1,5 @@
 from django import forms
-from djcelery.models import CrontabSchedule, PeriodicTask, IntervalSchedule
-
-
+from django_celery_beat.models import  CrontabSchedule, PeriodicTask, IntervalSchedule
 
 
 class CrontabScheduleForm(forms.ModelForm):

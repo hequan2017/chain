@@ -1,5 +1,3 @@
-from celery import Celery, platforms
-from chain import settings
 from multiprocessing import current_process
 from asset.models import AssetInfo
 from tasks.ansible_2420.runner import AdHocRunner, PlayBookRunner
@@ -10,20 +8,26 @@ import logging
 import os
 import random
 
-platforms.C_FORCE_ROOT = True
-app = Celery('chain')
-app.config_from_object('django.conf:settings', )
-app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
+from celery import shared_task
+
 
 logger = logging.getLogger('tasks_celery')
 
 
-@app.task(bind=True)
-def debug_task(self):
-    print('Request: {0!r}'.format(self.request))
 
 
-@app.task()
+
+
+
+
+
+
+
+
+
+
+
+@shared_task
 def ansbile_tools(assets, tasks):
     current_process()._config = {'semprefix': '/mp'}
 
@@ -96,7 +100,7 @@ def ansbile_tools(assets, tasks):
     return retsult_data
 
 
-@app.task()
+@shared_task
 def ansbile_asset_hardware(ids, assets):
     current_process()._config = {'semprefix': '/mp'}
 
@@ -129,7 +133,7 @@ def ansbile_asset_hardware(ids, assets):
     return "获取资产信息 {} 成功".format(hostname)
 
 
-@app.task()
+@shared_task
 def ansbile_tools_crontab(tools_name, *args):
     current_process()._config = {'semprefix': '/mp'}
 

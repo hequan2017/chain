@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'guardian',
     'channels',
-    # 'crontab'
+    'crontab'
 ]
 
 MIDDLEWARE = [

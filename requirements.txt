@@ -1,7 +1,5 @@
 aadict==0.2.3
 aioredis==1.0.0
-aliyun-python-sdk-core-v3==2.8.6
-aliyun-python-sdk-ecs==4.8.0
 amqp==2.3.2
 ansible==2.6.3
 anyjson==0.3.3
@@ -50,8 +48,6 @@ hyperlink==18.0.0
 idna==2.6
 incremental==17.5.0
 Interactive==1.0.1
-ipython==6.3.1
-ipython-genutils==0.2.0
 javascripthon==0.10
 jedi==0.12.0
 Jinja2==2.10
@@ -81,12 +77,10 @@ PyNaCl==1.2.1
 python-dateutil==2.7.2
 pytz==2018.4
 PyYAML==3.12
-redis==2.10.6
 simplegeneric==0.8.1
 six==1.11.0
 tornado==5.0.2
 traitlets==4.3.2
-Twisted==18.4.0
 txaio==2.10.0
 tzlocal==1.5.1
 vine==1.1.4

@@ -1,7 +1,7 @@
 ## 链喵 CMDB
 ![DEMO](static/demo/LOGO.png)
 
-重要通知：因本人工作原因，本项目就此完结。之后不提供更新和维护。 2018-6-1
+重要通知：因本人工作原因，本项目就此完结。之后不提供更新和维护。
 
 
 项目中文名：链喵
@@ -91,12 +91,23 @@ web_port = 8002
 ```
 
 ```bash
+
+
+
 mkdir /etc/ansible/
 cd chain/
 
-python3 -m pip install --upgrade pip
-yum  install   sshpass  bzip2  redis   -y
+
+yum  install   sshpass  bzip2  redis  wget  -y
 systemctl start redis
+
+cd /tmp/
+wget https://files.pythonhosted.org/packages/12/2a/e9e4fb2e6b2f7a75577e0614926819a472934b0b85f205ba5d5d2add54d0/Twisted-18.4.0.tar.bz2
+tar xf Twisted-18.4.0.tar.bz2
+cd Twisted-18.4.0
+python3 setup.py install
+
+
 pip3   install -r   requirements.txt
 
 ```
@@ -108,7 +119,7 @@ python3     manage.py   migrate
 
 python manage.py  shell
 from  name.models import Names
-user=Names.objects.create_superuser('admin','hequan@chain.com','1qaz.2wsx')
+user=Names.objects.create_superuser('admin','hequan@test.com','1qaz.2wsx')
 exit()
 
 python3   manage.py runserver 0.0.0.0:80

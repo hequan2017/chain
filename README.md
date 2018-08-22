@@ -67,7 +67,7 @@ http://47.104.140.38:8001
   * INSPINIA 2.7.1  
 
 后端：
-  * django==2.0.5
+  * django 2.0.5
   * Python 3.6.5
   
 运行环境：
@@ -119,8 +119,7 @@ python3   manage.py runserver 0.0.0.0:80
 
 python3    webssh/main.py    ##启动终端登录功能
 
-celery   -A  chain  worker  -l  info
-celery   -A  chain  beat  -l  info
+celery -B   -A  chain  worker  -l  info
 ```
 
 ```bash

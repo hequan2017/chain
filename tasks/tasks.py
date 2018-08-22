@@ -14,19 +14,6 @@ from celery import shared_task
 logger = logging.getLogger('tasks_celery')
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 @shared_task
 def ansbile_tools(assets, tasks):
     current_process()._config = {'semprefix': '/mp'}

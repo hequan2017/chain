@@ -238,19 +238,10 @@ LOGGING = {
 
 
 # celery
-# 由于celery-4.1.0存在时区bug，必须启用USE_TZ
-USE_TZ = True
 
 CELERY_RESULT_BACKEND = 'django-db'
-CELERY_BROKER_URL = 'redis://localhost:6379'
-CELERY_TIMEZONE = 'UTC'
-CELERY_ENABLE_UTC = True
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
-
-# 这是使用了django-celery默认的数据库调度模型,任务执行周期都被存在你指定的orm数据库中
-# CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
-
 # jet
 JET_DEFAULT_THEME = 'default'
 

@@ -94,15 +94,11 @@ web_port = 8002
 mkdir /etc/ansible/
 cd chain/
 
+python3 -m pip install --upgrade pip
 yum  install   sshpass  bzip2  redis   -y
 systemctl start redis
 pip3   install -r   requirements.txt
 
-cd /tmp/
-wget https://files.pythonhosted.org/packages/12/2a/e9e4fb2e6b2f7a75577e0614926819a472934b0b85f205ba5d5d2add54d0/Twisted-18.4.0.tar.bz2
-tar xf Twisted-18.4.0.tar.bz2
-cd Twisted-18.4.0
-python3 setup.py install
 ```
 
 ```bash
@@ -134,36 +130,6 @@ yum -y install sqlite-devel
 from   task.ansible_2420.runner import AdHocRunner
 from   task.ansible_2420.inventory import BaseInventory
 
-```
-
-### docker部署
-
-可以参考  data/dockerfile-*   文件部署
-
-```bash
-/opt
-    chain
-    password.sh
-    dockerfile-chain
-    dockerfile-python3
-    supervisord.conf
-
-
-cd /opt
-mv  /opt/chain/data/dockerfile-python3   .
-mv  /opt/chain/data/dockerfile-chain   .
-mv  /opt/chain/data/supervisord.conf  .
-mv  /opt/chain/data/password.sh  .
-
-
-修改password.sh 里面的密码
-
-docker build  -t python3.6.5  -f dockerfile-python3    .
-docker build  -t chain   -f dockerfile-chain  --build-arg  ip='47.104.140.38'  .
-
-docker  run  -itd  --name chain   -p 8001:8001  -p 8002:8002    chain
-
-docker  exec  -it   chain /bin/bash
 ```
 
 ###   截图

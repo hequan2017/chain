@@ -20,6 +20,8 @@ COPY    chain  /opt/chain
 
 WORKDIR   /opt/chain/
 
+RUN  python -m pip  install --upgrade pip
+
 RUN  python -m pip  install -r   requirements.txt  && \
      python     manage.py   makemigrations  && \
      python     manage.py   migrate

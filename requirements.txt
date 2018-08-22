@@ -23,7 +23,7 @@ channels==2.0.2
 channels-redis==2.1.0
 chardet==3.0.4
 constantly==15.1.0
-cryptography==2.2.2
+cryptography==2.3.1
 daphne==2.1.1
 decorator==4.3.0
 Delorean==1.0.0

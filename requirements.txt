@@ -68,7 +68,7 @@ prompt-toolkit==1.0.15
 ptyprocess==0.5.2
 pyasn1==0.4.2
 pycparser==2.18
-pycryptodome==3.6.1
+pycryptodome==3.6.6
 pyecharts==0.5.4
 pyecharts-javascripthon==0.0.6
 pyecharts-jupyter-installer==0.0.3

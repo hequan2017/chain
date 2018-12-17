@@ -155,3 +155,4 @@ from   task.ansible_2420.inventory import BaseInventory
 
 #### 0.2
 - 何全
+- 盘振鹏

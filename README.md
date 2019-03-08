@@ -1,16 +1,14 @@
-## 链喵 CMDB
+# 链喵 CMDB
 ![DEMO](static/demo/LOGO.png)
 
-重要通知：因本人工作原因，本项目就此完结。之后不提供更新和维护。
 
-
-
-### 推荐一下 现在自己在做的  django 基础开发模板
+## 推荐一下 现在自己在做的  django 基础开发模板
 
 https://github.com/hequan2017/seal/
 
+## 介绍
 
-
+重要通知：因本人工作原因，本项目就此完结。之后不提供更新和维护。
 
 
 项目中文名：链喵
@@ -22,17 +20,8 @@ linux 云主机 管理系统,包含 CMDB系统,webssh登录、命令执行、异
 * 交流群号： 620176501  <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=bbe5716e8bd2075cb27029bd5dd97e22fc4d83c0f61291f47ed3ed6a4195b024"><img border="0" src="https://github.com/hequan2017/cmdb/blob/master/static/img/group.png"  alt="django开发讨论群" title="django开发讨论群"></a>
 
 ---
-### DEMO
 
-```bash
-http://47.104.140.38:8001
-
-账号  admin
-密码  1qaz.2wsx
-
-```
-
-### 目录结构
+## 目录结构
 
 ![DEMO](static/demo/项目.png)
   *  asset     资产
@@ -47,7 +36,7 @@ http://47.104.140.38:8001
   *  templates  静态模板
   *  webssh     终端ssh登录     参考的  https://github.com/huashengdun/webssh   此项目
 
-###  权限
+##  权限
 
 关于权限,采用的为 django-guardian  对象权限  和 django自带auth权限 相结合
 

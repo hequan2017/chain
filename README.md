@@ -148,9 +148,3 @@ from   task.ansible_2420.inventory import BaseInventory
 ![DEMO](static/demo/3.png)
 ![DEMO](static/demo/4.png)
 
----
-### 作者
-
-#### 0.2
-- 何全
-- 盘振鹏

@@ -8,12 +8,19 @@
 本项目已停止开发！因长时间未对代码进行维护，可能会造成项目在不同环境上无法部署、运行BUG等问题，请知晓！项目仅供参考！
 
 
+## dmeo 
+> http://129.28.156.219:8003/index.html
+
+> 账号admin  密码 1qaz.2wsx
+
 ## 项目
 
 
 项目中文名：链喵
 
 项目英文名：chain 
+
+版本 : v1.0.0  最终版本
 
 linux 云主机 管理系统,包含 CMDB系统,webssh登录、命令执行、异步执行shell/python/yml、查看日志、定时任务等功能。
 
@@ -121,6 +128,10 @@ user=Names.objects.create_superuser('admin','hequan@test.com','1qaz.2wsx')
 exit()
 
 python3   manage.py runserver 0.0.0.0:80
+
+
+##
+nohup  python36  manage.py  runserver 0.0.0.0:8003  >>  /tmp/chain-http.log   2>&1  &
 
 python3    webssh/main.py    ##启动终端登录功能
 

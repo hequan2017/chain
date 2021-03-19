@@ -44,7 +44,7 @@ django-jet==1.0.7
 django-pure-pagination==0.3.0
 django-simpleui==2.1.1
 django-timezone-field==3.0
-djangorestframework==3.8.2
+djangorestframework==3.11.2
 dnf==0.0.1
 dramatiq==1.5.0
 dukpy==0.2.0

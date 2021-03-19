@@ -69,7 +69,7 @@ ipython-genutils==0.2.0
 itypes==1.1.0
 javascripthon==0.10
 jedi==0.12.0
-Jinja2==2.10.1
+Jinja2==2.11.3
 jsonfield==2.0.2
 jupyter-echarts-pypkg==0.1.1
 kombu==4.2.1

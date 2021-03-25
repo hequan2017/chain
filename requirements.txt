@@ -103,7 +103,7 @@ PyNaCl==1.2.1
 python-crontab==2.3.6
 python-dateutil==2.7.2
 pytz==2018.4
-PyYAML==3.12
+PyYAML==5.4
 redis==2.10.6
 requests==2.21.0
 Rx==1.6.1

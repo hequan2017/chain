@@ -17,7 +17,7 @@ Babel==2.5.3
 backcall==0.1.0
 bcrypt==3.1.4
 billiard==3.5.0.3
-celery==4.2.1
+celery==5.2.2
 certifi==2018.11.29
 cffi==1.11.5
 channels==2.0.2

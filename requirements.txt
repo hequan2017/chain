@@ -34,7 +34,7 @@ Django==2.0.13
 django-bootstrap3==10.0.1
 django-bootstrap4==0.0.7
 django-celery-beat==1.1.1
-django-celery-results==1.0.1
+django-celery-results==2.4.0
 django-cors-headers==2.5.2
 django-crispy-forms==1.7.2
 django-filter==2.1.0

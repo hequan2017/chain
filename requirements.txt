@@ -111,7 +111,7 @@ simplegeneric==0.8.1
 simplejson==3.16.0
 singledispatch==3.4.0.3
 six==1.11.0
-sqlparse==0.3.0
+sqlparse==0.5.4
 tornado==5.0.2
 traitlets==4.3.2
 Twisted==19.2.0

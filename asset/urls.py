@@ -36,6 +36,16 @@ urlpatterns = [
     path('asset-business-add.html', views.AssetBusinessAdd.as_view(), name='asset_business_add'),
     path('asset-business-all-del.html', views.AssetBusinessAllDel.as_view(), name='asset_business_all_del'),
     path('asset-business-update-<int:pk>.html', views.AssetBusinessUpdate.as_view(), name='asset_business_update'),
+
+    path('docker-host.html', views.DockerHostListAll.as_view(), name='docker_host_list'),
+    path('docker-host-add.html', views.DockerHostAdd.as_view(), name='docker_host_add'),
+    path('docker-host-all-del.html', views.DockerHostAllDel.as_view(), name='docker_host_all_del'),
+    path('docker-host-update-<int:pk>.html', views.DockerHostUpdate.as_view(), name='docker_host_update'),
+
+    path('k8s-cluster.html', views.K8sClusterListAll.as_view(), name='k8s_cluster_list'),
+    path('k8s-cluster-add.html', views.K8sClusterAdd.as_view(), name='k8s_cluster_add'),
+    path('k8s-cluster-all-del.html', views.K8sClusterAllDel.as_view(), name='k8s_cluster_all_del'),
+    path('k8s-cluster-update-<int:pk>.html', views.K8sClusterUpdate.as_view(), name='k8s_cluster_update'),
 ]
 
 app_name = "asset"

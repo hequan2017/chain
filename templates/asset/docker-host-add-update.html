@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block  title %}Docker管理{% endblock %}
+{% block page-content %}
+<div class="row wrapper border-bottom white-bg page-heading"><div class="col-lg-10"><h2>Docker管理</h2></div></div>
+<div class="row"><div class="col-lg-12"><div class="ibox float-e-margins"><div class="ibox-title"><h5>Docker主机</h5></div><div class="ibox-content">
+<form method="post" class="form-horizontal" action="">{% csrf_token %}
+{% bootstrap_field form.name layout="horizontal" %}
+{% bootstrap_field form.endpoint layout="horizontal" %}
+{% bootstrap_field form.project layout="horizontal" %}
+{% bootstrap_field form.business layout="horizontal" %}
+{% bootstrap_field form.version layout="horizontal" %}
+{% bootstrap_field form.ps layout="horizontal" %}
+{% bootstrap_field form.is_active layout="horizontal" %}
+<div class="form-group"><div class="col-sm-4 col-sm-offset-3">{% bootstrap_button "保存" button_type="submit" button_class="btn-primary" %} <a class="btn btn-white" href="{% url 'asset:docker_host_list' %}">取消</a></div></div>
+</form>
+</div></div></div></div>
+{% endblock %}

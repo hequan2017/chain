@@ -64,7 +64,7 @@ hyperlink==18.0.0
 idna==2.6
 incremental==17.5.0
 Interactive==1.0.1
-ipython==6.4.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 itypes==1.1.0
 javascripthon==0.10

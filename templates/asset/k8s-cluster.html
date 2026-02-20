@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% block  title %}K8s管理{% endblock %}
+{% block page-content %}
+<div class="row wrapper border-bottom white-bg page-heading"><div class="col-lg-10"><h2>K8s管理</h2></div></div>
+<div class="wrapper wrapper-content animated fadeInRight"><div class="row"><div class="col-lg-12"><div class="ibox float-e-margins"><div class="ibox-title"><h5>K8s集群</h5></div>
+<div class="ibox-content table-responsive">
+<a href="{% url 'asset:k8s_cluster_add' %}" class="btn btn-sm btn-primary">添加</a>
+<a class="btn btn-sm btn-danger k8s_cluster_all_del">批量删除</a>
+<form id="del_form_k8s_all" class="form-horizontal"><table class="table table-striped table-bordered table-hover"><thead><tr><th width="20"><input type="checkbox" id="CheckedAll"></th><th>名称</th><th>API Server</th><th>命名空间</th><th>项目</th><th>业务</th><th>状态</th><th>动作</th></tr></thead><tbody>
+{% for row in k8s_list %}
+<tr id="{{ row.id }}"><td><input type="checkbox" value="{{ row.id }}" name="id"></td><td>{{ row.name }}</td><td>{{ row.api_server }}</td><td>{{ row.namespace }}</td><td>{{ row.project }}</td><td>{{ row.business }}</td><td>{% if row.is_active %}<i class="fa fa-check text-navy"></i>{% else %}<i class="fa fa-times text-danger"></i>{% endif %}</td><td><a class="btn btn-primary btn-xs" href="{% url 'asset:k8s_cluster_update' pk=row.id %}">编辑</a> <a class="btn btn-danger btn-xs k8s_cluster_del">删除</a></td></tr>
+{% endfor %}
+</tbody></table></form>
+</div></div></div></div></div>
+{% block footer-js %}
+<script>
+$(function () {
+    $(document).on('click', '.k8s_cluster_del', function () {
+        var id = $(this).closest('tr').attr('id');
+        $.post('/asset/k8s-cluster-all-del.html', {'nid': id}, function () { window.location.reload(); });
+    });
+    $(document).on('click', '.k8s_cluster_all_del', function () {
+        $.post('/asset/k8s-cluster-all-del.html', $('#del_form_k8s_all').serialize(), function () { window.location.reload(); });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

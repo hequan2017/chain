@@ -2,7 +2,7 @@ from django.test import TestCase
 from rest_framework.test import APIRequestFactory
 
 from asset.api import AssetList
-from asset.models import AssetBusiness, AssetInfo, AssetProject
+from asset.models import AssetBusiness, AssetInfo, AssetProject, DockerHost, K8sCluster
 
 
 class AssetListApiQueryTests(TestCase):
@@ -58,3 +58,15 @@ class AssetListApiQueryTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data[0]['hostname'], 'dev-api-01')
+
+
+class ContainerModelTests(TestCase):
+    def test_docker_and_k8s_model_str(self):
+        project = AssetProject.objects.create(projects='platform')
+        business = AssetBusiness.objects.create(business='container')
+
+        docker = DockerHost.objects.create(name='docker-prod', endpoint='tcp://10.0.0.10:2375', project=project, business=business)
+        k8s = K8sCluster.objects.create(name='k8s-prod', api_server='https://10.0.0.11:6443', project=project, business=business)
+
+        self.assertEqual(str(docker), 'docker-prod')
+        self.assertEqual(str(k8s), 'k8s-prod')

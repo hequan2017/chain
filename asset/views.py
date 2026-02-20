@@ -18,14 +18,14 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, View, CreateView, UpdateView, DetailView
 from guardian.decorators import permission_required_or_404
 
-from asset.models import AssetInfo, AssetLoginUser, AssetProject, AssetBusiness
+from asset.models import AssetInfo, AssetLoginUser, AssetProject, AssetBusiness, DockerHost, K8sCluster
 from asset.models import AssetInfo as Asset
 from chain import settings
 from index.password_crypt import encrypt_p, decrypt_p
 from name.models import Names
 from tasks.models import Variable
 from tasks.tasks import ansbile_asset_hardware
-from .form import AssetForm, FileForm, AssetUserForm, AssetProjectForm, AssetBusinessForm
+from .form import AssetForm, FileForm, AssetUserForm, AssetProjectForm, AssetBusinessForm, DockerHostForm, K8sClusterForm
 
 logger = logging.getLogger('asset')
 from pure_pagination import PageNotAnInteger, Paginator
@@ -950,3 +950,125 @@ class AssetBusinessUpdate(LoginRequiredMixin, UpdateView):
         }
         kwargs.update(context)
         return super().get_context_data(**kwargs)
+
+
+class DockerHostListAll(LoginRequiredMixin, ListView):
+    """
+    Docker主机列表
+    """
+    template_name = 'asset/docker-host.html'
+    model = DockerHost
+    context_object_name = 'docker_list'
+    queryset = DockerHost.objects.all().order_by('-id')
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'asset_active': 'active',
+            'docker_host_active': 'active',
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class DockerHostAdd(LoginRequiredMixin, CreateView):
+    model = DockerHost
+    form_class = DockerHostForm
+    template_name = 'asset/docker-host-add-update.html'
+    success_url = reverse_lazy('asset:docker_host_list')
+
+    def get_context_data(self, **kwargs):
+        context = {'asset_active': 'active', 'docker_host_active': 'active'}
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class DockerHostUpdate(LoginRequiredMixin, UpdateView):
+    model = DockerHost
+    form_class = DockerHostForm
+    template_name = 'asset/docker-host-add-update.html'
+    success_url = reverse_lazy('asset:docker_host_list')
+
+    def get_context_data(self, **kwargs):
+        context = {'asset_active': 'active', 'docker_host_active': 'active'}
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class DockerHostAllDel(LoginRequiredMixin, View):
+    model = DockerHost
+
+    @staticmethod
+    def post(request):
+        ret = {'status': True, 'error': None}
+        try:
+            if request.POST.get('nid'):
+                DockerHost.objects.get(id=request.POST.get('nid')).delete()
+            else:
+                ids = request.POST.getlist('id', None)
+                DockerHost.objects.filter(id__in=ids).delete()
+        except Exception as e:
+            ret['status'] = False
+            ret['error'] = '删除请求错误,{}'.format(e)
+        finally:
+            return HttpResponse(json.dumps(ret))
+
+
+class K8sClusterListAll(LoginRequiredMixin, ListView):
+    """
+    K8s集群列表
+    """
+    template_name = 'asset/k8s-cluster.html'
+    model = K8sCluster
+    context_object_name = 'k8s_list'
+    queryset = K8sCluster.objects.all().order_by('-id')
+
+    def get_context_data(self, **kwargs):
+        context = {
+            'asset_active': 'active',
+            'k8s_cluster_active': 'active',
+        }
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class K8sClusterAdd(LoginRequiredMixin, CreateView):
+    model = K8sCluster
+    form_class = K8sClusterForm
+    template_name = 'asset/k8s-cluster-add-update.html'
+    success_url = reverse_lazy('asset:k8s_cluster_list')
+
+    def get_context_data(self, **kwargs):
+        context = {'asset_active': 'active', 'k8s_cluster_active': 'active'}
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class K8sClusterUpdate(LoginRequiredMixin, UpdateView):
+    model = K8sCluster
+    form_class = K8sClusterForm
+    template_name = 'asset/k8s-cluster-add-update.html'
+    success_url = reverse_lazy('asset:k8s_cluster_list')
+
+    def get_context_data(self, **kwargs):
+        context = {'asset_active': 'active', 'k8s_cluster_active': 'active'}
+        kwargs.update(context)
+        return super().get_context_data(**kwargs)
+
+
+class K8sClusterAllDel(LoginRequiredMixin, View):
+    model = K8sCluster
+
+    @staticmethod
+    def post(request):
+        ret = {'status': True, 'error': None}
+        try:
+            if request.POST.get('nid'):
+                K8sCluster.objects.get(id=request.POST.get('nid')).delete()
+            else:
+                ids = request.POST.getlist('id', None)
+                K8sCluster.objects.filter(id__in=ids).delete()
+        except Exception as e:
+            ret['status'] = False
+            ret['error'] = '删除请求错误,{}'.format(e)
+        finally:
+            return HttpResponse(json.dumps(ret))

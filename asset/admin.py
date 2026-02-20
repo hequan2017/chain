@@ -1,5 +1,5 @@
 from django.contrib import admin
-from asset.models import AssetInfo, AssetLoginUser, AssetProject,AssetBusiness
+from asset.models import AssetInfo, AssetLoginUser, AssetProject, AssetBusiness, DockerHost, K8sCluster
 from guardian.admin import GuardedModelAdmin
 
 
@@ -25,3 +25,5 @@ admin.site.register(AssetInfo, AssetAdmin)
 admin.site.register(AssetProject, AssetProjectAdmin)
 admin.site.register(AssetLoginUser, AssetUserAdmin)
 admin.site.register(AssetBusiness)
+admin.site.register(DockerHost)
+admin.site.register(K8sCluster)

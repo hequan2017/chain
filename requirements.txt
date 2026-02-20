@@ -30,7 +30,7 @@ cryptography==2.3.1
 daphne==2.1.1
 decorator==4.3.0
 Delorean==1.0.0
-Django==2.0.13
+Django==4.2.28
 django-bootstrap3==10.0.1
 django-bootstrap4==0.0.7
 django-celery-beat==1.1.1

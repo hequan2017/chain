@@ -19,6 +19,22 @@
 
 linux 云主机 管理系统,包含 CMDB系统,webssh登录、命令执行、异步执行shell/python/yml、查看日志、定时任务等功能。
 
+## 新增功能说明（补充）
+
+在原有资产管理基础上，现已补充容器平台管理入口：
+
+* Docker 管理：用于维护 Docker 主机信息（名称、API 地址、所属项目/业务、版本、激活状态等）
+* K8s 管理：用于维护 Kubernetes 集群信息（集群名、API Server、默认命名空间、所属项目/业务、版本、激活状态等）
+* 导航位置：`资产管理 -> Docker管理 / K8s管理`
+
+同时，资产 API 列表接口补充了常用查询能力：
+
+* `keyword`：按主机名/IP/项目/业务模糊查询
+* `project`、`business`：按项目/业务过滤
+* `is_active`：按激活状态过滤（true/false/1/0 等）
+* `ordering`：允许白名单字段排序，非法参数自动回退默认排序
+
+
 * 交流群号： 620176501  <a target="_blank" href="//shang.qq.com/wpa/qunwpa?idkey=bbe5716e8bd2075cb27029bd5dd97e22fc4d83c0f61291f47ed3ed6a4195b024"><img border="0" src="https://github.com/hequan2017/cmdb/blob/master/static/img/group.png"  alt="django开发讨论群" title="django开发讨论群"></a>
 
 ---
@@ -115,6 +131,10 @@ pip3   install -r   requirements.txt
 ```bash
 cd  chain/
 python3     manage.py   makemigrations
+python3     manage.py   migrate
+
+# 若你拉取了包含 Docker/K8s 新功能的代码，请确保执行迁移
+python3     manage.py   makemigrations asset
 python3     manage.py   migrate
 
 python manage.py  shell

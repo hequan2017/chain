@@ -1,5 +1,5 @@
 from django import forms
-from asset.models import AssetInfo, AssetLoginUser, AssetProject,AssetBusiness
+from asset.models import AssetInfo, AssetLoginUser, AssetProject, AssetBusiness, DockerHost, K8sCluster
 from tasks.models import Variable
 
 
@@ -191,4 +191,26 @@ class AssetBusinessForm(forms.ModelForm):
         widgets = {
             'ps': forms.Textarea(
                 attrs={'cols': 80, 'rows': 4}),
+        }
+
+
+class DockerHostForm(forms.ModelForm):
+    class Meta:
+        model = DockerHost
+        fields = '__all__'
+        widgets = {
+            'ps': forms.Textarea(attrs={'cols': 80, 'rows': 4}),
+            'project': forms.Select(attrs={'class': 'select2'}),
+            'business': forms.Select(attrs={'class': 'select2'}),
+        }
+
+
+class K8sClusterForm(forms.ModelForm):
+    class Meta:
+        model = K8sCluster
+        fields = '__all__'
+        widgets = {
+            'ps': forms.Textarea(attrs={'cols': 80, 'rows': 4}),
+            'project': forms.Select(attrs={'class': 'select2'}),
+            'business': forms.Select(attrs={'class': 'select2'}),
         }

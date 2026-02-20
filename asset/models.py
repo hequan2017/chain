@@ -4,7 +4,10 @@ import random
 __all__ = [
     'AssetInfo',
     'AssetLoginUser',
-    'AssetProject'
+    'AssetProject',
+    'AssetBusiness',
+    'DockerHost',
+    'K8sCluster',
 ]
 
 
@@ -59,6 +62,48 @@ class AssetBusiness(models.Model):
     def __str__(self):
         return self.business
 
+
+
+
+class DockerHost(models.Model):
+    name = models.CharField(max_length=128, verbose_name='Docker主机', unique=True)
+    endpoint = models.CharField(max_length=256, verbose_name='Docker API地址')
+    project = models.ForeignKey(verbose_name='资产项目', to='AssetProject', related_name='docker_hosts',
+                                on_delete=models.SET_NULL, null=True, blank=True)
+    business = models.ForeignKey(verbose_name='资产业务', to='AssetBusiness', related_name='docker_hosts',
+                                 on_delete=models.SET_NULL, null=True, blank=True)
+    version = models.CharField(max_length=64, verbose_name='Docker版本', null=True, blank=True)
+    ps = models.CharField(max_length=1024, verbose_name='备注', null=True, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name='激活')
+
+    class Meta:
+        db_table = 'DockerHost'
+        verbose_name = 'Docker管理'
+        verbose_name_plural = 'Docker管理'
+
+    def __str__(self):
+        return self.name
+
+
+class K8sCluster(models.Model):
+    name = models.CharField(max_length=128, verbose_name='K8s集群', unique=True)
+    api_server = models.CharField(max_length=256, verbose_name='API Server地址')
+    namespace = models.CharField(max_length=128, verbose_name='默认命名空间', default='default')
+    project = models.ForeignKey(verbose_name='资产项目', to='AssetProject', related_name='k8s_clusters',
+                                on_delete=models.SET_NULL, null=True, blank=True)
+    business = models.ForeignKey(verbose_name='资产业务', to='AssetBusiness', related_name='k8s_clusters',
+                                 on_delete=models.SET_NULL, null=True, blank=True)
+    version = models.CharField(max_length=64, verbose_name='K8s版本', null=True, blank=True)
+    ps = models.CharField(max_length=1024, verbose_name='备注', null=True, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name='激活')
+
+    class Meta:
+        db_table = 'K8sCluster'
+        verbose_name = 'K8s管理'
+        verbose_name_plural = 'K8s管理'
+
+    def __str__(self):
+        return self.name
 
 class AssetInfo(models.Model):
     PLATFORM_CHOICES = (

@@ -105,7 +105,7 @@ python-dateutil==2.7.2
 pytz==2018.4
 PyYAML==3.12
 redis==2.10.6
-requests==2.21.0
+requests==2.33.0
 Rx==1.6.1
 simplegeneric==0.8.1
 simplejson==3.16.0

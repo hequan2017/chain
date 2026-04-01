@@ -90,7 +90,7 @@ prometheus-client==0.2.0
 promise==2.2.1
 prompt-toolkit==1.0.15
 ptyprocess==0.5.2
-pyasn1==0.4.2
+pyasn1==0.6.3
 pycparser==2.18
 pycryptodome==3.6.6
 pyecharts==0.5.4

@@ -112,6 +112,11 @@ class BaseInventory(InventoryManager):
         """兼容旧版 InventoryManager.hosts 的访问方式"""
         return self._inventory.hosts
 
+    @property
+    def groups(self):
+        """兼容旧版 InventoryManager.groups 的访问方式"""
+        return self._inventory.groups
+
     def get_groups(self):
         return self._inventory.groups
 

@@ -1,10 +1,12 @@
 from __future__ import absolute_import, unicode_literals
 import os
 import django
-from celery import Celery,platforms
+from celery import Celery
 from chain import settings
 # set the default Django settings module for the 'celery' program.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chain.settings')
+# celery 5 移除了 celery.platforms，允许 root 运行改用环境变量
+os.environ.setdefault('C_FORCE_ROOT', 'true')
 
 django.setup()
 
@@ -19,7 +21,6 @@ app.config_from_object('django.conf:settings',namespace='CELERY')
 # Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
 
-platforms.C_FORCE_ROOT = True
 app.conf.timezone = 'Asia/Shanghai'
 
 

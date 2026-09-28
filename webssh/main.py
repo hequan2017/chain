@@ -14,6 +14,11 @@ from tornado.iostream import _ERRNO_CONNRESET
 from tornado.options import define, options, parse_command_line
 from tornado.util import errno_from_exception
 
+# tornado 6 移除了 READ/WRITE/ERROR 常量，改用等价的 epoll 事件位
+READ = 0x0001
+WRITE = 0x0004
+ERROR = 0x0008 | 0x0010
+
 
 define('address', default='0.0.0.0', help='listen address')
 define('port', default=8002, help='listen port', type=int)
@@ -49,14 +54,14 @@ class Worker(object):
         self.id = str(id(self))
         self.data_to_dst = []
         self.handler = None
-        self.mode = IOLoop.READ
+        self.mode = READ
 
     def __call__(self, fd, events):
-        if events & IOLoop.READ:
+        if events & READ:
             self.on_read()
-        if events & IOLoop.WRITE:
+        if events & WRITE:
             self.on_write()
-        if events & IOLoop.ERROR:
+        if events & ERROR:
             self.close()
 
     def set_handler(self, handler):
@@ -103,15 +108,15 @@ class Worker(object):
             if errno_from_exception(e) in _ERRNO_CONNRESET:
                 self.close()
             else:
-                self.update_handler(IOLoop.WRITE)
+                self.update_handler(WRITE)
         else:
             self.data_to_dst = []
             data = data[sent:]
             if data:
                 self.data_to_dst.append(data)
-                self.update_handler(IOLoop.WRITE)
+                self.update_handler(WRITE)
             else:
-                self.update_handler(IOLoop.READ)
+                self.update_handler(READ)
 
     def close(self):
         logging.debug('Closing worker {}'.format(self.id))
@@ -312,7 +317,7 @@ class WsockHandler(MixinHandler, tornado.websocket.WebSocketHandler):
             self.set_nodelay(True)
             worker.set_handler(self)
             self.worker_ref = weakref.ref(worker)
-            self.loop.add_handler(worker.fd, worker, IOLoop.READ)
+            self.loop.add_handler(worker.fd, worker, READ)
         else:
             self.close()
 

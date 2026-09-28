@@ -23,8 +23,6 @@ handler500 = page_error
 
 urlpatterns = [
     path('admin/', admin.site.urls, name='admin'),
-    path('jet/', include('jet.urls', 'jet')),
-    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
     path('', index),
     path('index.html', index, name="index"),
     path('login.html', login_view),
